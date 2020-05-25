@@ -1,0 +1,116 @@
+package gui.util;
+
+import gui.App;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
+public class CommandArea extends JPanel {
+
+    App app;
+
+    JTextArea textAreaRead;
+    JPanel commandLine;
+    JTextField commandInput;
+    JButton commitButton;
+
+    public CommandArea(App app){
+        this.app = app;
+        init();
+    }
+
+    public void init(){
+
+        this.setSize(app.getSize());
+        this.setBackground(Color.BLACK);
+        this.setLocation(0, 0);
+
+        this.setLayout(new BorderLayout());
+
+        //textArea for for reading outputs and commands
+        textAreaRead = new JTextArea();
+        textAreaRead.setEditable(false);
+        textAreaRead.setSelectedTextColor(Color.BLUE);
+        textAreaRead.setCursor(new Cursor(Cursor.TEXT_CURSOR));
+        textAreaRead.setLineWrap(true);
+        textAreaRead.setAutoscrolls(true);
+        textAreaRead.setLocation(0, 0);
+        JScrollPane jsp = new JScrollPane(textAreaRead);
+        jsp.setCursor(new Cursor(Cursor.TEXT_CURSOR));
+
+        // FocusListener to give the focus to the CommandLine
+        jsp.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                CommandArea.this.getFocus();
+            }
+            @Override
+            public void focusLost(FocusEvent focusEvent) { }
+        });
+
+        textAreaRead.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                CommandArea.this.getFocus();
+            }
+            @Override
+            public void focusLost(FocusEvent focusEvent) { }
+        });
+        this.add(jsp, BorderLayout.CENTER);
+
+        // CommandLine for the input of commands
+        commandLine = new JPanel();
+        commandLine.setLayout(new BorderLayout());
+
+        commandInput = new JTextField();
+
+        commandInput.addActionListener(actionEvent -> execute());
+        commandInput.requestFocus();
+        commandLine.add(commandInput, BorderLayout.CENTER);
+
+        commitButton = new JButton();
+        commitButton.setText("send");
+        commitButton.addActionListener(actionEvent -> execute());
+        commandLine.add(commitButton, BorderLayout.EAST);
+
+
+
+        this.add(commandLine, BorderLayout.SOUTH);
+
+    }
+
+    /**
+     * write in the textArea
+     * @param content String to write
+     */
+    public void print(String content){
+        textAreaRead.setText(textAreaRead.getText() + content);
+    }
+
+    /**
+     * write in the textArea
+     * @param content String to write
+     */
+    public void println(String content){
+        textAreaRead.setText(textAreaRead.getText() + content + "\n");
+    }
+
+    private void execute(){
+        print(commandInput.getText() + "\n");
+        app.handleCommand(commandInput.getText());
+        commandInput.setText("");
+        commandInput.requestFocus();
+    }
+
+    /**
+     * Method to give the Focus to the commandInputField
+     */
+    public void getFocus(){
+        this.requestFocus();
+        commandInput.requestFocus();
+    }
+
+
+}
