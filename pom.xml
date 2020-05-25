@@ -53,5 +53,10 @@
         </dependency>
     </dependencies>
 
+    <properties>
+        <project.build.sourceEncoding>ISO8859_1</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>ISO8859_1</project.reporting.outputEncoding>
+    </properties>
+
     
 </project>

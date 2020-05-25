@@ -73,6 +73,7 @@ public class WebSocketClient {
 	public Map request(Map command, boolean noResponse){
 
 		Gson gson = new Gson();
+		this.response = false;
 		this.sendMessage(gson.toJson(command));
 		try{
 			if(!noResponse){

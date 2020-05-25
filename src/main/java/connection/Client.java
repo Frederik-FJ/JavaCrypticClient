@@ -270,6 +270,9 @@ public class Client {
                 }
             }
         }
+        if(device == null){
+            return "Unknown Device";
+        }
 
 
         if(cmd.equalsIgnoreCase("connect")){
@@ -277,7 +280,7 @@ public class Client {
                 return "device connect <uuid>";
             }
             try{
-                device.isOnline();
+                if(!device.isOnline()) return "Device not online";
             }catch (InvalidServerResponseException e){
                 return "Wrong UUID or Permission denied";
             }
