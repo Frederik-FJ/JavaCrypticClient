@@ -1,8 +1,5 @@
 package gui.desktop;
 
-import Exceptions.InvalidLoginException;
-import Exceptions.InvalidServerResponseException;
-import connection.Client;
 import gui.apps.Settings;
 import gui.apps.Shop;
 import gui.apps.Terminal;
@@ -120,6 +117,7 @@ public class DesktopPane extends JDesktopPane{
             @Override
             public void internalFrameClosing(InternalFrameEvent internalFrameEvent) {
                 taskbar.remove(b);
+                taskbar.repaint();
             }
         });
     }
@@ -146,6 +144,7 @@ public class DesktopPane extends JDesktopPane{
             @Override
             public void internalFrameClosing(InternalFrameEvent internalFrameEvent) {
                 taskbar.remove(b);
+                taskbar.repaint();
             }
         });
     }
@@ -167,6 +166,7 @@ public class DesktopPane extends JDesktopPane{
             @Override
             public void internalFrameClosing(InternalFrameEvent internalFrameEvent) {
                 taskbar.remove(b);
+                taskbar.repaint();
             }
         });
     }

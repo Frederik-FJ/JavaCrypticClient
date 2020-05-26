@@ -10,7 +10,10 @@ public class Taskbar extends JToolBar {
 
     public Taskbar(DesktopPane desktop){
         this.desktop = desktop;
-        this.setLayout(new FlowLayout());
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        JButton options = new JButton("Options");
+        options.addActionListener((actionEvent) -> desktop.startSettings());
+        //this.add(options);
     }
 }
