@@ -6,14 +6,12 @@ import javax.swing.*;
 
 public class Settings extends App {
 
-    Client client;
     JDesktopPane window;
 
 
 
-    public Settings(JDesktopPane window, Client client){
+    public Settings(JDesktopPane window){
         super();
-        this.client = client;
         this.window = window;
 
         this.width = 300;

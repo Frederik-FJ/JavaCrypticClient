@@ -1,6 +1,6 @@
 package gui.desktop;
 
-import connection.Client;
+import gui.ControlCenter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,26 +10,48 @@ public class Desktop extends JPanel {
     DesktopPane pane;
     Taskbar taskbar;
 
-    Client client;
     JFrame window;
 
-    public Desktop(JFrame window, Client client){
-        this.client = client;
+    public Desktop(JFrame window){
         this.window = window;
 
 
-        init();
+        disconnect();
 
     }
 
-    private void init(){
+    private void initComputer(){
         this.setLayout(new BorderLayout());
 
         taskbar = new Taskbar(pane);
-        pane = new DesktopPane(this, client, taskbar);
+        pane = new DesktopPane(this, taskbar);
 
         this.add(pane, BorderLayout.CENTER);
         this.add(taskbar, BorderLayout.WEST);
+    }
+
+    public void connect(){
+        this.removeAll();
+
+        repaint();
+
+        initComputer();
+
+
+        Dimension size = window.getSize();
+        window.setSize(0, 0);
+        window.setSize(size);
+    }
+
+    public void disconnect(){
+        this.removeAll();
+
+        ControlCenter controlCenter = new ControlCenter(this);
+        this.add(controlCenter);
+
+        Dimension size = window.getSize();
+        window.setSize(0, 0);
+        window.setSize(size);
     }
 
 

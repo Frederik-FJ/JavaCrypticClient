@@ -9,7 +9,7 @@ public class Main {
 
     public Main(){
 
-        //TODO ALS NÄCHSTES GUI BEARBEITEN ( COMMANDAREA)
+        //TODO ALS NÄCHSTES GUI BEARBEITEN (COMMANDAREA)
         //TODO console verbessern, villeicht nachschauen bei  https://stackoverflow.com/questions/10030477/make-parts-of-a-jtextarea-non-editable-not-the-whole-jtextarea anschauen text area selectable machen.
 
         //TODO ControllCenter einrichten

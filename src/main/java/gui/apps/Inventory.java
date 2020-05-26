@@ -8,12 +8,10 @@ import java.awt.*;
 
 public class Inventory extends App {
 
-    Client client;
     JDesktopPane window;
 
-    public Inventory(Client client, JDesktopPane window){
+    public Inventory(JDesktopPane window){
         super();
-        this.client = client;
         this.window = window;
 
         this.width = 300;

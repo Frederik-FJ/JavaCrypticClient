@@ -3,6 +3,7 @@ package gui.apps;
 import connection.Client;
 import gui.App;
 import gui.util.CommandArea;
+import information.Information;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,13 +13,11 @@ import java.util.Arrays;
 public class Terminal extends App {
 
     JDesktopPane window;
-    Client client;
 
     CommandArea commandArea;
 
-    public Terminal(JDesktopPane window, Client client) {
+    public Terminal(JDesktopPane window) {
         super();
-        this.client = client;
         this.window = window;
 
         width = 800;
@@ -43,7 +42,7 @@ public class Terminal extends App {
         }
 
         commandArea = new CommandArea(this);
-        commandArea.print("[" + client.user + "]$ ");
+        commandArea.print("[" + Information.client.user + "]$ ");
         this.add(commandArea);
     }
 
@@ -54,13 +53,13 @@ public class Terminal extends App {
                 this.setClosed(true);
                 return;
             }
-            String result = client.processCommand(command);
+            String result = Information.client.processCommand(command);
             commandArea.println(result);
-            commandArea.print("[" + client.user + "]$ ");
+            commandArea.print("[" + Information.client.user + "]$ ");
         } catch (Exception e) {
             e.printStackTrace();
             commandArea.println(Arrays.toString(e.getStackTrace()));
-            commandArea.print("[" + client.user + "]");
+            commandArea.print("[" + Information.client.user + "]");
         }
     }
 

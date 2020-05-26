@@ -7,6 +7,7 @@ import connection.Client;
 import gui.App;
 import gui.util.ShopCategory;
 import gui.util.ShoppingCart;
+import information.Information;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,6 @@ import java.util.Set;
 
 public class Shop extends App {
 
-    Client client;
     JDesktopPane window;
 
     String outputString;
@@ -26,8 +26,7 @@ public class Shop extends App {
 
     Map<String, Map> outputMap;
 
-    public Shop(JDesktopPane window, Client client){
-        this.client = client;
+    public Shop(JDesktopPane window){
         this.window = window;
 
         this.width = 800;
@@ -94,7 +93,7 @@ public class Shop extends App {
         String ret = "";
         Gson gson = new Gson();
 
-        this.outputMap = (Map<String, Map>) client.getShopItems().get("categories");
+        this.outputMap = (Map<String, Map>) Information.client.getShopItems().get("categories");
         System.out.println(gson.toJson(outputMap));
         for(String key : outputMap.keySet()){
             Map<String, Map> category = outputMap.get(key);

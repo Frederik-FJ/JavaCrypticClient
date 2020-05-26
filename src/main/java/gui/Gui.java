@@ -6,6 +6,7 @@ import Exceptions.InvalidServerResponseException;
 import connection.Client;
 import connection.WebSocketClient;
 import gui.desktop.Desktop;
+import information.Information;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,6 @@ public class Gui extends JFrame {
 
     Container pane;
     WebSocketClient webClient;
-    Client client;
 
 
     public Gui(){
@@ -36,11 +36,11 @@ public class Gui extends JFrame {
             server = "wss://ws.test.cryptic-game.net";
         }
 
-        this.client = new Client(server);
-        webClient = client.getClient();
+        Information.client= new Client(server);
+        webClient = Information.client.getClient();
 
         // new Thread wait for inputs in the console
-        new Thread(() -> client.init()).start();
+        new Thread(() -> Information.client.init()).start();
 
         login();
         initialize();
@@ -53,7 +53,7 @@ public class Gui extends JFrame {
         this.pane = getContentPane();
         pane.setLayout(new BorderLayout());
 
-        Desktop desktop = new Desktop(this, client);
+        Desktop desktop = new Desktop(this);
         pane.add(desktop);
     }
 
@@ -78,7 +78,7 @@ public class Gui extends JFrame {
         String pw = JOptionPane.showInputDialog("Password");
 
         try {
-            client.login(uname, pw);
+            Information.client.login(uname, pw);
         } catch (InvalidLoginException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Falsche Logindaten", "Fehler", JOptionPane.ERROR_MESSAGE);
@@ -87,9 +87,4 @@ public class Gui extends JFrame {
             e.printStackTrace();
         }
     }
-
-
-
-
-
 }

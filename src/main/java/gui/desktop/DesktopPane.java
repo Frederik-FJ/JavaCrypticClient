@@ -20,12 +20,12 @@ import java.io.IOException;
 public class DesktopPane extends JDesktopPane{
 
     Desktop window;
-    Client client;
     Taskbar taskbar;
 
     JButton terminal;
     JButton settings;
     JButton shop;
+    JButton controlCenter;
 
     Image settingsIconImage;
     Image terminalIconImage;
@@ -36,8 +36,7 @@ public class DesktopPane extends JDesktopPane{
     Settings sets;
 
 
-    public DesktopPane(Desktop window, Client client, Taskbar taskbar){
-        this.client = client;
+    public DesktopPane(Desktop window, Taskbar taskbar){
         this.window = window;
         this.taskbar = taskbar;
 
@@ -94,12 +93,19 @@ public class DesktopPane extends JDesktopPane{
         shop.setLocation(50, 250);
         shop.addActionListener(actionEvent -> startShop());
         this.add(shop);
+
+        controlCenter = new JButton();
+        controlCenter.setText("Shop");
+        controlCenter.setSize(50, 50);
+        controlCenter.setLocation(50, 350);
+        controlCenter.addActionListener(actionEvent -> window.disconnect());
+        this.add(controlCenter);
     }
 
 
     public void startTerminal(){
         // open terminal
-        Terminal ter = new Terminal(this, client);
+        Terminal ter = new Terminal(this);
         this.add(ter);
         ter.moveToFront();
         ter.getFocus();
@@ -125,7 +131,7 @@ public class DesktopPane extends JDesktopPane{
             if(f instanceof Settings) return;
         }
         //open settings
-        sets = new Settings(this, client);
+        sets = new Settings(this);
         this.add(sets);
         sets.moveToFront();
         sets.getFocus();
@@ -146,7 +152,7 @@ public class DesktopPane extends JDesktopPane{
 
     public void startShop(){
         // open shop
-        Shop shop = new Shop(this, client);
+        Shop shop = new Shop(this);
         this.add(shop);
         shop.moveToFront();
         shop.getFocus();
