@@ -1,21 +1,29 @@
 package gui;
 
-import javax.swing.*;
-import java.awt.*;
+import gui.controlCenter.ComputerCategory;
+import gui.controlCenter.WalletCategory;
 import gui.desktop.Desktop;
 
-public class ControlCenter extends JPanel{
+import javax.swing.*;
 
-    Desktop window;
+public class ControlCenter extends JTabbedPane{
 
-    public ControlCenter(Desktop window){
-        this.window = window;
-        this.setLayout(new FlowLayout());
+    Desktop desktop;
 
-        JButton button = new JButton("connect");
-        button.addActionListener(actionEvent -> window.connect());
-        this.add(button);
+    ComputerCategory computerCategory;
+    WalletCategory walletCategory;
 
 
+
+    public ControlCenter(Desktop desktop){
+        this.desktop = desktop;
+
+        computerCategory = new ComputerCategory(desktop);
+        this.addTab("Computer", computerCategory);
+
+        walletCategory = new WalletCategory();
+        this.addTab("Wallet", walletCategory);
     }
+
+
 }

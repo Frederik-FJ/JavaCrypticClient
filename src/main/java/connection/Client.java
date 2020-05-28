@@ -1,9 +1,11 @@
 package connection;
 
+import Exceptions.DeviceNotOnlineException;
 import Exceptions.InvalidLoginException;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
+import information.Information;
 import items.Device;
 import items.HardwareElement;
 import items.HardwareInventory;
@@ -38,6 +40,7 @@ public class Client {
         Scanner s = new Scanner(System.in);
         try {
             clientEndPoint = new WebSocketClient(new URI(this.server));
+            Information.webSocketClient = clientEndPoint;
 
             System.out.println(onlinePlayer());
 
@@ -276,18 +279,11 @@ public class Client {
 
 
         if(cmd.equalsIgnoreCase("connect")){
-            if(params.length != 1){
-                return "device connect <uuid>";
+            try {
+                return connect(device);
+            } catch (DeviceNotOnlineException e) {
+                return "Device not online";
             }
-            try{
-                if(!device.isOnline()) return "Device not online";
-            }catch (InvalidServerResponseException e){
-                return "Wrong UUID or Permission denied";
-            }
-            connected = true;
-            this.device = device.getName();
-            connectedDevice = device;
-            return "connected";
         }
 
         if(cmd.equals("info")){
@@ -333,6 +329,18 @@ public class Client {
         }
 
         return usage;
+    }
+
+    public String connect(Device device) throws UnknownMicroserviceException, InvalidServerResponseException, DeviceNotOnlineException {
+        try{
+            if(!device.isOnline()) throw new DeviceNotOnlineException();
+        }catch (InvalidServerResponseException e){
+            return "Wrong UUID or Permission denied";
+        }
+        connected = true;
+        this.device = device.getName();
+        connectedDevice = device;
+        return "connected";
     }
 
 

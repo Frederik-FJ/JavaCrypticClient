@@ -14,15 +14,13 @@ public class Desktop extends JPanel {
 
     public Desktop(JFrame window){
         this.window = window;
-
+        this.setLayout(new BorderLayout());
 
         disconnect();
 
     }
 
     private void initComputer(){
-        this.setLayout(new BorderLayout());
-
         taskbar = new Taskbar(pane);
         pane = new DesktopPane(this, taskbar);
 
@@ -47,7 +45,7 @@ public class Desktop extends JPanel {
         this.removeAll();
 
         ControlCenter controlCenter = new ControlCenter(this);
-        this.add(controlCenter);
+        this.add(controlCenter, BorderLayout.CENTER);
 
         Dimension size = window.getSize();
         window.setSize(0, 0);

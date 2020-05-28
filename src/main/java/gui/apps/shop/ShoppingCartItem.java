@@ -1,4 +1,4 @@
-package gui.util;
+package gui.apps.shop;
 
 import items.HardwareElement;
 

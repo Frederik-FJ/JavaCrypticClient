@@ -1,6 +1,6 @@
-package gui.util;
+package gui.apps.shop;
 
-import com.google.gson.Gson;
+import gui.apps.shop.ShoppingCartItem;
 import items.HardwareElement;
 
 import javax.swing.*;

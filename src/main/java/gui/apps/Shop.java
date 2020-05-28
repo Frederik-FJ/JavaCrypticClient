@@ -3,10 +3,9 @@ package gui.apps;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
-import connection.Client;
 import gui.App;
-import gui.util.ShopCategory;
-import gui.util.ShoppingCart;
+import gui.apps.shop.ShopCategory;
+import gui.apps.shop.ShoppingCart;
 import information.Information;
 
 import javax.swing.*;
