@@ -10,6 +10,6 @@ public class Information {
     public static Client client;
     public static WebSocketClient webSocketClient;
 
-    public static String walletUuid = "";
-    public static String walletPw = "";
+    public static String walletUuid = null;
+    public static String walletPw = null;
 }

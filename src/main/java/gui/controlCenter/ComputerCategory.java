@@ -26,7 +26,7 @@ public class ComputerCategory extends JPanel {
     JButton powerButton;
 
     Map<String, Device> devices = new HashMap<>();
-    List<String> deviceNames = new ArrayList<String>();
+    List<String> deviceNames = new ArrayList<>();
 
     public ComputerCategory(Desktop desktop){
         this.desktop = desktop;

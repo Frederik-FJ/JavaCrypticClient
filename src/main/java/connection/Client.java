@@ -226,7 +226,7 @@ public class Client {
         Gson gson = new Gson();
         String usage = "device list|build";
 
-        String command[] = cmd.split(" ");
+        String[] command = cmd.split(" ");
         try{
             cmd = command[1];
         }catch (ArrayIndexOutOfBoundsException e){
@@ -290,12 +290,12 @@ public class Client {
             String uuid = params[0];
             Map info = device.deviceInfo();
             List<Map> hardware = (List<Map>) info.get("hardware");
-            String ret = "Name: \t" + info.get("name");
-            ret += "\nUUID: \t" + info.get("uuid");
-            ret += "\nStatus: \t" + ((boolean) info.get("powered_on")?"on":"off");
-            ret += "\nHardware:";
+            StringBuilder ret = new StringBuilder("Name: \t" + info.get("name"));
+            ret.append("\nUUID: \t").append(info.get("uuid"));
+            ret.append("\nStatus: \t").append((boolean) info.get("powered_on") ? "on" : "off");
+            ret.append("\nHardware:");
             for(Map component : hardware){
-                ret += "\n\t" + component.get("hardware_type") + ":\t " + component.get("hardware_element");
+                ret.append("\n\t").append(component.get("hardware_type")).append(":\t ").append(component.get("hardware_element"));
             }
             return ret + gson.toJson(hardware);
         }
@@ -317,11 +317,11 @@ public class Client {
 
         if(cmd.equals("elements")){
             HardwareElement[] elements = device.getElements();
-            String ret = "";
+            StringBuilder ret = new StringBuilder();
             for(HardwareElement e: elements){
-                ret += e.getType() + ": \t" + e.getName() + "\n";
+                ret.append(e.getType()).append(": \t").append(e.getName()).append("\n");
             }
-            return ret;
+            return ret.toString();
         }
 
         if(cmd.equals("owner")){
@@ -348,7 +348,6 @@ public class Client {
         List<String> endpoint = Arrays.asList("device", "all");
         Map result = clientEndPoint.microservice("device", endpoint, new HashMap<>());
         return result;
-
     }
 
     public Map buildDeviceCmd(String mainboard, String cpu, String gpu, List<String> ram, List<String> disk, List<String> processCooler, String powerPack, String computerCase) throws InvalidServerResponseException, UnknownMicroserviceException {

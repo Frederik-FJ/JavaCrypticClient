@@ -24,14 +24,25 @@ public class Wallet {
         this.pw = Information.walletPw;
     }
 
-    public double getMorphcoins() throws UnknownMicroserviceException, InvalidServerResponseException {
+    public double getMorphcoins() throws UnknownMicroserviceException {
+
+        if(uuid == null || pw == null || uuid.length() < 8 || pw.length() < 6){
+            return -1;
+        }
 
         Map<String, String> data = new HashMap<>();
         data.put("source_uuid", uuid);
         data.put("key", pw);
 
-        Map result = Information.webSocketClient.microservice("currency", Collections.singletonList("get"), data);
-        System.out.println(gson.toJson(result));
+        Map result;
+
+        try{
+            result = Information.webSocketClient.microservice("currency", Collections.singletonList("get"), data);
+        }catch (InvalidServerResponseException e){
+            return -1;
+        }
+
+        //System.out.println(gson.toJson(result));
         try{
             return (double) result.get("amount");
         } catch (ClassCastException e){
