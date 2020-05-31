@@ -3,6 +3,8 @@ package connection;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.net.URI;
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -72,7 +74,8 @@ public class WebSocketClient {
 
 	public Map request(Map command, boolean noResponse){
 
-		Gson gson = new Gson();
+		GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
+		Gson gson = gsonBuilder.create();
 		this.response = false;
 		this.sendMessage(gson.toJson(command));
 		try{

@@ -1,12 +1,10 @@
 package connection;
 
-import Exceptions.DeviceNotOnlineException;
-import Exceptions.InvalidLoginException;
-import Exceptions.InvalidServerResponseException;
-import Exceptions.UnknownMicroserviceException;
+import Exceptions.*;
 import com.google.gson.Gson;
 import information.Information;
 import items.Device;
+import items.File;
 import items.HardwareElement;
 import items.HardwareInventory;
 
@@ -115,8 +113,19 @@ public class Client {
             }
 
             if(cmd.equalsIgnoreCase("ls") || cmd.equalsIgnoreCase("dir")){
-                //TODO if statement hierrum abfrage auf Parameter, uuid vom root ordner rausfinden
-                return gson.toJson(connectedDevice.getFiles(null));
+                try {
+                    StringBuilder s = new StringBuilder();
+                    for(File f : this.connectedDevice.getRootDirectory().getFiles()){
+                        s.append("[")
+                                .append(f.isDirectory()?"DIR":"FILE")
+                                .append("]\t")
+                                .append(f.getName())
+                                .append("\n");
+                    }
+                    return s.toString();
+                } catch (NoDirectoryException e) {
+                    e.printStackTrace();
+                }
             }
 
             if(shopCmd) return shopCmd(cmd);

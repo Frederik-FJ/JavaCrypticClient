@@ -3,26 +3,26 @@ package items;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import connection.WebSocketClient;
+import information.Information;
 
 import java.util.*;
 
 public class Device {
 
     String uuid;
-    WebSocketClient client;
+    WebSocketClient client = Information.webSocketClient;
     HardwareElement[] components;
 
+    @Deprecated
     public Device(String uuid, WebSocketClient client){
         this.uuid = uuid;
         this.client = client;
     }
 
-    /**
-     *
-     * @return Map with information about the device ("name"(String), "uuid"(String), "powered_on"(boolean), "hardware_type"(List< Map< String, String > >)
-     * @throws UnknownMicroserviceException
-     * @throws InvalidServerResponseException
-     */
+    public Device(String uuid){
+        this.uuid = uuid;
+    }
+
     public Map deviceInfo() throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("device", "info");
         Map<String, String> data = new HashMap<>();
@@ -86,20 +86,16 @@ public class Device {
         return client.microservice("device", endpoint, data);
     }
 
-    public Map getFiles(String parentDirUUID) throws UnknownMicroserviceException, InvalidServerResponseException {
-        List<String> endpoint = Arrays.asList("file", "all");
-        Map<String, String> data = new HashMap<>();
-        data.put("device_uuid", uuid);
-        data.put("parent_dir_uuid", parentDirUUID);
-        return client.microservice("device", endpoint, data);
-    }
-
-
     private void setComponents(List<Map> components){
         this.components = new HardwareElement[components.size()];
         for(Map component: components){
             HardwareElement element = new HardwareElement(component.get("hardware_type").toString(), component.get("hardware_element").toString());
             this.components[components.indexOf(component)] = element;
         }
+    }
+
+
+    public File getRootDirectory() throws UnknownMicroserviceException, InvalidServerResponseException {
+        return new File(null, null, true, this);
     }
 }

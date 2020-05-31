@@ -3,6 +3,7 @@ package items;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import connection.WebSocketClient;
+import information.Information;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,8 +14,13 @@ public class HardwareInventory {
 
     WebSocketClient client;
 
+    @Deprecated
     public HardwareInventory(WebSocketClient client){
         this.client = client;
+    }
+
+    public HardwareInventory(){
+        this.client = Information.webSocketClient;
     }
 
     /**
