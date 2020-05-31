@@ -1,6 +1,5 @@
 package gui.apps;
 
-import connection.Client;
 import gui.App;
 import gui.util.CommandArea;
 import information.Information;
@@ -42,7 +41,7 @@ public class Terminal extends App {
         }
 
         commandArea = new CommandArea(this);
-        commandArea.print("[" + Information.client.user + "]$ ");
+        commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + Information.client.pwd + "$ ");
         this.add(commandArea);
     }
 
@@ -55,11 +54,11 @@ public class Terminal extends App {
             }
             String result = Information.client.processCommand(command);
             commandArea.println(result);
-            commandArea.print("[" + Information.client.user + "]$ ");
+            commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + Information.client.pwd + "$ ");
         } catch (Exception e) {
             e.printStackTrace();
             commandArea.println(Arrays.toString(e.getStackTrace()));
-            commandArea.print("[" + Information.client.user + "]");
+            commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + Information.client.pwd + "$ ");
         }
     }
 

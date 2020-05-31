@@ -21,6 +21,9 @@ public class Client {
     public String device = "";
     String token = "";
 
+    public String pwd = "/";
+    public File currentDirectory = null;
+
     Device connectedDevice = null;
     public boolean connected = false;
     public boolean loggedIn = false;
@@ -48,7 +51,9 @@ public class Client {
             while (true) {
                 System.out.print("[" + this.user);
                 if (connected) System.out.print("@" + this.device);
-                System.out.print("]$");
+                System.out.print("]");
+                if (connected) System.out.print(this.pwd);
+                System.out.print(" $");
 
                 String st = s.nextLine();
                 try {
@@ -87,6 +92,10 @@ public class Client {
         boolean inventoryCmd = cmd.startsWith("inventory");
         boolean shopCmd = cmd.startsWith("shop");
 
+        boolean pwd = cmd.startsWith("pwd");
+        boolean ls = cmd.startsWith("ls") || cmd.startsWith("dir");
+        boolean cd = cmd.startsWith("cd");
+
         String[] params = cmd.split( " ");
 
         // Commands which do the same in every case
@@ -106,23 +115,29 @@ public class Client {
         }
         if (connected) {  // if you're connected with a device
             if (exit) {
-                connected = false;
-                device = "";
-                connectedDevice = null;
-                return "disconnected from the device";
+                disconnect();
             }
 
-            if(cmd.equalsIgnoreCase("ls") || cmd.equalsIgnoreCase("dir")){
+            if(ls){
+                return listFiles();
+            }
+
+            if(cd){
+                if(params.length < 2){
+                    return changeDirectory("/");
+                }
+                return changeDirectory(params[1]);
+            }
+
+            if(pwd){
+                updatePwd();
+                return this.pwd;
+            }
+
+            if (cmd.equalsIgnoreCase("test")){
+                File f = new File("9e778ab8-3d25-4d9f-8bce-d57187b8ec80", null, false, connectedDevice);
                 try {
-                    StringBuilder s = new StringBuilder();
-                    for(File f : this.connectedDevice.getRootDirectory().getFiles()){
-                        s.append("[")
-                                .append(f.isDirectory()?"DIR":"FILE")
-                                .append("]\t")
-                                .append(f.getName())
-                                .append("\n");
-                    }
-                    return s.toString();
+                    return gson.toJson(f.getFiles());
                 } catch (NoDirectoryException e) {
                     e.printStackTrace();
                 }
@@ -171,6 +186,79 @@ public class Client {
 
 
         return "Unknown Command: \"" + cmd + "\"";
+    }
+
+    public String changeDirectory(String path) throws UnknownMicroserviceException, InvalidServerResponseException {
+        if(path.equals(".") || path.equals("/")){
+            currentDirectory = connectedDevice.getRootDirectory();
+            updatePwd();
+            return "";
+        }
+        if(path.equals("..")){
+            currentDirectory = File.getParentDir(currentDirectory);
+            //System.out.println(gson.toJson(currentDirectory));
+            updatePwd();
+            return "";
+        }
+        File dir = null;
+        try {
+            for(File f: currentDirectory.getFiles()){
+                if(path.equals(f.getName())){
+                    dir = f;
+                    break;
+                }
+            }
+        } catch (NoDirectoryException e) {
+            e.printStackTrace();
+        }
+        if(dir == null){
+            return "No such directory";
+        }
+        if(!dir.isDirectory()){
+            return dir.getName() + " isn't a directory";
+        }
+        currentDirectory = dir;
+        updatePwd();
+        return "";
+    }
+
+    public String listFiles() throws UnknownMicroserviceException, InvalidServerResponseException {
+        try {
+            StringBuilder s = new StringBuilder();
+            for(File f : this.currentDirectory.getFiles()){
+                s.append("[")
+                        .append(f.isDirectory()?"DIR":"FILE")
+                        .append("]\t")
+                        .append(f.getName())
+                        .append("\n");
+            }
+            return s.toString();
+        } catch (NoDirectoryException e) {
+            e.printStackTrace();
+            return Arrays.toString(e.getStackTrace());
+        }
+    }
+
+    public void updatePwd() throws InvalidServerResponseException, UnknownMicroserviceException {
+        if (currentDirectory.getUuid() == null) {
+            pwd = "/";
+            return;
+        }
+        List<File> dirs = new ArrayList<>();
+        dirs.add(currentDirectory);
+        File dir = currentDirectory;
+        System.out.println(dir.getUuid());
+        while((dir = File.getParentDir(dir)).getUuid() != null){
+            System.out.println("UUID: " + dir.getUuid() + "\nParent UUID: " +  dir.getParentDirUuid());
+            dirs.add(dir);
+        }
+        StringBuilder pwdBuilder = new StringBuilder();
+        for(int i = dirs.size()-1; i >= 0; i--){
+            pwdBuilder.append("/")
+                    .append(dirs.get(i).getName());
+        }
+        pwd = pwdBuilder.toString();
+
     }
 
 
@@ -349,9 +437,18 @@ public class Client {
         connected = true;
         this.device = device.getName();
         connectedDevice = device;
+        currentDirectory = connectedDevice.getRootDirectory();
         return "connected";
     }
 
+    public String disconnect(){
+        pwd = null;
+        currentDirectory = null;
+        connected = false;
+        device = "";
+        connectedDevice = null;
+        return "disconnected from the device";
+    }
 
     public Map getDevices() throws InvalidServerResponseException, UnknownMicroserviceException {
         List<String> endpoint = Arrays.asList("device", "all");
