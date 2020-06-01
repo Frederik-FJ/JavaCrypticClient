@@ -1,5 +1,6 @@
 package gui.desktop;
 
+import gui.App;
 import gui.apps.*;
 import information.Information;
 import items.Device;
@@ -25,9 +26,17 @@ public class DesktopPane extends JDesktopPane{
 
     Image settingsIconImage;
     Image terminalIconImage;
+    Image shopImage;
+    Image controlCenterImage;
+    Image fileManagerImage;
+    Image textEditorImage;
 
-    Icon settingsIcon;
-    Icon terminalIcon;
+    ImageIcon settingsIcon;
+    ImageIcon terminalIcon;
+    ImageIcon shopIcon;
+    ImageIcon controlCenterIcon;
+    ImageIcon fileManagerIcon;
+    ImageIcon textEditorIcon;
 
     Settings sets;
 
@@ -41,6 +50,10 @@ public class DesktopPane extends JDesktopPane{
         try {
             terminalIconImage = ImageIO.read(new File(Information.path + "apps/terminal/icon.png"));
             settingsIconImage = ImageIO.read(new File(Information.path + "apps/settings/icon.png"));
+            shopImage = ImageIO.read(new File(Information.path + "apps/shop/icon.png"));
+            controlCenterImage = ImageIO.read(new File(Information.path + "apps/control_center/icon.png"));
+            fileManagerImage = ImageIO.read(new File(Information.path + "apps/file_manager/icon.png"));
+            textEditorImage = ImageIO.read(new File(Information.path + "apps/text_editor/icon.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,6 +63,19 @@ public class DesktopPane extends JDesktopPane{
 
         newPic = settingsIconImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         settingsIcon = new ImageIcon(newPic);
+
+        newPic = shopImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        shopIcon = new ImageIcon(newPic);
+
+        newPic = controlCenterImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        controlCenterIcon = new ImageIcon(newPic);
+
+        newPic = fileManagerImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        fileManagerIcon = new ImageIcon(newPic);
+
+        newPic = textEditorImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        textEditorIcon = new ImageIcon(newPic);
+
 
 
 
@@ -84,21 +110,21 @@ public class DesktopPane extends JDesktopPane{
         this.add(settings);
 
         shop = new JButton();
-        shop.setText("Shop");
+        shop.setIcon(shopIcon);
         shop.setSize(50, 50);
         shop.setLocation(50, 250);
         shop.addActionListener(actionEvent -> startShop());
         this.add(shop);
 
         controlCenter = new JButton();
-        controlCenter.setText("Shop");
+        controlCenter.setIcon(controlCenterIcon);
         controlCenter.setSize(50, 50);
         controlCenter.setLocation(50, 350);
         controlCenter.addActionListener(actionEvent -> window.disconnect());
         this.add(controlCenter);
 
         fileManager = new JButton();
-        fileManager.setText("fileManager");
+        fileManager.setIcon(fileManagerIcon);
         fileManager.setSize(50, 50);
         fileManager.setLocation(50, 450);
         fileManager.addActionListener(actionEvent -> startFileManager(Information.client.connectedDevice));
@@ -109,22 +135,7 @@ public class DesktopPane extends JDesktopPane{
     public void startTerminal(){
         // open terminal
         Terminal ter = new Terminal(this);
-        this.add(ter);
-        ter.getFocus();
-
-        // Add an icon to the taskbar
-        JButton b = new JButton(terminalIcon);
-        b.addActionListener(actionEvent -> ter.getFocus());
-        taskbar.add(b);
-
-        // If the Terminal is closing, the button disappears from the Taskbar
-        ter.addInternalFrameListener(new InternalFrameAdapter() {
-            @Override
-            public void internalFrameClosing(InternalFrameEvent internalFrameEvent) {
-                taskbar.remove(b);
-                taskbar.repaint();
-            }
-        });
+        startApp(ter, terminalIcon);
     }
 
 
@@ -135,73 +146,36 @@ public class DesktopPane extends JDesktopPane{
         }
         //open settings
         sets = new Settings(this);
-        this.add(sets);
-        sets.getFocus();
-
-        // Add an icon to the taskbar
-        JButton b = new JButton(settingsIcon);
-        b.addActionListener(actionEvent -> sets.getFocus());
-        taskbar.add(b);
-
-        // If the Terminal is closing, the button disappears from the Taskbar
-        sets.addInternalFrameListener(new InternalFrameAdapter() {
-            @Override
-            public void internalFrameClosing(InternalFrameEvent internalFrameEvent) {
-                taskbar.remove(b);
-                taskbar.repaint();
-            }
-        });
+        startApp(sets, settingsIcon);
     }
 
     public void startShop(){
         // open shop
         Shop shop = new Shop(this);
-        this.add(shop);
-        shop.getFocus();
-
-        //Add a icon to the taskbar
-        JButton b = new JButton("Shop");
-        b.addActionListener(actionEvent -> shop.getFocus());
-        taskbar.add(b);
-
-        // If the Terminal is closing, the button disappears from the Taskbar
-        shop.addInternalFrameListener(new InternalFrameAdapter() {
-            @Override
-            public void internalFrameClosing(InternalFrameEvent internalFrameEvent) {
-                taskbar.remove(b);
-                taskbar.repaint();
-            }
-        });
+        startApp(shop, shopIcon);
     }
 
     public void startFileManager(Device device){
         FileManager fileManager = new FileManager(this, device);
-        this.add(fileManager);
-        fileManager.getFocus();
-
-        JButton b = new JButton("FileManager");
-        b.addActionListener(actionEvent -> fileManager.getFocus());
-        taskbar.add(b);
-
-        fileManager.addInternalFrameListener(new InternalFrameAdapter() {
-            @Override
-            public void internalFrameClosing(InternalFrameEvent e) {
-                taskbar.remove(b);
-                taskbar.repaint();
-            }
-        });
+        startApp(fileManager, fileManagerIcon);
     }
 
     public void startTextEditor(items.File file){
         TextEditor textEditor = new TextEditor(file);
-        this.add(textEditor);
-        textEditor.getFocus();
+        startApp(textEditor, textEditorIcon);
+    }
 
-        JButton b = new JButton("TextEditor");
-        b.addActionListener(actionEvent -> textEditor.getFocus());
+    public void startApp(App app, ImageIcon icon){
+        ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+        app.setFrameIcon(scaledIcon);
+        this.add(app);
+        app.getFocus();
+
+        JButton b = new JButton(icon);
+        b.addActionListener(actionEvent -> app.getFocus());
         taskbar.add(b);
 
-        textEditor.addInternalFrameListener(new InternalFrameAdapter() {
+        app.addInternalFrameListener(new InternalFrameAdapter() {
             @Override
             public void internalFrameClosing(InternalFrameEvent e) {
                 taskbar.remove(b);
