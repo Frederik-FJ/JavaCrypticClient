@@ -1,4 +1,4 @@
-package items;
+package util;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;

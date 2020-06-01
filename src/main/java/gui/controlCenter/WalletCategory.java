@@ -1,9 +1,8 @@
 package gui.controlCenter;
 
-import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import information.Information;
-import items.Wallet;
+import util.Wallet;
 
 import javax.swing.*;
 import java.awt.*;

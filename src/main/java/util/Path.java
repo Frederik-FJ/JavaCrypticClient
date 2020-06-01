@@ -1,10 +1,9 @@
-package gui.util;
+package util;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
 import items.Device;
-import items.File;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,5 +108,9 @@ public class Path {
 
     public String getPwd(){
         return pwd;
+    }
+
+    public File getCurrentDirectory(){
+        return currentDirectory;
     }
 }

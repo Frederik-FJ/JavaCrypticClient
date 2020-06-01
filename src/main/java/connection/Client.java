@@ -2,7 +2,7 @@ package connection;
 
 import Exceptions.*;
 import com.google.gson.Gson;
-import gui.util.Path;
+import util.Path;
 import information.Information;
 import items.Device;
 import items.HardwareElement;

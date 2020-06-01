@@ -4,6 +4,7 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import connection.WebSocketClient;
 import information.Information;
+import util.File;
 
 import java.util.*;
 

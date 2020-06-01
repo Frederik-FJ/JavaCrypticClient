@@ -1,9 +1,10 @@
-package items;
+package util;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
 import information.Information;
+import items.Device;
 
 import java.util.*;
 
@@ -84,7 +85,7 @@ public class File {
         data.put("device_uuid", this.device.getUuid());
         data.put("file_uuid", this.getUuid());
         data.put("new_parent_dir_uuid", newParentDirUuid);
-        data.put("new_name", newName);
+        data.put("new_filename", newName);
         Information.webSocketClient.microservice("device", endpoint, data);
     }
 
@@ -126,7 +127,7 @@ public class File {
         data.put("parent_dir_uuid", parentDirUuid);
         data.put("is_directory", isDirectory);
         Map result = Information.webSocketClient.microservice("device", endpoint, data);
-        return new File(result.get("uuid").toString(), result.get("parent_dir_uuid").toString(), (boolean) result.get("is_directory"), new Device(result.get("device").toString()));
+        return new File(result.get("uuid").toString(), (String) result.get("parent_dir_uuid"), (boolean) result.get("is_directory"), new Device(result.get("device").toString()));
     }
 
     public static File createFile(String filename, String content, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
@@ -134,7 +135,7 @@ public class File {
     }
 
     public static File createDirectory(String name, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
-        return create(device, name, "", parentDirUuid, false);
+        return create(device, name, "", parentDirUuid, true);
     }
 
     public static File getParentDir(File f) throws UnknownMicroserviceException, InvalidServerResponseException {

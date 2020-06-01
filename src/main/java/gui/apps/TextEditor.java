@@ -3,7 +3,7 @@ package gui.apps;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
-import items.File;
+import util.File;
 
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;

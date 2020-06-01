@@ -160,7 +160,7 @@ public class DesktopPane extends JDesktopPane{
         startApp(fileManager, fileManagerIcon);
     }
 
-    public void startTextEditor(items.File file){
+    public void startTextEditor(util.File file){
         TextEditor textEditor = new TextEditor(file);
         startApp(textEditor, textEditorIcon);
     }
