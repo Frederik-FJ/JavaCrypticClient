@@ -2,9 +2,9 @@ package connection;
 
 import Exceptions.*;
 import com.google.gson.Gson;
+import gui.util.Path;
 import information.Information;
 import items.Device;
-import items.File;
 import items.HardwareElement;
 import items.HardwareInventory;
 
@@ -21,10 +21,9 @@ public class Client {
     public String device = "";
     String token = "";
 
-    public String pwd = "/";
-    public File currentDirectory = null;
+    public Path path = null;
 
-    Device connectedDevice = null;
+    public Device connectedDevice = null;
     public boolean connected = false;
     public boolean loggedIn = false;
 
@@ -52,7 +51,7 @@ public class Client {
                 System.out.print("[" + this.user);
                 if (connected) System.out.print("@" + this.device);
                 System.out.print("]");
-                if (connected) System.out.print(this.pwd);
+                if (connected) System.out.print(path.getPwd());
                 System.out.print(" $");
 
                 String st = s.nextLine();
@@ -119,28 +118,19 @@ public class Client {
             }
 
             if(ls){
-                return listFiles();
+                return path.listFiles();
             }
 
             if(cd){
                 if(params.length < 2){
-                    return changeDirectory("/");
+                    return path.changeDirectory("/");
                 }
-                return changeDirectory(params[1]);
+                return path.changeDirectory(params[1]);
             }
 
             if(pwd){
-                updatePwd();
-                return this.pwd;
-            }
-
-            if (cmd.equalsIgnoreCase("test")){
-                File f = new File("9e778ab8-3d25-4d9f-8bce-d57187b8ec80", null, false, connectedDevice);
-                try {
-                    return gson.toJson(f.getFiles());
-                } catch (NoDirectoryException e) {
-                    e.printStackTrace();
-                }
+                path.updatePwd();
+                return path.getPwd();
             }
 
             if(shopCmd) return shopCmd(cmd);
@@ -188,78 +178,7 @@ public class Client {
         return "Unknown Command: \"" + cmd + "\"";
     }
 
-    public String changeDirectory(String path) throws UnknownMicroserviceException, InvalidServerResponseException {
-        if(path.equals(".") || path.equals("/")){
-            currentDirectory = connectedDevice.getRootDirectory();
-            updatePwd();
-            return "";
-        }
-        if(path.equals("..")){
-            currentDirectory = File.getParentDir(currentDirectory);
-            //System.out.println(gson.toJson(currentDirectory));
-            updatePwd();
-            return "";
-        }
-        File dir = null;
-        try {
-            for(File f: currentDirectory.getFiles()){
-                if(path.equals(f.getName())){
-                    dir = f;
-                    break;
-                }
-            }
-        } catch (NoDirectoryException e) {
-            e.printStackTrace();
-        }
-        if(dir == null){
-            return "No such directory";
-        }
-        if(!dir.isDirectory()){
-            return dir.getName() + " isn't a directory";
-        }
-        currentDirectory = dir;
-        updatePwd();
-        return "";
-    }
 
-    public String listFiles() throws UnknownMicroserviceException, InvalidServerResponseException {
-        try {
-            StringBuilder s = new StringBuilder();
-            for(File f : this.currentDirectory.getFiles()){
-                s.append("[")
-                        .append(f.isDirectory()?"DIR":"FILE")
-                        .append("]\t")
-                        .append(f.getName())
-                        .append("\n");
-            }
-            return s.toString();
-        } catch (NoDirectoryException e) {
-            e.printStackTrace();
-            return Arrays.toString(e.getStackTrace());
-        }
-    }
-
-    public void updatePwd() throws InvalidServerResponseException, UnknownMicroserviceException {
-        if (currentDirectory.getUuid() == null) {
-            pwd = "/";
-            return;
-        }
-        List<File> dirs = new ArrayList<>();
-        dirs.add(currentDirectory);
-        File dir = currentDirectory;
-        System.out.println(dir.getUuid());
-        while((dir = File.getParentDir(dir)).getUuid() != null){
-            System.out.println("UUID: " + dir.getUuid() + "\nParent UUID: " +  dir.getParentDirUuid());
-            dirs.add(dir);
-        }
-        StringBuilder pwdBuilder = new StringBuilder();
-        for(int i = dirs.size()-1; i >= 0; i--){
-            pwdBuilder.append("/")
-                    .append(dirs.get(i).getName());
-        }
-        pwd = pwdBuilder.toString();
-
-    }
 
 
     // info
@@ -437,13 +356,12 @@ public class Client {
         connected = true;
         this.device = device.getName();
         connectedDevice = device;
-        currentDirectory = connectedDevice.getRootDirectory();
+        path = new Path(connectedDevice);
         return "connected";
     }
 
     public String disconnect(){
-        pwd = null;
-        currentDirectory = null;
+        path = null;
         connected = false;
         device = "";
         connectedDevice = null;

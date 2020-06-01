@@ -20,7 +20,7 @@ public class Inventory extends App {
         init();
     }
 
-    private void init(){
+    protected void init(){
         setBackground(Color.WHITE);
 
         JTabbedPane tabbedPane = new JTabbedPane();

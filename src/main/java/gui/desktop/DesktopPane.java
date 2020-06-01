@@ -1,16 +1,14 @@
 package gui.desktop;
 
-import gui.apps.Settings;
-import gui.apps.Shop;
-import gui.apps.Terminal;
+import gui.apps.*;
 import information.Information;
+import items.Device;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import java.awt.*;
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 
@@ -23,6 +21,7 @@ public class DesktopPane extends JDesktopPane{
     JButton settings;
     JButton shop;
     JButton controlCenter;
+    JButton fileManager;
 
     Image settingsIconImage;
     Image terminalIconImage;
@@ -97,6 +96,13 @@ public class DesktopPane extends JDesktopPane{
         controlCenter.setLocation(50, 350);
         controlCenter.addActionListener(actionEvent -> window.disconnect());
         this.add(controlCenter);
+
+        fileManager = new JButton();
+        fileManager.setText("fileManager");
+        fileManager.setSize(50, 50);
+        fileManager.setLocation(50, 450);
+        fileManager.addActionListener(actionEvent -> startFileManager(Information.client.connectedDevice));
+        this.add(fileManager);
     }
 
 
@@ -104,7 +110,6 @@ public class DesktopPane extends JDesktopPane{
         // open terminal
         Terminal ter = new Terminal(this);
         this.add(ter);
-        ter.moveToFront();
         ter.getFocus();
 
         // Add an icon to the taskbar
@@ -131,7 +136,6 @@ public class DesktopPane extends JDesktopPane{
         //open settings
         sets = new Settings(this);
         this.add(sets);
-        sets.moveToFront();
         sets.getFocus();
 
         // Add an icon to the taskbar
@@ -153,7 +157,6 @@ public class DesktopPane extends JDesktopPane{
         // open shop
         Shop shop = new Shop(this);
         this.add(shop);
-        shop.moveToFront();
         shop.getFocus();
 
         //Add a icon to the taskbar
@@ -165,6 +168,42 @@ public class DesktopPane extends JDesktopPane{
         shop.addInternalFrameListener(new InternalFrameAdapter() {
             @Override
             public void internalFrameClosing(InternalFrameEvent internalFrameEvent) {
+                taskbar.remove(b);
+                taskbar.repaint();
+            }
+        });
+    }
+
+    public void startFileManager(Device device){
+        FileManager fileManager = new FileManager(this, device);
+        this.add(fileManager);
+        fileManager.getFocus();
+
+        JButton b = new JButton("FileManager");
+        b.addActionListener(actionEvent -> fileManager.getFocus());
+        taskbar.add(b);
+
+        fileManager.addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameClosing(InternalFrameEvent e) {
+                taskbar.remove(b);
+                taskbar.repaint();
+            }
+        });
+    }
+
+    public void startTextEditor(items.File file){
+        TextEditor textEditor = new TextEditor(file);
+        this.add(textEditor);
+        textEditor.getFocus();
+
+        JButton b = new JButton("TextEditor");
+        b.addActionListener(actionEvent -> textEditor.getFocus());
+        taskbar.add(b);
+
+        textEditor.addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameClosing(InternalFrameEvent e) {
                 taskbar.remove(b);
                 taskbar.repaint();
             }

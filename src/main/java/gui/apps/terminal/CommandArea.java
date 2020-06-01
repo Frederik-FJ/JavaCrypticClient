@@ -1,4 +1,4 @@
-package gui.util;
+package gui.apps.terminal;
 
 import gui.App;
 

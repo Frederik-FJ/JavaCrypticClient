@@ -96,7 +96,7 @@ public class File {
         this.move(newParentDirUuid, this.getName());
     }
 
-    public void update(String newContent) throws UnknownMicroserviceException, InvalidServerResponseException {
+    public void setContent(String newContent) throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("file", "update");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", this.device.getUuid());

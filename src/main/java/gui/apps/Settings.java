@@ -20,7 +20,7 @@ public class Settings extends App {
         this.init();
     }
 
-    private void init(){
+    protected void init(){
         this.setSize(width, height);
         this.setTitle("Settings");
         this.moveToFront();
@@ -34,9 +34,4 @@ public class Settings extends App {
 
     }
 
-    @Override
-    public void getFocus() {
-        super.getFocus();
-        this.setSize(width, height);
-    }
 }

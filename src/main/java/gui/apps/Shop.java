@@ -51,7 +51,7 @@ public class Shop extends App {
 
     }
 
-    private void init() {
+    protected void init() {
 
         this.handleCommand("list");
         tabbedPane = new JTabbedPane();
@@ -122,12 +122,6 @@ public class Shop extends App {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void getFocus(){
-        super.getFocus();
-        this.setSize(width, height);
     }
 
 

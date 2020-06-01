@@ -1,7 +1,7 @@
 package gui.apps;
 
 import gui.App;
-import gui.util.CommandArea;
+import gui.apps.terminal.CommandArea;
 import information.Information;
 
 import javax.swing.*;
@@ -21,19 +21,14 @@ public class Terminal extends App {
 
         width = 800;
         height = 600;
+        title = "Terminal";
         init();
     }
 
-    private void init(){
+    protected void init(){
+        super.init();
 
-        this.setBackground(new Color(0xffffff));
-        String title = "Terminal";
 
-        this.setTitle(title);
-        this.setSize(width, height);
-        this.moveToFront();
-        this.setLocation(window.getX()/2, window.getY()/2);
-        this.setVisible(true);
         try {
             this.setSelected(true);
         } catch (PropertyVetoException e) {
@@ -41,7 +36,7 @@ public class Terminal extends App {
         }
 
         commandArea = new CommandArea(this);
-        commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + Information.client.pwd + "$ ");
+        commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + Information.client.path.getPwd() + "$ ");
         this.add(commandArea);
     }
 
@@ -54,18 +49,17 @@ public class Terminal extends App {
             }
             String result = Information.client.processCommand(command);
             commandArea.println(result);
-            commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + Information.client.pwd + "$ ");
+            commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" +  Information.client.path.getPwd() + "$ ");
         } catch (Exception e) {
             e.printStackTrace();
             commandArea.println(Arrays.toString(e.getStackTrace()));
-            commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + Information.client.pwd + "$ ");
+            commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" +  Information.client.path.getPwd() + "$ ");
         }
     }
 
     @Override
     public void getFocus() {
         super.getFocus();
-        this.setSize(width, height);
         commandArea.getFocus();
     }
 
