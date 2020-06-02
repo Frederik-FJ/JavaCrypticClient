@@ -10,10 +10,17 @@ public class Taskbar extends JToolBar {
 
     public Taskbar(DesktopPane desktop){
         this.desktop = desktop;
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        JButton options = new JButton("Options");
-        options.addActionListener((actionEvent) -> desktop.startSettings());
-        //this.add(options);
+        this.setOrientation(JToolBar.VERTICAL);
     }
+
+    public void addApp(Component component){
+        this.add(component);
+    }
+
+    public void removeApp(Component component){
+        this.remove(component);
+    }
+
+
+
 }

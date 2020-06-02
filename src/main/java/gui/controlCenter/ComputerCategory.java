@@ -36,7 +36,7 @@ public class ComputerCategory extends JPanel {
 
         try {
             for(Map map :(List<Map>) Information.client.getDevices().get("devices")){
-                devices.put((String) map.get("name"), new Device((String) map.get("uuid"), Information.client.getClient()));
+                devices.put((String) map.get("name"), new Device((String) map.get("uuid")));
                 deviceNames.add((String) map.get("name"));
             }
         } catch (InvalidServerResponseException | UnknownMicroserviceException | ClassCastException e) {

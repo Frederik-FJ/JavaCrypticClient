@@ -1,5 +1,7 @@
 package gui.desktop;
 
+import Exceptions.InvalidServerResponseException;
+import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import gui.apps.*;
 import information.Information;
@@ -90,6 +92,33 @@ public class DesktopPane extends JDesktopPane{
 
     public void initComputer(){
 
+        JPopupMenu menu = new JPopupMenu();
+
+        JMenuItem shutdown = new JMenuItem("shutdown");
+        JMenuItem disconnect = new JMenuItem("disconnect");
+
+        shutdown.addActionListener(actionEvent -> {
+            try {
+                Information.client.connectedDevice.shutdown();
+                window.disconnect();
+            } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+                e.printStackTrace();
+            }
+        });
+        disconnect.addActionListener(actionEvent -> {
+            window.disconnect();
+        });
+
+        menu.add(shutdown);
+        menu.add(disconnect);
+
+        JButton deviceOptions = new JButton(settingsIcon);
+
+        deviceOptions.addActionListener(actionEvent -> {
+            menu.show(deviceOptions, deviceOptions.getX(), deviceOptions.getY());
+        });
+
+        taskbar.add(deviceOptions);
 
         this.setOpaque(false);
 
@@ -173,12 +202,12 @@ public class DesktopPane extends JDesktopPane{
 
         JButton b = new JButton(icon);
         b.addActionListener(actionEvent -> app.getFocus());
-        taskbar.add(b);
+        taskbar.addApp(b);
 
         app.addInternalFrameListener(new InternalFrameAdapter() {
             @Override
             public void internalFrameClosing(InternalFrameEvent e) {
-                taskbar.remove(b);
+                taskbar.removeApp(b);
                 taskbar.repaint();
             }
         });
