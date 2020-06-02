@@ -12,6 +12,8 @@ import util.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -57,6 +59,19 @@ public class FileManager extends App {
                 if(e.getButton() == MouseEvent.BUTTON3){
                     JPopupMenu menu = popupMenu();
                     menu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
+
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_F5){
+                    try {
+                        loadDirectory(path.getCurrentDirectory());
+                    } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException unknownMicroserviceException) {
+                        unknownMicroserviceException.printStackTrace();
+                    }
                 }
             }
         });
@@ -122,6 +137,7 @@ public class FileManager extends App {
                     public void mouseClicked(MouseEvent e) {
                         if(e.getButton() == MouseEvent.BUTTON1) {
                             fileAction(f);
+                            b.setBackground(new Color(0x777777));
                         }
                         if(e.getButton() == MouseEvent.BUTTON3){
                             JPopupMenu menu = filePopupMenu(f);
@@ -142,7 +158,7 @@ public class FileManager extends App {
 
     }
 
-    private void fileAction(File f){
+    protected void fileAction(File f){
         window.startTextEditor(f);
     }
 
@@ -152,13 +168,11 @@ public class FileManager extends App {
     }
 
     protected JPopupMenu dirPopupMenu(File dir){
-        JPopupMenu popupMenu = popupMenu(dir, "directory");
-        return popupMenu;
+        return popupMenu(dir, "directory");
     }
 
     protected JPopupMenu filePopupMenu(File file){
-        JPopupMenu popupMenu = popupMenu(file, "file");
-        return popupMenu;
+        return popupMenu(file, "file");
     }
 
     protected JPopupMenu popupMenu(File f, String type){
