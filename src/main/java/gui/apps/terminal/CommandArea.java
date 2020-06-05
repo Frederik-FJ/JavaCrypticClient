@@ -98,10 +98,14 @@ public class CommandArea extends JPanel {
     }
 
     private void execute(){
-        print(commandInput.getText() + "\n");
-        app.handleCommand(commandInput.getText());
+        execute(commandInput.getText());
         commandInput.setText("");
         commandInput.requestFocus();
+    }
+
+    public void execute(String command){
+        print(command + "\n");
+        app.handleCommand(command);
     }
 
     /**

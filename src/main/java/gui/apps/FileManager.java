@@ -159,6 +159,15 @@ public class FileManager extends App {
     }
 
     protected void fileAction(File f){
+        try{
+            if(f.getName().endsWith(".run")){
+                f.toExecutionFile().execute();
+                return;
+            }
+        }catch (InvalidServerResponseException | UnknownMicroserviceException e){
+            e.printStackTrace();
+        }
+
         window.startTextEditor(f);
     }
 
@@ -172,7 +181,13 @@ public class FileManager extends App {
     }
 
     protected JPopupMenu filePopupMenu(File file){
-        return popupMenu(file, "file");
+       JPopupMenu options = popupMenu(file, "file");
+
+       JMenuItem open = new JMenuItem("open");
+       open.addActionListener((actionEvent -> window.startTextEditor(file)));
+       options.add(open, 0);
+
+       return options;
     }
 
     protected JPopupMenu popupMenu(File f, String type){

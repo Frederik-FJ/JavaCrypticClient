@@ -60,6 +60,8 @@ public class WebSocketClient {
 		}
 		this.message = message;
 		this.response = true;
+
+		//System.out.println("Response: \t" + message);
 	}
 
 
@@ -69,6 +71,7 @@ public class WebSocketClient {
 
 	public void sendMessage(String message){
 		this.userSession.getAsyncRemote().sendText(message);
+		//System.out.println("Message: \t" + message);
 	}
 
 	public Map request(Map command, boolean noResponse){

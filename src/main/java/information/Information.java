@@ -2,6 +2,7 @@ package information;
 
 import connection.Client;
 import connection.WebSocketClient;
+import gui.desktop.DesktopPane;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,6 +19,8 @@ public class Information {
 
     public static String walletUuid = null;
     public static String walletPw = null;
+
+    public static DesktopPane Desktop = null;
 
     public static ImageIcon fileIcon;
     public static ImageIcon dirIcon;

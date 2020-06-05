@@ -47,6 +47,10 @@ public class DesktopPane extends JDesktopPane{
         this.window = window;
         this.taskbar = taskbar;
 
+        this.init();
+    }
+
+    private void init(){
 
         // prepare Icons for for the Apps
         try {
@@ -78,16 +82,9 @@ public class DesktopPane extends JDesktopPane{
         newPic = textEditorImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         textEditorIcon = new ImageIcon(newPic);
 
+        Information.Desktop = this;
 
-
-
-        this.init();
-
-    }
-
-    private void init(){
         initComputer();
-
     }
 
     public void initComputer(){
@@ -161,10 +158,11 @@ public class DesktopPane extends JDesktopPane{
     }
 
 
-    public void startTerminal(){
+    public Terminal startTerminal(){
         // open terminal
         Terminal ter = new Terminal(this);
         startApp(ter, terminalIcon);
+        return ter;
     }
 
 

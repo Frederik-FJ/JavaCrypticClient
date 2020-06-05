@@ -24,7 +24,7 @@ public class File {
         this.device = device;
     }
 
-    public File(String uuid, String parentDirUuid, boolean isDirectory, Device device, String name){
+    private File(String uuid, String parentDirUuid, boolean isDirectory, Device device, String name){
         this(uuid, parentDirUuid, isDirectory, device);
         this.name = name;
     }
@@ -148,5 +148,9 @@ public class File {
         data.put("device_uuid", f.device.getUuid());
         Map result =  Information.webSocketClient.microservice("device", endpoint, data);
         return new File(result.get("uuid").toString(), (String) result.get("parent_dir_uuid"), true, f.device);
+    }
+
+    public ExecutionFile toExecutionFile(){
+        return new ExecutionFile(this);
     }
 }
