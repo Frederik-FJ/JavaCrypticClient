@@ -58,10 +58,14 @@ public class WebSocketClient {
 		if(this.messageHandler != null){
 			this.messageHandler.handleMessage(message);
 		}
+
+		// System.out.println("Response: \t" + message);
+
+		if(message.contains("notify-id")){
+			return;
+		}
 		this.message = message;
 		this.response = true;
-
-		//System.out.println("Response: \t" + message);
 	}
 
 
@@ -77,13 +81,30 @@ public class WebSocketClient {
 	public Map request(Map command, boolean noResponse){
 
 		GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
+		String tag = "";
+		if(command.get("ms") != null)
+			tag = command.get("tag").toString();
 		Gson gson = gsonBuilder.create();
+		Map result;
 		this.response = false;
 		this.sendMessage(gson.toJson(command));
 		try{
 			if(!noResponse){
 				while(!response){
 					Thread.sleep(3);
+				}
+				if (command.get("ms") != null){
+					result = gson.fromJson(message, Map.class);
+					try{
+						while (!result.get("tag").toString()
+								.equals(tag)){
+							Thread.sleep(3);
+							result = gson.fromJson(message, Map.class);
+						}
+					}catch (NullPointerException e){
+						System.err.println(message);
+					}
+
 				}
 			}
 		}catch (Exception e){

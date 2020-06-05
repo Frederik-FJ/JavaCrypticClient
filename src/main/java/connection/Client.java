@@ -80,6 +80,10 @@ public class Client {
 
     public String processCommand(String cmd) throws InvalidServerResponseException, UnknownMicroserviceException { Gson gson = new Gson();
 
+        while(cmd.contains("  ")){
+            cmd = cmd.replace("  ", " ");
+        }
+
         // Befehl
         boolean status = cmd.equalsIgnoreCase("status") || cmd.replace(" ", "").equalsIgnoreCase("onlineplayer");
         boolean exit = cmd.equalsIgnoreCase("exit") || cmd.equalsIgnoreCase("quit");

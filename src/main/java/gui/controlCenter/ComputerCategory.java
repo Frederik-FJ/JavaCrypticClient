@@ -20,10 +20,8 @@ public class ComputerCategory extends JPanel {
     Desktop desktop;
 
     JPanel deviceList;
-    JPanel infoField;
+    JPanel infoField = new JPanel();
     Gson gson = new Gson();
-
-    JButton powerButton;
 
     Map<String, Device> devices = new HashMap<>();
     List<String> deviceNames = new ArrayList<>();
@@ -44,7 +42,6 @@ public class ComputerCategory extends JPanel {
         }
 
         deviceList = new JPanel();
-        //deviceList.setBackground(Color.BLACK);
         deviceList.setLayout(new BoxLayout(deviceList, BoxLayout.Y_AXIS));
         for(String name : devices.keySet()){
             JButton b = new JButton(name);
@@ -52,11 +49,11 @@ public class ComputerCategory extends JPanel {
             b.addActionListener((actionEvent) -> {
                 try {
                     showInfos(devices.get(name));
+                    System.out.println("test");
                 } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
                     e.printStackTrace();
                 }
             });
-            deviceList.add(b);
             deviceList.add(b);
         }
 
@@ -71,8 +68,12 @@ public class ComputerCategory extends JPanel {
     }
 
     private void showInfos(Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
+        System.out.println("infos from" + device.getName());
+        this.remove(infoField);
         infoField = new JPanel();
         infoField.setLayout(new FlowLayout());
+
+        JLabel name = new JLabel(device.getName());
 
         JButton connect = new JButton("connect");
         connect.addActionListener(actionEvent ->  connect(device));
@@ -81,7 +82,7 @@ public class ComputerCategory extends JPanel {
 
         JLabel stateField = new JLabel(state?"online":"offline");
 
-        powerButton = new JButton(state?"shutdown":"boot");
+        JButton powerButton = new JButton(state?"shutdown":"boot");
         powerButton.addActionListener(actionEvent -> {
             try {
                 if (state) {
@@ -99,6 +100,10 @@ public class ComputerCategory extends JPanel {
         infoField.add(connect);
         infoField.add(stateField);
         infoField.add(powerButton);
+        infoField.add(name);
+        this.add(infoField, BorderLayout.CENTER);
+        this.revalidate();
+
     }
 
     private void connect(Device device){
