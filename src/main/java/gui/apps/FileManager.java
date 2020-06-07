@@ -12,10 +12,7 @@ import util.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class FileManager extends App {
 
@@ -52,6 +49,18 @@ public class FileManager extends App {
         } catch (NoDirectoryException | UnknownMicroserviceException | InvalidServerResponseException e) {
             e.printStackTrace();
         }
+
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                for(Component c: FileManager.this.getContentPane().getComponents()){
+                    if(c instanceof FilePane){
+                        FilePane fp = (FilePane) c;
+                        fp.setWidth(FileManager.this.getWidth() - 30);
+                    }
+                }
+            }
+        });
 
         this.addMouseListener(new MouseAdapter() {
             @Override

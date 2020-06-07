@@ -36,9 +36,7 @@ public class Desktop extends JPanel {
         initComputer();
 
 
-        Dimension size = window.getSize();
-        window.setSize(0, 0);
-        window.setSize(size);
+        this.revalidate();
     }
 
     public void disconnect(){
@@ -47,9 +45,7 @@ public class Desktop extends JPanel {
         ControlCenter controlCenter = new ControlCenter(this);
         this.add(controlCenter, BorderLayout.CENTER);
 
-        Dimension size = window.getSize();
-        window.setSize(0, 0);
-        window.setSize(size);
+        this.revalidate();
     }
 
 

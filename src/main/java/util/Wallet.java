@@ -48,7 +48,23 @@ public class Wallet {
         } catch (ClassCastException e){
             return -1;
         }
-
     }
 
+    public Map listConnectedWallets() throws UnknownMicroserviceException, InvalidServerResponseException {
+        List<String> endpoint = Arrays.asList("miner", "list");
+        Map<String, String> data = new HashMap<>();
+        data.put("wallet_uuid", this.uuid);
+        return Information.webSocketClient.microservice("service", endpoint, data);
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void stopMiners() throws UnknownMicroserviceException, InvalidServerResponseException {
+        List<String> endpoint = Arrays.asList("miner", "stop");
+        Map<String, String> data = new HashMap<>();
+        data.put("wallet_uuid", this.uuid);
+        Information.webSocketClient.microservice("service", endpoint, data);
+    }
 }

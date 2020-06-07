@@ -95,6 +95,13 @@ public class Device {
         }
     }
 
+    public boolean hasAccess() throws UnknownMicroserviceException, InvalidServerResponseException {
+        List<String> endpoint = Collections.singletonList("part_owner");
+        Map<String, String> data = new HashMap<>();
+        data.put("device_uuid", uuid);
+        return (boolean) Information.webSocketClient.microservice("service", endpoint, data).get("ok");
+    }
+
 
     public File getRootDirectory() throws UnknownMicroserviceException, InvalidServerResponseException {
         return new File(null, null, true, this);

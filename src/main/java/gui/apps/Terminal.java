@@ -53,7 +53,8 @@ public class Terminal extends App {
                 return;
             }
             String result = processCommand(command);
-            commandArea.println(result);
+            if (!result.equals(""))
+                commandArea.println(result);
             commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + path.getPwd() + "$ ");
         } catch (Exception e) {
             e.printStackTrace();
