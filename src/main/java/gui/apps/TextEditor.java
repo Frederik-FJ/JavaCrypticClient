@@ -47,13 +47,13 @@ public class TextEditor extends App {
             public void internalFrameClosing(InternalFrameEvent e) {
             try {
                 if(!textArea.getText().equals(file.getContent())){
-                    int save = JOptionPane.showConfirmDialog(null, "Save File?", null, JOptionPane.YES_NO_OPTION);
+                    int save = JOptionPane.showInternalConfirmDialog(pane, "Save File?", null, JOptionPane.YES_NO_OPTION);
                     if(save == JOptionPane.YES_OPTION){
                         save();
                     }
                 }
             } catch (InvalidServerResponseException | UnknownMicroserviceException exception) {
-                JOptionPane.showMessageDialog(null, "Error occurred during the conversation with the Server");
+                JOptionPane.showInternalMessageDialog(null, "Error occurred during the conversation with the Server");
             }
             }
         });
@@ -68,14 +68,15 @@ public class TextEditor extends App {
         save.addActionListener(actionEvent -> save());
         rename.addActionListener(actionEvent -> {
             try {
-                String newName = JOptionPane.showInputDialog("New Name", file.getName());
+                String newName = (String) JOptionPane.showInternalInputDialog(pane, "New Name", null,
+                        JOptionPane.PLAIN_MESSAGE, null, null, file.getName());
                 file.rename(newName);
             } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
                 e.printStackTrace();
             }
         });
         delete.addActionListener(actionEvent -> {
-            int result = JOptionPane.showConfirmDialog(null,
+            int result = JOptionPane.showInternalConfirmDialog(pane,
                     "Should this file really be deleted?", null, JOptionPane.YES_NO_OPTION);
             try {
                 if(result == JOptionPane.YES_OPTION) {

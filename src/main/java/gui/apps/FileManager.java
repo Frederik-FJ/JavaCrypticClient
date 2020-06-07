@@ -205,8 +205,8 @@ public class FileManager extends App {
         JMenuItem rename = new JMenuItem("rename");
         rename.addActionListener(actionEvent -> {
             try {
-                String newName = JOptionPane.showInputDialog("New Name", f.getName());
-                f.rename(newName);
+                String newName = (String) JOptionPane.showInternalInputDialog(window, "New Name", null,
+                        JOptionPane.PLAIN_MESSAGE, null, null, f.getName());
                 loadDirectory(path.getCurrentDirectory());
             } catch (InvalidServerResponseException | UnknownMicroserviceException | NoDirectoryException e) {
                 e.printStackTrace();
@@ -216,7 +216,7 @@ public class FileManager extends App {
 
         JMenuItem delete = new JMenuItem("delete");
         delete.addActionListener(actionEvent -> {
-            int result = JOptionPane.showConfirmDialog(null,
+            int result = JOptionPane.showInternalConfirmDialog(window,
                     "Should this " + type + " really be deleted?", null, JOptionPane.YES_NO_OPTION);
             if(result == JOptionPane.YES_OPTION){
                 try {

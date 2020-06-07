@@ -78,7 +78,7 @@ public class Path {
                         .append(f.getName())
                         .append("\n");
             }
-            return s.toString();
+            return s.substring(0, s.length()-1);
         } catch (NoDirectoryException e) {
             e.printStackTrace();
             return Arrays.toString(e.getStackTrace());

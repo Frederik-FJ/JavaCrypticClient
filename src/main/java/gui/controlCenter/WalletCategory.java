@@ -1,5 +1,6 @@
 package gui.controlCenter;
 
+import Exceptions.InvalidWalletException;
 import Exceptions.UnknownMicroserviceException;
 import information.Information;
 import util.Wallet;
@@ -62,8 +63,8 @@ public class WalletCategory extends JPanel{
         Information.walletUuid = walletUuid.getText();
         Information.walletPw = walletPw.getText();
         try {
-            currency.setText(String.valueOf(new Wallet().getMorphcoins()/1000.0));
-        } catch (UnknownMicroserviceException e){
+            currency.setText(String.valueOf(new Wallet(Information.walletUuid, Information.walletPw).getMorphcoins()/1000.0));
+        } catch (UnknownMicroserviceException | InvalidWalletException e){
             e.printStackTrace();
         }
         walletInfo.repaint();
