@@ -4,6 +4,9 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import gui.apps.*;
+import gui.apps.fileManager.FileManager;
+import gui.apps.shop.Shop;
+import gui.apps.terminal.Terminal;
 import information.Information;
 import items.Device;
 
@@ -187,7 +190,7 @@ public class DesktopPane extends JDesktopPane{
         startApp(fileManager, fileManagerIcon);
     }
 
-    public void startTextEditor(util.File file){
+    public void startTextEditor(util.file.File file){
         TextEditor textEditor = new TextEditor(file, this);
         startApp(textEditor, textEditorIcon);
     }

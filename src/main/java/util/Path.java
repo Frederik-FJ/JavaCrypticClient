@@ -4,6 +4,7 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
 import items.Device;
+import util.file.File;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,17 +36,19 @@ public class Path {
     }
 
     public String changeDirectory(String path) throws UnknownMicroserviceException, InvalidServerResponseException {
+        // change to root-Directory if path is . or /
         if(path.equals(".") || path.equals("/")){
             currentDirectory = device.getRootDirectory();
             updatePwd();
             return "";
         }
+        // go on step back if path is ..
         if(path.equals("..")){
             currentDirectory = File.getParentDir(currentDirectory);
-            //System.out.println(gson.toJson(currentDirectory));
             updatePwd();
             return "";
         }
+        // search the folder with the name in the actual path
         File dir = null;
         try {
             for(File f: currentDirectory.getFiles()){
@@ -57,20 +60,27 @@ public class Path {
         } catch (NoDirectoryException e) {
             e.printStackTrace();
         }
+        // handle errors
         if(dir == null){
             return "No such directory";
         }
         if(!dir.isDirectory()){
             return dir.getName() + " isn't a directory";
         }
+        // finally
         currentDirectory = dir;
         updatePwd();
         return "";
     }
 
-    public String listFiles() throws UnknownMicroserviceException, InvalidServerResponseException {
+    /**
+     *  List files from the actual path
+     * @return String of files/dirs in the actual path
+     */
+    public String listFiles(){
         try {
             StringBuilder s = new StringBuilder();
+            // list files from the actual directory
             for(File f : this.currentDirectory.getFiles()){
                 s.append("[")
                         .append(f.isDirectory()?"DIR":"FILE")
@@ -79,13 +89,16 @@ public class Path {
                         .append("\n");
             }
             return s.substring(0, s.length()-1);
-        } catch (NoDirectoryException e) {
+        } catch (NoDirectoryException | UnknownMicroserviceException | InvalidServerResponseException e) {
             e.printStackTrace();
             return Arrays.toString(e.getStackTrace());
         }
     }
 
-    public void updatePwd() throws InvalidServerResponseException, UnknownMicroserviceException {
+    /**
+     * Updates the pwd variable
+     */
+    public void updatePwd(){
         if (currentDirectory.getUuid() == null) {
             pwd = "/";
             return;
@@ -93,17 +106,22 @@ public class Path {
         List<File> dirs = new ArrayList<>();
         dirs.add(currentDirectory);
         File dir = currentDirectory;
-        System.out.println(dir.getUuid());
-        while((dir = File.getParentDir(dir)).getUuid() != null){
-            System.out.println("UUID: " + dir.getUuid() + "\nParent UUID: " +  dir.getParentDirUuid());
-            dirs.add(dir);
+        try {
+            // while dir has parent-dir add the parent dir to the path
+            while ((dir = File.getParentDir(dir)).getUuid() != null) {
+                dirs.add(dir);
+            }
+            StringBuilder pwdBuilder = new StringBuilder();
+
+            // go backwards through the dir-list to have the first dir at the first place
+            for (int i = dirs.size() - 1; i >= 0; i--) {
+                pwdBuilder.append("/")
+                        .append(dirs.get(i).getName());
+            }
+            pwd = pwdBuilder.toString();
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e){
+            e.printStackTrace();
         }
-        StringBuilder pwdBuilder = new StringBuilder();
-        for(int i = dirs.size()-1; i >= 0; i--){
-            pwdBuilder.append("/")
-                    .append(dirs.get(i).getName());
-        }
-        pwd = pwdBuilder.toString();
     }
 
     public String getPwd(){

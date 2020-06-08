@@ -1,4 +1,4 @@
-package gui.apps;
+package gui.apps.shop;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;

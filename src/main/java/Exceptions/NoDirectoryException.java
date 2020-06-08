@@ -1,6 +1,6 @@
 package Exceptions;
 
-import util.File;
+import util.file.File;
 
 public class NoDirectoryException extends Exception{
 

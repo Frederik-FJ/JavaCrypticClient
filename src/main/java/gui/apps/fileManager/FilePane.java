@@ -4,7 +4,7 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
 import information.Information;
-import util.File;
+import util.file.File;
 
 import javax.swing.*;
 import java.awt.*;

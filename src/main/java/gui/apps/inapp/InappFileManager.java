@@ -1,8 +1,8 @@
 package gui.apps.inapp;
 
-import gui.apps.FileManager;
+import gui.apps.fileManager.FileManager;
 import items.Device;
-import util.File;
+import util.file.File;
 
 import javax.swing.*;
 

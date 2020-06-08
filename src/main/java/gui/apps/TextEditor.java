@@ -4,7 +4,7 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import gui.desktop.DesktopPane;
-import util.File;
+import util.file.File;
 
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
@@ -38,10 +38,10 @@ public class TextEditor extends App {
     @Override
     protected void init(){
         super.init();
-        //this.setLayout(new BorderLayout());
 
         InternalFrameAdapter saveOnClose;
 
+        // Add Option to save the file on closing the TextEditor
         this.addInternalFrameListener(saveOnClose = new InternalFrameAdapter() {
             @Override
             public void internalFrameClosing(InternalFrameEvent e) {
@@ -58,6 +58,7 @@ public class TextEditor extends App {
             }
         });
 
+        // Adding a JMenu
         JMenu fileMenu = new JMenu("File");
 
         JMenuItem save = new JMenuItem("save");
@@ -65,6 +66,7 @@ public class TextEditor extends App {
         JMenuItem rename = new JMenuItem("rename");
         JMenuItem delete = new JMenuItem("delete");
 
+        // Adding Actions to the Items
         save.addActionListener(actionEvent -> save());
         rename.addActionListener(actionEvent -> {
             try {
@@ -89,6 +91,7 @@ public class TextEditor extends App {
             }
         });
 
+        // Add the Items to the JMenuBar
         fileMenu.add(save);
         //fileMenu.add(saveAs);
         fileMenu.addSeparator();
@@ -99,6 +102,7 @@ public class TextEditor extends App {
         menuBar.add(fileMenu);
         this.setJMenuBar(menuBar);
 
+        // init the TextArea
         textArea = new JTextArea();
         textArea.setEditable(true);
         textArea.setLineWrap(true);
@@ -106,6 +110,7 @@ public class TextEditor extends App {
 
         this.add(textArea);
 
+        // Add Key-Listener for Strg+S
         textArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -120,6 +125,9 @@ public class TextEditor extends App {
 
     }
 
+    /**
+     * load the content of a file into the TextArea from the TextEditor
+     */
     private void load(){
         try{
             textArea.setText(file.getContent());
@@ -128,6 +136,9 @@ public class TextEditor extends App {
         }
     }
 
+    /**
+     * save the content from the textArea into the file
+     */
     public void save() {
         try{
             file.setContent(textArea.getText());

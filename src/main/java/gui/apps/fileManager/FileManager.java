@@ -1,14 +1,14 @@
-package gui.apps;
+package gui.apps.fileManager;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
-import gui.apps.fileManager.FilePane;
 import gui.desktop.DesktopPane;
 import information.Information;
 import items.Device;
 import util.*;
+import util.file.File;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,6 +50,7 @@ public class FileManager extends App {
             e.printStackTrace();
         }
 
+        // Resize the FilePane when the FileManager resizes
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -62,6 +63,7 @@ public class FileManager extends App {
             }
         });
 
+        // Adding a Popup-Menu on Right-Click
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -72,6 +74,7 @@ public class FileManager extends App {
             }
         });
 
+        // Reloading when F5 is released
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -86,6 +89,10 @@ public class FileManager extends App {
         });
     }
 
+    /**
+     * Loads the files and dirs of a dir into the file-Manager
+     * @param dir the dir from which the dirs/files should be loaded
+     */
     private void loadDirectory(File dir) throws UnknownMicroserviceException, InvalidServerResponseException, NoDirectoryException {
         for(Component c : this.getContentPane().getComponents()){
             if(c instanceof FilePane){
@@ -167,8 +174,13 @@ public class FileManager extends App {
 
     }
 
+    /**
+     * Action from a file if the filePane is left-clicked
+     * @param f the file
+     */
     protected void fileAction(File f){
         try{
+            // execute the file if the ending of the file is .run
             if(f.getName().endsWith(".run")){
                 f.toExecutionFile().execute();
                 return;
@@ -177,30 +189,62 @@ public class FileManager extends App {
             e.printStackTrace();
         }
 
+        // open the TextEditor
         window.startTextEditor(f);
     }
 
+    /**
+     * Action from a dire of the filePane is left-clicked
+     * @param dir the directory
+     */
     protected void dirAction(File dir) throws NoDirectoryException, InvalidServerResponseException, UnknownMicroserviceException {
         loadDirectory(dir);
         path.setDirectory(dir);
     }
 
+    /**
+     * The Popup-Menu for right-clicking a dir
+     * @param dir The dir
+     * @return returns the Popup-Menu
+     */
     protected JPopupMenu dirPopupMenu(File dir){
         return popupMenu(dir, "directory");
     }
 
+    /**
+     * The Popup-Menu for right-clicking a file
+     * @param file The file
+     * @return returns the Popup-Menu
+     */
     protected JPopupMenu filePopupMenu(File file){
        JPopupMenu options = popupMenu(file, "file");
 
+       // adding the option to open the file in the Text-Editor
        JMenuItem open = new JMenuItem("open");
-       open.addActionListener((actionEvent -> window.startTextEditor(file)));
+       open.addActionListener(actionEvent -> window.startTextEditor(file));
        options.add(open, 0);
 
-       return options;
+
+       // Adding option to execute if the file ends with .run
+        try {
+            if(file.getName().endsWith(".run")){
+                JMenuItem execute = new JMenuItem("execute");
+                execute.addActionListener(actionEvent -> {
+                        file.toExecutionFile().execute();
+                });
+                options.add(execute, 0);
+            }
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
+
+        return options;
     }
 
     protected JPopupMenu popupMenu(File f, String type){
         JPopupMenu popupMenu = new JPopupMenu();
+
+        popupMenu.addSeparator();
 
         JMenuItem rename = new JMenuItem("rename");
         rename.addActionListener(actionEvent -> {

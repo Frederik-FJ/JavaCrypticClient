@@ -1,4 +1,4 @@
-package gui.apps;
+package gui.apps.terminal;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
@@ -48,13 +48,16 @@ public class Terminal extends App {
     @Override
     public void handleCommand(String command) {
         try {
+            // if command is exit or quit close the Terminal
             if ((command.equalsIgnoreCase("exit") || command.equalsIgnoreCase("quit"))) {
                 this.setClosed(true);
                 return;
             }
             String result = processCommand(command);
+            // if command returns something, write it
             if (!result.equals(""))
                 commandArea.println(result);
+            // print the new Line
             commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + path.getPwd() + "$ ");
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,8 +76,13 @@ public class Terminal extends App {
         return commandArea;
     }
 
-    public String processCommand(String command) throws UnknownMicroserviceException, InvalidServerResponseException {
-        String result = "";
+    /**
+     *
+     * @param command The command from the console as String
+     * @return The output of the command
+     */
+    public String processCommand(String command){
+        String notFound = "Unknown command";
 
         String[] params = command.split(" ");
 
@@ -87,17 +95,22 @@ public class Terminal extends App {
         }
 
         if(cd){
-            if(params.length < 2){
-                return path.changeDirectory("/");
+            try{
+                if(params.length < 2){
+                    return path.changeDirectory("/");
+                }
+                return path.changeDirectory(params[1]);
+            } catch (InvalidServerResponseException | UnknownMicroserviceException e){
+                e.printStackTrace();
             }
-            return path.changeDirectory(params[1]);
+
         }
 
         if(pwd){
             path.updatePwd();
             return path.getPwd();
         }
-        return result;
+        return notFound;
     }
 
 }

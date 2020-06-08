@@ -114,9 +114,11 @@ public class Wallet {
     }
 
     public static List<Wallet> getWallets() throws UnknownMicroserviceException, InvalidServerResponseException {
-        List<Wallet> ret = new ArrayList<>();
         List<String> endpoint = Collections.singletonList("list");
         Map result = Information.webSocketClient.microservice("currency", endpoint, new HashMap<>());
+
+        List<Wallet> ret = new ArrayList<>();
+        // list wallets
         for(String uuid : (List<String>)result.get("wallets")){
             ret.add(new Wallet(uuid));
         }
