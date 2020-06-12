@@ -30,7 +30,7 @@ public class Bruteforce extends Service{
         try{
             status();
             return true;
-        }catch (InvalidServerResponseException e){
+        }catch (InvalidServerResponseException ignore){
             return false;
         }
     }

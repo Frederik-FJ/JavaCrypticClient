@@ -26,7 +26,7 @@ public class FileManager extends App {
 
         this.device = device;
         this.window = window;
-        path = new Path(Information.client.connectedDevice);
+        path = new Path(device);
 
         width = 800;
         height = 600;
@@ -250,6 +250,7 @@ public class FileManager extends App {
             try {
                 String newName = (String) JOptionPane.showInternalInputDialog(window, "New Name", null,
                         JOptionPane.PLAIN_MESSAGE, null, null, f.getName());
+                f.rename(newName);
                 loadDirectory(path.getCurrentDirectory());
             } catch (InvalidServerResponseException | UnknownMicroserviceException | NoDirectoryException e) {
                 e.printStackTrace();

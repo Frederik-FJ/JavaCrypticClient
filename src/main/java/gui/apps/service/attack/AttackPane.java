@@ -2,6 +2,7 @@ package gui.apps.service.attack;
 
 import gui.App;
 import gui.apps.service.attack.bruteforce.BruteforceAttackPane;
+import gui.apps.service.attack.hacked.HackedPane;
 import gui.apps.service.attack.portscan.PortscanAttackPane;
 import util.service.Bruteforce;
 import util.service.Portscan;
@@ -30,6 +31,10 @@ public class AttackPane extends JPanel {
 
     private void init(){
         this.setLayout(new BorderLayout());
+
+        if(service == null){
+            this.add(new HackedPane(), BorderLayout.CENTER);
+        }
 
         if(service instanceof Bruteforce){
             this.add(new BruteforceAttackPane(service), BorderLayout.CENTER);

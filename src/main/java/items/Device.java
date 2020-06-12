@@ -109,6 +109,13 @@ public class Device {
         return (boolean) Information.webSocketClient.microservice("service", endpoint, data).get("ok");
     }
 
+    public Portscan getPortscanService(){
+        for(Service s: Service.getServiceList(this)){
+            if(s instanceof Portscan)
+                return (Portscan) s;
+        }
+        return null;
+    }
 
     public File getRootDirectory() throws UnknownMicroserviceException, InvalidServerResponseException {
         return new File(null, null, true, this);
@@ -125,11 +132,21 @@ public class Device {
         return new Device(result.get("uuid").toString());
     }
 
-    public Portscan getPortscanService(){
-       for(Service s: Service.getServiceList(this)){
-            if(s instanceof Portscan)
-                return (Portscan) s;
+    public static List<Device> getHackedDevices(){
+        List<String> endpoint = Collections.singletonList("list_part_owner");
+        Map result;
+        try {
+            result = Information.webSocketClient.microservice("service", endpoint, new HashMap<>());
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+            return null;
         }
-       return null;
+
+        List<Device> ret = new ArrayList<>();
+        for(Map m:(List<Map>)result.get("services")){
+            ret.add(new Device(m.get("device").toString()));
+        }
+
+        return ret;
     }
 }

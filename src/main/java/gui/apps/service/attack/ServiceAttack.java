@@ -1,6 +1,7 @@
 package gui.apps.service.attack;
 
 import gui.App;
+import gui.apps.service.attack.hacked.HackedPane;
 import items.Device;
 import util.service.Service;
 
@@ -35,6 +36,8 @@ public class ServiceAttack extends App {
                 content.addTab(s.getName(), attackPane);
             }
         }
+        content.addTab("hacked", new HackedPane());
+
         this.add(content, BorderLayout.CENTER);
     }
 }
