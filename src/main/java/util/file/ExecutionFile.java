@@ -21,7 +21,7 @@ public class ExecutionFile extends File {
      * opens the Terminal and execute the commands from the file
      */
     public void execute(){
-        Terminal ter = Information.Desktop.startTerminal();
+        Terminal ter = Information.Desktop.startTerminal(device);
         try {
             for(String line: this.getContent().split("\n")){
                 ter.getCommandArea().execute(line);

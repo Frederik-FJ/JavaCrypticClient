@@ -16,23 +16,56 @@ public class Bruteforce extends Service{
         super(service.serviceUuid, service.device);
     }
 
-    public void attack(Device targetDevice, Service targetService) throws UnknownMicroserviceException, InvalidServerResponseException {
+    @Override
+    public String getName() {
+        return "bruteforce";
+    }
+
+    @Override
+    public boolean isAttackService() {
+        return true;
+    }
+
+    public boolean inAttack(){
+        try{
+            status();
+            return true;
+        }catch (InvalidServerResponseException e){
+            return false;
+        }
+    }
+
+    public void attack(Device targetDevice, Service targetService) throws InvalidServerResponseException{
         List<String> endpoint = Arrays.asList("bruteforce", "attack");
         Map<String, String> data = new HashMap<>();
         data.put("service_uuid", this.serviceUuid);
         data.put("device_uuid", this.device.getUuid());
         data.put("target_device", targetDevice.getUuid());
         data.put("target_service", targetService.getUuid());
-        Map result = Information.webSocketClient.microservice("service", endpoint, data);
+        try {
+            Map result = Information.webSocketClient.microservice("service", endpoint, data);
+        } catch (UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
     }
 
-    public Map status() throws InvalidServerResponseException, UnknownMicroserviceException {
+    public Map status() throws InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("bruteforce", "status");
-        return this.command(endpoint);
+        try {
+            return this.command(endpoint);
+        } catch (UnknownMicroserviceException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public void stop() throws InvalidServerResponseException, UnknownMicroserviceException {
+    public Map stop(){
         List<String> endpoint = Arrays.asList("bruteforce", "stop");
-        command(endpoint);
+        try {
+            return command(endpoint);
+        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

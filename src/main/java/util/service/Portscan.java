@@ -5,10 +5,7 @@ import Exceptions.UnknownMicroserviceException;
 import information.Information;
 import items.Device;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Portscan extends Service{
     public Portscan(String serviceUuid, Device device) {
@@ -19,12 +16,34 @@ public class Portscan extends Service{
         super(service.serviceUuid, service.device);
     }
 
-    public void run(String target_device) throws InvalidServerResponseException, UnknownMicroserviceException {
+    @Override
+    public String getName() {
+        return "portscan";
+    }
+
+    @Override
+    public boolean isAttackService() {
+        return true;
+    }
+
+    public List<Service> run(Device target_device){
         List<String> endpoint = Collections.singletonList("use");
         Map<String, String> data = new HashMap<>();
         data.put("service_uuid", serviceUuid);
         data.put("device_uuid", device.getUuid());
-        data.put("target_device", target_device);
-        Information.webSocketClient.microservice("service", endpoint, data);
+        data.put("target_device", target_device.getUuid());
+        Map result;
+        try {
+            result = Information.webSocketClient.microservice("service", endpoint, data);
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e){
+            e.printStackTrace();
+            return null;
+        }
+        List<Service> ret = new ArrayList<>();
+        for(Map map: (List<Map>) result.get("services")){
+            Service s = new UnknownService(map.get("uuid").toString(), new Device(map.get("device").toString()));
+            ret.add(Service.toServiceType(s, map.get("name").toString()));
+        }
+        return ret;
     }
 }

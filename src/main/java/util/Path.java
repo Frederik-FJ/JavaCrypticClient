@@ -88,6 +88,9 @@ public class Path {
                         .append(f.getName())
                         .append("\n");
             }
+            if(s.length() == 0){
+                return "";
+            }
             return s.substring(0, s.length()-1);
         } catch (NoDirectoryException | UnknownMicroserviceException | InvalidServerResponseException e) {
             e.printStackTrace();

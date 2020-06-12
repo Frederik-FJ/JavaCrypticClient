@@ -3,30 +3,32 @@ package gui.apps.terminal;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
-import gui.apps.terminal.CommandArea;
 import information.Information;
+import items.Device;
 import util.Path;
 
 import javax.swing.*;
-import java.awt.*;
 import java.beans.PropertyVetoException;
 import java.util.Arrays;
 
 public class Terminal extends App {
 
-    JDesktopPane window;
+    JDesktopPane window = Information.Desktop;
     Path path;
+
+    Device device;
 
     CommandArea commandArea;
 
-    public Terminal(JDesktopPane window) {
+    public Terminal(Device device) {
         super();
-        this.window = window;
+
+        this.device = device;
 
         width = 800;
         height = 600;
-        title = "Terminal";
-        path = new Path(Information.client.connectedDevice);
+        title = "Terminal - " + device.getName();
+        path = new Path(device);
         init();
     }
 
@@ -41,7 +43,7 @@ public class Terminal extends App {
         }
 
         commandArea = new CommandArea(this);
-        commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + Information.client.path.getPwd() + "$ ");
+        commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + path.getPwd() + "$ ");
         this.add(commandArea);
     }
 
@@ -58,11 +60,11 @@ public class Terminal extends App {
             if (!result.equals(""))
                 commandArea.println(result);
             // print the new Line
-            commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + path.getPwd() + "$ ");
+            commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + path.getPwd() + "$ ");
         } catch (Exception e) {
             e.printStackTrace();
             commandArea.println(Arrays.toString(e.getStackTrace()));
-            commandArea.print("[" + Information.client.user + "@" + Information.client.device + "]" + path.getPwd() + "$ ");
+            commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + path.getPwd() + "$ ");
         }
     }
 
@@ -86,10 +88,34 @@ public class Terminal extends App {
 
         String[] params = command.split(" ");
 
+        boolean fileManager = command.replace(" ", "").equalsIgnoreCase("filemanager");
+        boolean terminal = command.replace(" ", "").equalsIgnoreCase("terminal");
+        boolean attack = command.replace(" ", "").equalsIgnoreCase("attack");
+        boolean serviceManager = command.replace(" ", "").equalsIgnoreCase("servicemanager");
+
         boolean ls = command.equals("ls");
         boolean cd = command.startsWith("cd");
         boolean pwd = command.equals("pwd");
 
+        // open programs
+        if(fileManager){
+            Information.Desktop.startFileManager(device);
+        }
+
+        if(terminal){
+            Information.Desktop.startTerminal(device);
+        }
+
+        if(attack){
+            Information.Desktop.startServiceAttacker(device);
+        }
+
+        if(serviceManager){
+            Information.Desktop.startServiceManager(device);
+        }
+
+
+        // path cmd
         if(ls){
             return path.listFiles();
         }

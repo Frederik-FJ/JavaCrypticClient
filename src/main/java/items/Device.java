@@ -5,6 +5,8 @@ import Exceptions.UnknownMicroserviceException;
 import connection.WebSocketClient;
 import information.Information;
 import util.file.File;
+import util.service.Portscan;
+import util.service.Service;
 
 import java.util.*;
 
@@ -37,8 +39,13 @@ public class Device {
         return uuid;
     }
 
-    public String getName() throws InvalidServerResponseException, UnknownMicroserviceException {
-        return (String) this.deviceInfo().get("name");
+    public String getName(){
+        try {
+            return (String) this.deviceInfo().get("name");
+        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
+            e.printStackTrace();
+        }
+        return "Error with the server";
     }
 
     public boolean isOnline() throws UnknownMicroserviceException, InvalidServerResponseException {
@@ -105,5 +112,24 @@ public class Device {
 
     public File getRootDirectory() throws UnknownMicroserviceException, InvalidServerResponseException {
         return new File(null, null, true, this);
+    }
+
+    public static Device getRandomDevice(){
+        List<String> endpoint = Arrays.asList("device", "spot");
+        Map result;
+        try {
+            result = Information.webSocketClient.microservice("device", endpoint, new HashMap());
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            return null;
+        }
+        return new Device(result.get("uuid").toString());
+    }
+
+    public Portscan getPortscanService(){
+       for(Service s: Service.getServiceList(this)){
+            if(s instanceof Portscan)
+                return (Portscan) s;
+        }
+       return null;
     }
 }

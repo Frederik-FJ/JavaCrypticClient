@@ -19,9 +19,11 @@ public class WebSocketClient {
 	
 	Session userSession = null; 
 	private MessageHandler messageHandler;
-	boolean response = false;
-	String message;
+	volatile boolean response = false;
+	volatile String message;
 	WebSocketContainer container;
+
+	volatile boolean waiting = false;
 
 	public WebSocketClient(URI endpointURI) {
 		try{
@@ -87,13 +89,20 @@ public class WebSocketClient {
 		Gson gson = gsonBuilder.create();
 		Map result;
 		this.response = false;
+
+		//waiting for free connection
+		while (waiting) {
+			Thread.onSpinWait();
+		}
+		waiting = true;
+
 		this.sendMessage(gson.toJson(command));
 		try{
 			if(!noResponse){
 				while(!response){
-					Thread.sleep(3);
+					Thread.onSpinWait();
 				}
-				if (command.get("ms") != null){
+				/*if (command.get("ms") != null){
 					result = gson.fromJson(message, Map.class);
 					try{
 						while (!result.get("tag").toString()
@@ -105,13 +114,15 @@ public class WebSocketClient {
 						System.err.println(message);
 					}
 
-				}
+				} */
 			}
 		}catch (Exception e){
 			e.printStackTrace();
 		}
 		response = false;
-		return gson.fromJson(this.message, Map.class);
+		Map response = gson.fromJson(this.message, Map.class);
+		waiting = false;
+		return response;
 	}
 
 	public void sendCommand(Map command){

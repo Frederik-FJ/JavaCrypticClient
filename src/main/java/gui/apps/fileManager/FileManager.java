@@ -127,11 +127,12 @@ public class FileManager extends App {
             this.add(filePane);
         }
 
+        // Verzeichnisse aus dem Pfad
         for(File f: dir.getFiles()){
-            FilePane b = new FilePane(f);
-            b.setWidth(this.getWidth() - 30);
+            FilePane filePane = new FilePane(f);
+            filePane.setWidth(this.getWidth() - 30);
             if(f.isDirectory()){
-                b.addMouseListener(new MouseAdapter() {
+                filePane.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if(e.getButton() == MouseEvent.BUTTON1) {
@@ -148,12 +149,12 @@ public class FileManager extends App {
                     }
                 });
             }else {
-                b.addMouseListener(new MouseAdapter() {
+                filePane.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if(e.getButton() == MouseEvent.BUTTON1) {
                             fileAction(f);
-                            b.setBackground(new Color(0x777777));
+                            filePane.setBackground(new Color(0x777777));
                         }
                         if(e.getButton() == MouseEvent.BUTTON3){
                             JPopupMenu menu = filePopupMenu(f);
@@ -162,9 +163,9 @@ public class FileManager extends App {
                     }
                 });
             }
-            b.setLocation(15, y);
+            filePane.setLocation(15, y);
             y += 30;
-            this.add(b);
+            this.add(filePane);
         }
         Dimension d = this.getSize();
         this.setSize(1, 1);
@@ -229,9 +230,7 @@ public class FileManager extends App {
         try {
             if(file.getName().endsWith(".run")){
                 JMenuItem execute = new JMenuItem("execute");
-                execute.addActionListener(actionEvent -> {
-                        file.toExecutionFile().execute();
-                });
+                execute.addActionListener(actionEvent -> file.toExecutionFile().execute());
                 options.add(execute, 0);
             }
         } catch (InvalidServerResponseException | UnknownMicroserviceException e) {

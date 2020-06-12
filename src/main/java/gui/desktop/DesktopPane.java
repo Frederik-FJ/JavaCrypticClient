@@ -5,6 +5,8 @@ import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import gui.apps.*;
 import gui.apps.fileManager.FileManager;
+import gui.apps.service.attack.ServiceAttack;
+import gui.apps.service.manager.ServiceManager;
 import gui.apps.shop.Shop;
 import gui.apps.terminal.Terminal;
 import information.Information;
@@ -28,6 +30,8 @@ public class DesktopPane extends JDesktopPane{
     JButton shop;
     JButton controlCenter;
     JButton fileManager;
+    JButton serviceManager;
+    JButton serviceAttack;
 
     Image settingsIconImage;
     Image terminalIconImage;
@@ -85,7 +89,6 @@ public class DesktopPane extends JDesktopPane{
         newPic = textEditorImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         textEditorIcon = new ImageIcon(newPic);
 
-        Information.Desktop = this;
 
         initComputer();
     }
@@ -105,30 +108,27 @@ public class DesktopPane extends JDesktopPane{
                 e.printStackTrace();
             }
         });
-        disconnect.addActionListener(actionEvent -> {
-            window.disconnect();
-        });
+        disconnect.addActionListener(actionEvent -> window.disconnect());
 
         menu.add(shutdown);
         menu.add(disconnect);
 
         JButton deviceOptions = new JButton(settingsIcon);
 
-        deviceOptions.addActionListener(actionEvent -> {
-            menu.show(deviceOptions, deviceOptions.getX(), deviceOptions.getY());
-        });
+        deviceOptions.addActionListener(actionEvent ->
+                menu.show(deviceOptions, deviceOptions.getX(), deviceOptions.getY()));
 
         taskbar.add(deviceOptions);
 
         this.setOpaque(false);
 
 
-        //Add icons to the Terminal
+        //Add icons to the Desktop
         terminal = new JButton();
         terminal.setIcon(terminalIcon);
         terminal.setSize(50, 50);
         terminal.setLocation(50, 50);
-        terminal.addActionListener(actionEvent -> startTerminal());
+        terminal.addActionListener(actionEvent -> startTerminal(Information.client.connectedDevice));
         this.add(terminal);
 
         settings = new JButton();
@@ -158,12 +158,26 @@ public class DesktopPane extends JDesktopPane{
         fileManager.setLocation(50, 450);
         fileManager.addActionListener(actionEvent -> startFileManager(Information.client.connectedDevice));
         this.add(fileManager);
+
+        serviceManager = new JButton("Service Manager");
+        serviceManager.setSize(50, 50);
+        serviceManager.setLocation(50, 550);
+        serviceManager.addActionListener(actionEvent -> startServiceManager(Information.client.connectedDevice));
+        this.add(serviceManager);
+
+        serviceAttack = new JButton("Service Attack");
+        serviceAttack.setSize(50, 50);
+        serviceAttack.setLocation(150, 50);
+        serviceAttack.addActionListener(actionEvent -> startServiceAttacker(Information.client.connectedDevice));
+        this.add(serviceAttack);
+
+
     }
 
 
-    public Terminal startTerminal(){
+    public Terminal startTerminal(Device device){
         // open terminal
-        Terminal ter = new Terminal(this);
+        Terminal ter = new Terminal(device);
         startApp(ter, terminalIcon);
         return ter;
     }
@@ -195,9 +209,21 @@ public class DesktopPane extends JDesktopPane{
         startApp(textEditor, textEditorIcon);
     }
 
+    public void startServiceManager(Device device){
+        ServiceManager serviceManager = new ServiceManager(device, this);
+        startApp(serviceManager, null);
+    }
+
+    public void startServiceAttacker(Device device){
+        ServiceAttack serviceAttack = new ServiceAttack(device);
+        startApp(serviceAttack, null);
+    }
+
     public void startApp(App app, ImageIcon icon){
-        ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
-        app.setFrameIcon(scaledIcon);
+        if(icon != null){
+            ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            app.setFrameIcon(scaledIcon);
+        }
         this.add(app);
         app.getFocus();
 

@@ -35,10 +35,9 @@ public abstract class App extends JInternalFrame {
      * Method to give the Focus to this App
      */
     public void getFocus(){
-        this.pack();
+        this.revalidate();
         this.moveToFront();
         this.requestFocus();
-        this.setSize(width, height);
     }
 
 

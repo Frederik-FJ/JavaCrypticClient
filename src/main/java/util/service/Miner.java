@@ -17,6 +17,16 @@ public class Miner extends Service {
         super(service.serviceUuid, service.device);
     }
 
+    @Override
+    public String getName() {
+        return "miner";
+    }
+
+    @Override
+    public boolean isAttackService() {
+        return false;
+    }
+
     public static Miner createMiner(String walletUuid, Device device) throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Collections.singletonList("create");
         Map<String, String> data = new HashMap<>();

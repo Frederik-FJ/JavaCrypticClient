@@ -32,6 +32,11 @@ public class TextEditor extends App {
         this.width = 400;
         this.height = 300;
         title = "TextEditor";
+        try {
+            title = "TextEditor - " + file.getName();
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
         init();
     }
 
@@ -140,6 +145,17 @@ public class TextEditor extends App {
      * save the content from the textArea into the file
      */
     public void save() {
+        if(textArea.getText().length() > 255){
+            int confirmed = JOptionPane.showInternalConfirmDialog(pane, "Your Text is too long. The " +
+                    "file can maximally contain 255 chars. Your Text contains " + textArea.getText().length() +
+                    " chars. Do you want to store your Text with the first 255 chars?","Too long",
+                    JOptionPane.YES_NO_OPTION);
+            if(confirmed == JOptionPane.YES_OPTION){
+                textArea.setText(textArea.getText().substring(0, 255));
+            }else {
+                return;
+            }
+        }
         try{
             file.setContent(textArea.getText());
         } catch (InvalidServerResponseException | UnknownMicroserviceException e) {

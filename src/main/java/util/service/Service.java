@@ -7,7 +7,7 @@ import items.Device;
 
 import java.util.*;
 
-public class Service {
+public abstract class Service {
 
     protected String serviceUuid;
     protected Device device;
@@ -16,6 +16,9 @@ public class Service {
         this.device = device;
         this.serviceUuid = serviceUuid;
     }
+
+    public abstract String getName();
+    public abstract boolean isAttackService();
 
     protected Map command(List<String> endpoint) throws UnknownMicroserviceException, InvalidServerResponseException {
         Map<String, String> data = new HashMap<>();
@@ -45,30 +48,44 @@ public class Service {
         return serviceUuid;
     }
 
-    public static List<Service> getServiceList(Device device) throws UnknownMicroserviceException, InvalidServerResponseException {
+    public Device getDevice() {
+        return device;
+    }
+
+    public static List<Service> getServiceList(Device device){
         List<Service> ret = new ArrayList<>();
 
         List<String> endpoint = Collections.singletonList("list");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", device.getUuid());
-        Map result = Information.webSocketClient.microservice("service", endpoint, data);
-        for(Map map : (List<Map>)result.get("Services")){
-            Service s = new Service(map.get("uuid").toString(), new Device(map.get("device").toString()));
-            switch (map.get("name").toString()){
-                case "bruteforce":
-                    ret.add(new Bruteforce(s));
-                    break;
-                case "miner":
-                    ret.add(new Miner(s));
-                    break;
-                case "portscan":
-                    ret.add(new Portscan(s));
-                    break;
-                default:
-                    ret.add(s);
-                    break;
-            }
+        Map result = null;
+        try {
+            result = Information.webSocketClient.microservice("service", endpoint, data);
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
+        for(Map map : (List<Map>)result.get("services")){
+            Service s = new UnknownService(map.get("uuid").toString(), new Device(map.get("device").toString()));
+            ret.add(Service.toServiceType(s, map.get("name").toString()));
         }
         return ret;
+    }
+
+    public static Service toServiceType(Service s, String name){
+
+        switch (name){
+            case "bruteforce":
+                return new Bruteforce(s);
+            case "miner":
+                return new Miner(s);
+            case "portscan":
+                return new Portscan(s);
+            case "ssh":
+                return new SSH(s);
+            case "telnet":
+                return new Telnet(s);
+            default:
+                return new UnknownService(s.getUuid(), s.getDevice());
+        }
     }
 }

@@ -34,7 +34,7 @@ public class Wallet {
             throw new InvalidWalletException();
         }
 
-        if(uuid == null || uuid.length() != 32 || pw.length() != 10){
+        if(uuid == null || uuid.length() < 32 || pw.length() != 10){
             return -1;
         }
 
@@ -50,7 +50,6 @@ public class Wallet {
             return -1;
         }
 
-        //System.out.println(gson.toJson(result));
         try{
             return (double) result.get("amount");
         } catch (ClassCastException e){

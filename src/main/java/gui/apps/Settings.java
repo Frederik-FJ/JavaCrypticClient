@@ -1,8 +1,10 @@
 package gui.apps;
 
-import connection.Client;
 import gui.App;
+import information.Information;
+
 import javax.swing.*;
+import java.awt.*;
 
 public class Settings extends App {
 
@@ -16,15 +18,20 @@ public class Settings extends App {
 
         this.width = 300;
         this.height = 300;
+        this.title = "settings";
 
         this.init();
     }
 
     protected void init(){
-        this.setSize(width, height);
-        this.setTitle("Settings");
-        this.moveToFront();
-        this.setVisible(true);
+        super.init();
+        this.setLayout(new FlowLayout());
+
+        JLabel deviceName = new JLabel(Information.client.connectedDevice.getName());
+        this.add(deviceName);
+
+        JTextField uuid = new JTextField(Information.client.connectedDevice.getUuid());
+        this.add(uuid);
 
     }
 
