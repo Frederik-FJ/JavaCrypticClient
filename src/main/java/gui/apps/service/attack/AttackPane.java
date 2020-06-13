@@ -49,4 +49,13 @@ public class AttackPane extends JPanel {
     public String getTitle(){
         return title.getText();
     }
+
+
+    protected int relativeHeight(int percent){
+        return (int) (this.getHeight()*((double) percent/100));
+    }
+
+    protected int relativeWidth(int percent){
+        return (int) (this.getWidth()*((double) percent/100));
+    }
 }

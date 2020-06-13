@@ -12,6 +12,10 @@ public abstract class Service {
     protected String serviceUuid;
     protected Device device;
 
+    protected int runningPort;
+
+    boolean running;
+
     public Service(String serviceUuid, Device device){
         this.device = device;
         this.serviceUuid = serviceUuid;
@@ -19,6 +23,22 @@ public abstract class Service {
 
     public abstract String getName();
     public abstract boolean isAttackService();
+
+    public void setRunningPort(int runningPort) {
+        this.runningPort = runningPort;
+    }
+
+    public int getRunningPort() {
+        return runningPort;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
 
     protected Map command(List<String> endpoint) throws UnknownMicroserviceException, InvalidServerResponseException {
         Map<String, String> data = new HashMap<>();

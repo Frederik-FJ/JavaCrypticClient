@@ -9,6 +9,8 @@ public class Telnet extends Service{
 
     public Telnet(Service service){
         super(service.serviceUuid, service.device);
+        super.setRunning(service.running);
+        super.setRunningPort(service.runningPort);
     }
 
     @Override

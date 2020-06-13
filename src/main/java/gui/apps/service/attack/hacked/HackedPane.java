@@ -24,7 +24,6 @@ public class HackedPane extends JScrollPane {
             devicePane.setLocation(30, y);
             y += 35;
             this.add(devicePane);
-            System.out.println(d.getName());
         }
 
         this.addComponentListener(new ComponentAdapter() {

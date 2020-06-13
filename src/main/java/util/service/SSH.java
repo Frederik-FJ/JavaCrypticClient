@@ -9,6 +9,8 @@ public class SSH extends Service{
 
     public SSH(Service service){
         super(service.serviceUuid, service.device);
+        super.setRunning(service.running);
+        super.setRunningPort(service.runningPort);
     }
 
     @Override

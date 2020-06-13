@@ -42,7 +42,12 @@ public class Portscan extends Service{
         List<Service> ret = new ArrayList<>();
         for(Map map: (List<Map>) result.get("services")){
             Service s = new UnknownService(map.get("uuid").toString(), new Device(map.get("device").toString()));
-            ret.add(Service.toServiceType(s, map.get("name").toString()));
+            s = (Service.toServiceType(s, map.get("name").toString()));
+            s.setRunningPort(Double.valueOf((double) map.get("running_port")).intValue());
+            try {
+                s.setRunning((boolean) map.get("running"));
+            }catch (NullPointerException ignore){ }
+            ret.add(s);
         }
         return ret;
     }
