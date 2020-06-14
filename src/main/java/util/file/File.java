@@ -49,14 +49,24 @@ public class File {
         return Information.webSocketClient.microservice("device", endpoint, data);
     }
 
-    public String getName() throws InvalidServerResponseException, UnknownMicroserviceException {
-        if(name == null)
-            this.name = getInfo().get("filename").toString();
+    public String getName(){
+        if(name == null) {
+            try {
+                this.name = getInfo().get("filename").toString();
+            } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
+                e.printStackTrace();
+            }
+        }
         return name;
     }
 
-    public String getContent() throws InvalidServerResponseException, UnknownMicroserviceException {
-        return this.getInfo().get("content").toString();
+    public String getContent(){
+        try {
+            return this.getInfo().get("content").toString();
+        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<File> getFiles() throws UnknownMicroserviceException, InvalidServerResponseException, NoDirectoryException {

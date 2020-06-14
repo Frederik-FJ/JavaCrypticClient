@@ -15,6 +15,8 @@ public class Wallet {
     String uuid;
     String pw;
 
+    User owner;
+
     public Wallet(String uuid){
         this.uuid = uuid;
     }
@@ -28,7 +30,7 @@ public class Wallet {
         this.pw = pw;
     }
 
-    public double getMorphcoins() throws UnknownMicroserviceException, InvalidWalletException {
+    public double getMorphcoins()throws  InvalidWalletException {
 
         if(pw == null){
             throw new InvalidWalletException();
@@ -46,12 +48,14 @@ public class Wallet {
 
         try{
             result = Information.webSocketClient.microservice("currency", Collections.singletonList("get"), data);
-        }catch (InvalidServerResponseException e){
+        }catch (InvalidServerResponseException | UnknownMicroserviceException e){
             return -1;
         }
 
+        owner = new User(result.get("user_uuid").toString());
+
         try{
-            return (double) result.get("amount");
+            return ((double) result.get("amount"))/1000;
         } catch (ClassCastException e){
             return -1;
         }
@@ -72,12 +76,15 @@ public class Wallet {
         Information.webSocketClient.microservice("service", endpoint, data);
     }
 
-    public User getOwner() throws UnknownMicroserviceException, InvalidServerResponseException {
-        List<String> endpoint = Collections.singletonList("owner");
-        Map<String, String> data = new HashMap<>();
-        data.put("source_uuid", this.uuid);
-        Map result = Information.webSocketClient.microservice("currency", endpoint, data);
-        return new User(result.get("owner").toString());
+    public User getOwner() {
+        if(owner == null) {
+            try {
+                getMorphcoins();
+            } catch (InvalidWalletException e) {
+                e.printStackTrace();
+            }
+        }
+        return owner;
     }
 
     public void delete() throws InvalidWalletException, UnknownMicroserviceException, InvalidServerResponseException {

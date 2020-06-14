@@ -9,6 +9,7 @@ import information.Information;
 import items.Device;
 import util.*;
 import util.file.File;
+import util.file.WalletFile;
 
 import javax.swing.*;
 import java.awt.*;
@@ -180,18 +181,21 @@ public class FileManager extends App {
      * @param f the file
      */
     protected void fileAction(File f){
-        try{
-            // execute the file if the ending of the file is .run
-            if(f.getName().endsWith(".run")){
-                f.toExecutionFile().execute();
-                return;
-            }
-        }catch (InvalidServerResponseException | UnknownMicroserviceException e){
-            e.printStackTrace();
+
+        // execute the file if the ending of the file is .run
+        if(f.getName().endsWith(".run")){
+            f.toExecutionFile().execute();
+            return;
+        }
+
+        // open walletApp if file ends with .wal
+        if(f.getName().endsWith(".wal")){
+            Information.Desktop.startWalletApp(new WalletFile(f).getWallet());
+            return;
         }
 
         // open the TextEditor
-        window.startTextEditor(f);
+        Information.Desktop.startTextEditor(f);
     }
 
     /**
@@ -227,14 +231,17 @@ public class FileManager extends App {
 
 
        // Adding option to execute if the file ends with .run
-        try {
-            if(file.getName().endsWith(".run")){
-                JMenuItem execute = new JMenuItem("execute");
-                execute.addActionListener(actionEvent -> file.toExecutionFile().execute());
-                options.add(execute, 0);
-            }
-        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
-            e.printStackTrace();
+        if(file.getName().endsWith(".run")){
+            JMenuItem execute = new JMenuItem("execute");
+            execute.addActionListener(actionEvent -> file.toExecutionFile().execute());
+            options.add(execute, 0);
+        }
+
+        // Adding option to execute if the file ends with .wal
+        if(file.getName().endsWith(".wal")){
+            JMenuItem show = new JMenuItem("show");
+            show.addActionListener(actionEvent -> window.startWalletApp(new WalletFile(file).getWallet()));
+            options.add(show, 0);
         }
 
         return options;

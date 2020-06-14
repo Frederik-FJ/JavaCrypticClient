@@ -11,4 +11,8 @@ public class User {
     public String getUuid() {
         return uuid;
     }
+
+    public String getUserName(){
+        return "Anonym";
+    }
 }

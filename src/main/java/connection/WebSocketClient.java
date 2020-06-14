@@ -64,6 +64,7 @@ public class WebSocketClient {
 		// System.out.println("Response: \t" + message);
 
 		if(message.contains("notify-id")){
+			//System.err.println("Notify: \t" + message);
 			return;
 		}
 		this.message = message;

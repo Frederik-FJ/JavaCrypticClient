@@ -25,6 +25,11 @@ public class Path {
         }
     }
 
+    public Path(Path path){
+        this(path.getDevice());
+        this.currentDirectory = path.getCurrentDirectory();
+    }
+
     public Device getDevice(){
         return  device;
     }

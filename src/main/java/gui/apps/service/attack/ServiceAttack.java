@@ -19,7 +19,7 @@ public class ServiceAttack extends App {
         this.device = device;
 
         this.height = 300;
-        this.width = 400;
+        this.width = 480;
         this.title = "Attack - " + device.getName();
 
         this.init();

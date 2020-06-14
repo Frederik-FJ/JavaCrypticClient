@@ -6,7 +6,6 @@ import information.Information;
 import items.Device;
 import util.service.Bruteforce;
 import util.service.Portscan;
-import util.service.SSH;
 import util.service.Service;
 
 import javax.swing.*;
@@ -220,7 +219,7 @@ public class BruteforceAttackPane extends AttackPane {
             public void run() {
                 getStatus();
             }
-        }, 0, 500);
+        }, 0, 5000);
 
         reload();
     }

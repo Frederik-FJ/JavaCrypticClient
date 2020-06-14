@@ -25,11 +25,7 @@ public class FilePane extends JPanel{
     public FilePane(File file){
         this.file = file;
 
-        try {
-            load();
-        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
-            e.printStackTrace();
-        }
+        load();
 
         init();
     }
@@ -37,17 +33,12 @@ public class FilePane extends JPanel{
     public FilePane(File file, String name){
         this.file = file;
 
-        try {
-            load();
-        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
-            e.printStackTrace();
-        }
-
+        this.isDirectory = file.isDirectory();
         this.name = name;
         init();
     }
 
-    public void load() throws UnknownMicroserviceException, InvalidServerResponseException {
+    public void load(){
         this.isDirectory = file.isDirectory();
         this.name = file.getName();
     }
@@ -64,17 +55,16 @@ public class FilePane extends JPanel{
 
         iconContainer = new JLabel(icon);
         nameContainer = new JLabel(name);
-        try {
-            sizeContainer = new JLabel(file.getContent().length()+ " byte");
-        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
-            e.printStackTrace();
-        }
+
+
         if(isDirectory){
             try {
                 sizeContainer = new JLabel(file.getFiles().size() + " Files");
             } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException e) {
                 e.printStackTrace();
             }
+        }else {
+            sizeContainer = new JLabel(file.getContent().length()+ " byte");
         }
 
 

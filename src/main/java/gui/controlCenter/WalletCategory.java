@@ -64,7 +64,7 @@ public class WalletCategory extends JPanel{
         Information.walletPw = walletPw.getText();
         try {
             currency.setText(String.valueOf(new Wallet(Information.walletUuid, Information.walletPw).getMorphcoins()/1000.0));
-        } catch (UnknownMicroserviceException | InvalidWalletException e){
+        } catch (InvalidWalletException e){
             e.printStackTrace();
         }
         walletInfo.repaint();

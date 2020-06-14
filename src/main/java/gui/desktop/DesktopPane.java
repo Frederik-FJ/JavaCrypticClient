@@ -9,8 +9,10 @@ import gui.apps.service.attack.ServiceAttack;
 import gui.apps.service.manager.ServiceManager;
 import gui.apps.shop.Shop;
 import gui.apps.terminal.Terminal;
+import gui.apps.walletApp.WalletApp;
 import information.Information;
 import items.Device;
+import util.Wallet;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -217,6 +219,11 @@ public class DesktopPane extends JDesktopPane{
     public void startServiceAttacker(Device device){
         ServiceAttack serviceAttack = new ServiceAttack(device);
         startApp(serviceAttack, null);
+    }
+
+    public void startWalletApp(Wallet wallet){
+        WalletApp walletApp = new WalletApp(wallet);
+        startApp(walletApp, null);
     }
 
     public void startApp(App app, ImageIcon icon){

@@ -1,7 +1,5 @@
 package util.file;
 
-import Exceptions.InvalidServerResponseException;
-import Exceptions.UnknownMicroserviceException;
 import gui.apps.terminal.Terminal;
 import information.Information;
 import items.Device;
@@ -14,7 +12,6 @@ public class ExecutionFile extends File {
 
     public ExecutionFile(File file){
         super(file.uuid, file.parentDirUuid, file.isDirectory, file.device);
-
     }
 
     /**
@@ -22,12 +19,14 @@ public class ExecutionFile extends File {
      */
     public void execute(){
         Terminal ter = Information.Desktop.startTerminal(device);
-        try {
-            for(String line: this.getContent().split("\n")){
-                ter.getCommandArea().execute(line);
-            }
-        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
-            e.printStackTrace();
+
+        executeFromTerminal(ter);
+    }
+
+    public void executeFromTerminal(Terminal terminal){
+        terminal.getCommandArea().execute("");
+        for(String line: this.getContent().split("\n")){
+            terminal.getCommandArea().execute(line);
         }
     }
 

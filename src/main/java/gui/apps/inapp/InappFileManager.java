@@ -24,10 +24,6 @@ public class InappFileManager extends FileManager {
         this.add(submit);
     }
 
-    @Override
-    protected void fileAction(File f) {
-        this.choseFile = f;
-    }
 
     public File getChoseFile(){
         return choseFile;

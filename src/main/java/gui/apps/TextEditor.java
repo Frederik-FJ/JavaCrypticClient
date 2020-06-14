@@ -32,11 +32,8 @@ public class TextEditor extends App {
         this.width = 400;
         this.height = 300;
         title = "TextEditor";
-        try {
-            title = "TextEditor - " + file.getName();
-        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
-            e.printStackTrace();
-        }
+        title = "TextEditor - " + file.getName();
+
         init();
     }
 
@@ -50,16 +47,13 @@ public class TextEditor extends App {
         this.addInternalFrameListener(saveOnClose = new InternalFrameAdapter() {
             @Override
             public void internalFrameClosing(InternalFrameEvent e) {
-            try {
-                if(!textArea.getText().equals(file.getContent())){
-                    int save = JOptionPane.showInternalConfirmDialog(pane, "Save File?", null, JOptionPane.YES_NO_OPTION);
-                    if(save == JOptionPane.YES_OPTION){
-                        save();
-                    }
+            if(!textArea.getText().equals(file.getContent())){
+                int save = JOptionPane.showInternalConfirmDialog(pane, "Save File?", null, JOptionPane.YES_NO_OPTION);
+                if(save == JOptionPane.YES_OPTION){
+                    save();
                 }
-            } catch (InvalidServerResponseException | UnknownMicroserviceException exception) {
-                JOptionPane.showInternalMessageDialog(null, "Error occurred during the conversation with the Server");
             }
+
             }
         });
 
@@ -134,11 +128,7 @@ public class TextEditor extends App {
      * load the content of a file into the TextArea from the TextEditor
      */
     private void load(){
-        try{
-            textArea.setText(file.getContent());
-        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
-            JOptionPane.showMessageDialog(null, "Error occurred during the conversation with the Server");
-        }
+        textArea.setText(file.getContent());
     }
 
     /**
