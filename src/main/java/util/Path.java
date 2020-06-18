@@ -18,16 +18,13 @@ public class Path {
 
     public Path(Device device){
         this.device = device;
-        try {
-            currentDirectory = device.getRootDirectory();
-        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
-            e.printStackTrace();
-        }
+        currentDirectory = device.getRootDirectory();
     }
 
     public Path(Path path){
         this(path.getDevice());
         this.currentDirectory = path.getCurrentDirectory();
+        this.pwd = path.pwd;
     }
 
     public Device getDevice(){

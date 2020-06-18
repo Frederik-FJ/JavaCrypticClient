@@ -351,12 +351,9 @@ public class Client {
         return usage;
     }
 
-    public String connect(Device device) throws UnknownMicroserviceException, InvalidServerResponseException, DeviceNotOnlineException {
-        try{
+    public String connect(Device device) throws DeviceNotOnlineException {
             if(!device.isOnline()) throw new DeviceNotOnlineException();
-        }catch (InvalidServerResponseException e){
-            return "Wrong UUID or Permission denied";
-        }
+
         connected = true;
         this.device = device.getName();
         connectedDevice = device;
@@ -364,12 +361,11 @@ public class Client {
         return "connected";
     }
 
-    public String disconnect(){
+    public void disconnect(){
         path = null;
         connected = false;
         device = "";
         connectedDevice = null;
-        return "disconnected from the device";
     }
 
     public Map getDevices() throws InvalidServerResponseException, UnknownMicroserviceException {

@@ -111,18 +111,22 @@ public class Terminal extends App {
         // open programs
         if(fileManager){
             Information.Desktop.startFileManager(device);
+            return "starting fileManager";
         }
 
         if(terminal){
             Information.Desktop.startTerminal(device);
+            return "starting terminal";
         }
 
         if(attack){
             Information.Desktop.startServiceAttacker(device);
+            return "starting attacker";
         }
 
         if(serviceManager){
             Information.Desktop.startServiceManager(device);
+            return "starting serviceManager";
         }
 
         if(walletApp){
@@ -135,7 +139,6 @@ public class Terminal extends App {
                 e.printStackTrace();
                 return "Invalid File";
             }
-
         }
 
 

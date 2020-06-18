@@ -110,8 +110,6 @@ public class ComputerCategory extends JPanel {
         try {
             Information.client.connect(device);
             desktop.connect();
-        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
-            e.printStackTrace();
         } catch (DeviceNotOnlineException e){
             JOptionPane.showMessageDialog(null, "Device not online");
         }

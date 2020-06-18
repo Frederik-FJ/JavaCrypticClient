@@ -14,7 +14,7 @@ import java.util.TimerTask;
 
 public class WalletPane extends Panel {
 
-    Timer t;
+    Timer timer;
 
     Wallet wallet;
 
@@ -68,8 +68,8 @@ public class WalletPane extends Panel {
             }
         });
 
-        this.t = new Timer();
-        t.schedule(new TimerTask() {
+        this.timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 reloadMorphcoins();
@@ -103,7 +103,7 @@ public class WalletPane extends Panel {
     }
 
     public void close(){
-        t.cancel();
+        timer.cancel();
     }
 
 }

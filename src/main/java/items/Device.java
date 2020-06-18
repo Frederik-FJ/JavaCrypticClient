@@ -15,6 +15,7 @@ public class Device {
     String uuid;
     WebSocketClient client = Information.webSocketClient;
     HardwareElement[] components;
+    String name = null;
 
     @Deprecated
     public Device(String uuid, WebSocketClient client){
@@ -40,20 +41,36 @@ public class Device {
     }
 
     public String getName(){
+        if(name == null){
+            reloadName();
+        }
+        return name;
+    }
+
+    private void setName(String name){
+        this.name = name;
+    }
+
+    private void reloadName(){
         try {
-            return (String) this.deviceInfo().get("name");
+            this.name =  (String) this.deviceInfo().get("name");
         } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
             e.printStackTrace();
         }
-        return "Error with the server";
     }
 
-    public boolean isOnline() throws UnknownMicroserviceException, InvalidServerResponseException {
+    public boolean isOnline(){
         List<String> endpoint = Arrays.asList("device", "ping");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", uuid);
-        Map result = client.microservice("device", endpoint, data);
-        return (boolean) result.get("online");
+        try {
+            Map result = client.microservice("device", endpoint, data);
+            return (boolean) result.get("online");
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
     private Map changeStatus() throws UnknownMicroserviceException, InvalidServerResponseException {
@@ -117,7 +134,7 @@ public class Device {
         return null;
     }
 
-    public File getRootDirectory() throws UnknownMicroserviceException, InvalidServerResponseException {
+    public File getRootDirectory(){
         return new File(null, null, true, this);
     }
 
@@ -125,7 +142,7 @@ public class Device {
         List<String> endpoint = Arrays.asList("device", "spot");
         Map result;
         try {
-            result = Information.webSocketClient.microservice("device", endpoint, new HashMap());
+            result = Information.webSocketClient.microservice("device", endpoint, new HashMap<>());
         } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
             return null;
         }
@@ -144,7 +161,8 @@ public class Device {
 
         List<Device> ret = new ArrayList<>();
         for(Map m:(List<Map>)result.get("services")){
-            ret.add(new Device(m.get("device").toString()));
+            Device d = new Device(m.get("device").toString());
+            ret.add(d);
         }
 
         return ret;

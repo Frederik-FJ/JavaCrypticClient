@@ -32,4 +32,12 @@ public class HackedDevicePane extends Panel {
         this.add(uuid, BorderLayout.CENTER);
         this.add(connect, BorderLayout.EAST);
     }
+
+    public void openTerminal(){
+        if(device.isOnline())
+            Information.Desktop.startTerminal(device);
+        else
+            JOptionPane.showInternalMessageDialog(Information.Desktop, "This Device is not online");
+
+    }
 }

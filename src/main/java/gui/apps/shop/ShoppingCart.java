@@ -1,6 +1,5 @@
 package gui.apps.shop;
 
-import gui.apps.shop.ShoppingCartItem;
 import items.HardwareElement;
 
 import javax.swing.*;
