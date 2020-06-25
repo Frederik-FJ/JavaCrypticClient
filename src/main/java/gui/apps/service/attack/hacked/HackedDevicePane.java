@@ -26,7 +26,7 @@ public class HackedDevicePane extends Panel {
 
         name.setText(device.getName() + "------>");
         uuid.setText(device.getUuid());
-        connect.addActionListener(actionEvent -> Information.Desktop.startTerminal(device));
+        connect.addActionListener(actionEvent -> connect());
 
         this.add(name, BorderLayout.WEST);
         this.add(uuid, BorderLayout.CENTER);
@@ -39,5 +39,12 @@ public class HackedDevicePane extends Panel {
         else
             JOptionPane.showInternalMessageDialog(Information.Desktop, "This Device is not online");
 
+    }
+
+    private void connect(){
+        if(device.isOnline())
+            Information.Desktop.startTerminal(device);
+        else
+            JOptionPane.showInternalMessageDialog(Information.Desktop, "Device not online");
     }
 }

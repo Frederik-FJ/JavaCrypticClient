@@ -7,6 +7,7 @@ import gui.apps.*;
 import gui.apps.fileManager.FileManager;
 import gui.apps.service.attack.ServiceAttack;
 import gui.apps.service.manager.ServiceManager;
+import gui.apps.service.miner.MinerApp;
 import gui.apps.shop.Shop;
 import gui.apps.terminal.Terminal;
 import gui.apps.walletApp.WalletApp;
@@ -34,6 +35,7 @@ public class DesktopPane extends JDesktopPane{
     JButton fileManager;
     JButton serviceManager;
     JButton serviceAttack;
+    JButton miner;
 
     Image settingsIconImage;
     Image terminalIconImage;
@@ -173,6 +175,11 @@ public class DesktopPane extends JDesktopPane{
         serviceAttack.addActionListener(actionEvent -> startServiceAttacker(Information.client.connectedDevice));
         this.add(serviceAttack);
 
+        miner = new JButton("M");
+        miner.setSize(50, 50);
+        miner.setLocation(150, 150);
+        miner.addActionListener(actionEvent -> startMinerApp(Information.client.connectedDevice));
+        this.add(miner);
 
     }
 
@@ -224,6 +231,11 @@ public class DesktopPane extends JDesktopPane{
     public void startWalletApp(Wallet wallet){
         WalletApp walletApp = new WalletApp(wallet);
         startApp(walletApp, null);
+    }
+
+    public void startMinerApp(Device device){
+        MinerApp minerApp = MinerApp.startMinerApp(device);
+        startApp(minerApp, null);
     }
 
     public void startApp(App app, ImageIcon icon){

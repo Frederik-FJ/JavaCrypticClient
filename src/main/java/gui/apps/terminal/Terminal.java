@@ -101,6 +101,7 @@ public class Terminal extends App {
         boolean attack = command.replace(" ", "").equalsIgnoreCase("attack");
         boolean serviceManager = command.replace(" ", "").equalsIgnoreCase("servicemanager");
         boolean walletApp = command.replace(" ", "").startsWith("wallet");
+        boolean miner = command.replace(" ", "").equalsIgnoreCase("miner");
 
         boolean ls = command.equals("ls");
         boolean cd = command.startsWith("cd");
@@ -112,6 +113,11 @@ public class Terminal extends App {
         if(fileManager){
             Information.Desktop.startFileManager(device);
             return "starting fileManager";
+        }
+
+        if(miner){
+            Information.Desktop.startMinerApp(device);
+            return "starting MinerApp";
         }
 
         if(terminal){

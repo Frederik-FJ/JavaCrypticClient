@@ -5,6 +5,7 @@ import Exceptions.UnknownMicroserviceException;
 import connection.WebSocketClient;
 import information.Information;
 import util.file.File;
+import util.service.Miner;
 import util.service.Portscan;
 import util.service.Service;
 
@@ -127,11 +128,23 @@ public class Device {
     }
 
     public Portscan getPortscanService(){
-        for(Service s: Service.getServiceList(this)){
+        for(Service s: this.getServices()){
             if(s instanceof Portscan)
                 return (Portscan) s;
         }
         return null;
+    }
+
+    public Miner getMinerService(){
+        for(Service s: this.getServices()){
+            if(s instanceof Miner){
+                return (Miner) s;
+            }
+        }
+        return null;
+    }
+    public List<Service> getServices(){
+        return Service.getServiceList(this);
     }
 
     public File getRootDirectory(){

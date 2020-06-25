@@ -17,6 +17,10 @@ public class Miner extends Service {
         super(service.serviceUuid, service.device);
     }
 
+
+    int power = -1;
+    Wallet wallet = null;
+
     @Override
     public String getName() {
         return "miner";
@@ -43,14 +47,16 @@ public class Miner extends Service {
         data.put("service_uuid", this.serviceUuid);
         data.put("wallet_uuid", wallet.getUuid());
         Information.webSocketClient.microservice("service", endpoint, data);
+        this.wallet = wallet;
     }
 
     public void setPower(int power) throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("miner", "power");
         Map<String, Object> data = new HashMap<>();
         data.put("service_uuid", this.serviceUuid);
-        data.put("wallet_uuid", power);
+        data.put("power", power/100.0);
         Information.webSocketClient.microservice("service", endpoint, data);
+        this.power = power;
     }
 
     public void collect() throws UnknownMicroserviceException, InvalidServerResponseException {
@@ -58,5 +64,30 @@ public class Miner extends Service {
         Map<String, String> data = new HashMap<>();
         data.put("service_uuid", this.serviceUuid);
         Information.webSocketClient.microservice("service", endpoint, data);
+    }
+
+    private Map getInfos() throws UnknownMicroserviceException, InvalidServerResponseException {
+        List<String> endpoint = Arrays.asList("miner", "get");
+        Map<String, String> data = new HashMap<>();
+        data.put("service_uuid", this.serviceUuid);
+        return Information.webSocketClient.microservice("service", endpoint, data);
+    }
+
+    public int getPower(){
+        if(power == -1){
+            try{
+                return Double.valueOf((double)getInfos().get("power")*100).intValue();
+            } catch (UnknownMicroserviceException | InvalidServerResponseException ignore){ }
+        }
+        return power;
+    }
+
+    public Wallet getWallet(){
+        if(wallet == null){
+            try{
+                this.wallet = new Wallet(getInfos().get("wallet").toString());
+            }catch (UnknownMicroserviceException | InvalidServerResponseException ignore){ }
+        }
+        return wallet;
     }
 }
