@@ -9,8 +9,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 public class Information {
+
+    public static Properties properties;
 
     public static final String path = Information.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
@@ -24,6 +27,8 @@ public class Information {
 
     public static ImageIcon fileIcon;
     public static ImageIcon dirIcon;
+
+    public static String server = "";
 
     static {
         try {

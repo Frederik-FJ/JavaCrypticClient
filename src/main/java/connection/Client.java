@@ -16,6 +16,7 @@ public class Client {
 
     public WebSocketClient clientEndPoint;
     String server;
+    volatile boolean started = false;
 
     public String user = "";
     public String device = "";
@@ -35,6 +36,10 @@ public class Client {
         return clientEndPoint;
     }
 
+    public boolean isStarted(){
+        return started;
+    }
+
 
     public void init() {
         Scanner s = new Scanner(System.in);
@@ -46,6 +51,7 @@ public class Client {
 
             Thread t = new ConnectionThread(clientEndPoint);
             t.start();
+            started = true;
 
             while (true) {
                 System.out.print("[" + this.user);

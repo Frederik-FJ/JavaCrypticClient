@@ -1,5 +1,8 @@
 
 import gui.Gui;
+import information.Information;
+
+import java.io.*;
 
 public class Main {
 
@@ -11,5 +14,12 @@ public class Main {
 
         new Gui();
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() ->{
+            try {
+                Information.properties.store(new FileOutputStream(Information.path+Information.server+"Server.properties"), "");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 }

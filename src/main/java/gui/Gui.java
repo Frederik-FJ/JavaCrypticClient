@@ -10,6 +10,9 @@ import information.Information;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 
 public class Gui extends JFrame {
@@ -63,6 +66,14 @@ public class Gui extends JFrame {
         String[] options = {"main", "test"};
         String server = (String) JOptionPane.showInputDialog(null, "Welcher Server", "Serverauswahl",
                 JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+        // set Properties
+        Information.server = server;
+        Information.properties = new Properties();
+        try {
+            Information.properties.load(new FileInputStream(Information.path + server + "Server.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if(server.equalsIgnoreCase("main")){
             return "wss://ws.cryptic-game.net";
         }else if(server.equalsIgnoreCase("test")){
@@ -74,11 +85,31 @@ public class Gui extends JFrame {
 
 
     public void login(){
+
+        while(!Information.client.isStarted()){
+            Thread.onSpinWait();
+        }
+
+        // load with data from properties
+        if(Information.properties.containsKey("uname") && Information.properties.containsKey("pw")){
+            try{
+                Information.client.login(Information.properties.getProperty("uname"), Information.properties.getProperty("pw"));
+                return;
+            } catch (InvalidLoginException ignore){
+
+            } catch (InvalidServerResponseException e){
+                return;
+            }
+        }
+
+        // load with userInput if no data from properties available
         String uname = JOptionPane.showInputDialog("Username");
         String pw = JOptionPane.showInputDialog("Password");
 
         try {
             Information.client.login(uname, pw);
+            Information.properties.setProperty("uname", uname);
+            Information.properties.setProperty("pw", pw);
         } catch (InvalidLoginException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Falsche Logindaten", "Fehler", JOptionPane.ERROR_MESSAGE);
