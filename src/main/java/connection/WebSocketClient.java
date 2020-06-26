@@ -5,6 +5,7 @@ import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +33,14 @@ public class WebSocketClient {
 		}catch (Exception e){
 			e.printStackTrace();
 			throw new RuntimeException(e);
+		}
+	}
+
+	public void close(){
+		try {
+			userSession.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

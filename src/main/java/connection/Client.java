@@ -16,7 +16,7 @@ public class Client {
 
     public WebSocketClient clientEndPoint;
     String server;
-    volatile boolean started = false;
+    volatile boolean online = false;
 
     public String user = "";
     public String device = "";
@@ -36,8 +36,8 @@ public class Client {
         return clientEndPoint;
     }
 
-    public boolean isStarted(){
-        return started;
+    public boolean isOnline(){
+        return online;
     }
 
 
@@ -51,7 +51,7 @@ public class Client {
 
             Thread t = new ConnectionThread(clientEndPoint);
             t.start();
-            started = true;
+            online = true;
 
             while (true) {
                 System.out.print("[" + this.user);
@@ -242,8 +242,15 @@ public class Client {
     public void logout() {
         Map<String, String> cmd = new HashMap<String, String>(){{put("action", "logout");}};
         clientEndPoint.request(cmd, true);
-        System.exit(1);
-
+        online = false;
+        clientEndPoint.close();
+        try {
+            clientEndPoint = new WebSocketClient(new URI(this.server));
+            Information.webSocketClient = clientEndPoint;
+            online = true;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
 

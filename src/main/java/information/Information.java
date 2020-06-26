@@ -2,6 +2,7 @@ package information;
 
 import connection.Client;
 import connection.WebSocketClient;
+import gui.Gui;
 import gui.desktop.DesktopPane;
 
 import javax.imageio.ImageIO;
@@ -14,6 +15,7 @@ import java.util.Properties;
 public class Information {
 
     public static Properties properties;
+    public static Gui gui;
 
     public static final String path = Information.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 

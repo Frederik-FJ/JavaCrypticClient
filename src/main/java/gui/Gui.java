@@ -47,13 +47,15 @@ public class Gui extends JFrame {
 
         login();
         initialize();
+        Information.gui = this;
         setVisible(true);
 
     }
 
-    private void initialize(){
+    public void initialize(){
 
         this.pane = getContentPane();
+        pane.removeAll();
         pane.setLayout(new BorderLayout());
 
         Desktop desktop = new Desktop(this);
@@ -86,7 +88,7 @@ public class Gui extends JFrame {
 
     public void login(){
 
-        while(!Information.client.isStarted()){
+        while(!Information.client.isOnline()){
             Thread.onSpinWait();
         }
 

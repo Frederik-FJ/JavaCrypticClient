@@ -1,6 +1,7 @@
 package gui;
 
 import gui.controlCenter.ComputerCategory;
+import gui.controlCenter.UserCategory;
 import gui.controlCenter.WalletCategory;
 import gui.desktop.Desktop;
 
@@ -12,6 +13,7 @@ public class ControlCenter extends JTabbedPane{
 
     ComputerCategory computerCategory;
     WalletCategory walletCategory;
+    UserCategory userCategory;
 
 
 
@@ -23,6 +25,9 @@ public class ControlCenter extends JTabbedPane{
 
         walletCategory = new WalletCategory();
         this.addTab("Wallet", walletCategory);
+
+        userCategory = new UserCategory();
+        this.addTab("User", userCategory);
     }
 
 
