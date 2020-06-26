@@ -14,6 +14,7 @@ import gui.apps.walletApp.WalletApp;
 import information.Information;
 import items.Device;
 import util.Wallet;
+import util.file.WalletFile;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -213,6 +214,10 @@ public class DesktopPane extends JDesktopPane{
         startApp(fileManager, fileManagerIcon);
     }
 
+    public void startFileManager(FileManager fileManger){
+        startApp(fileManger, fileManagerIcon);
+    }
+
     public void startTextEditor(util.file.File file){
         TextEditor textEditor = new TextEditor(file, this);
         startApp(textEditor, textEditorIcon);
@@ -230,6 +235,11 @@ public class DesktopPane extends JDesktopPane{
 
     public void startWalletApp(Wallet wallet){
         WalletApp walletApp = new WalletApp(wallet);
+        startApp(walletApp, null);
+    }
+
+    public void startWalletApp(WalletFile walletFile){
+        WalletApp walletApp = new WalletApp(walletFile);
         startApp(walletApp, null);
     }
 

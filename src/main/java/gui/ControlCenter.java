@@ -23,8 +23,8 @@ public class ControlCenter extends JTabbedPane{
         computerCategory = new ComputerCategory(desktop);
         this.addTab("Computer", computerCategory);
 
-        walletCategory = new WalletCategory();
-        this.addTab("Wallet", walletCategory);
+        /*walletCategory = new WalletCategory();
+        this.addTab("Wallet", walletCategory);*/
 
         userCategory = new UserCategory();
         this.addTab("User", userCategory);

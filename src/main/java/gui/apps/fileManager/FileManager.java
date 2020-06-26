@@ -7,7 +7,7 @@ import gui.App;
 import gui.desktop.DesktopPane;
 import information.Information;
 import items.Device;
-import util.*;
+import util.path.DirectoryPath;
 import util.file.File;
 import util.file.WalletFile;
 
@@ -18,26 +18,36 @@ import java.awt.event.*;
 public class FileManager extends App {
 
     Device device;
-    DesktopPane window;
-    Path path;
+    DirectoryPath directoryPath;
 
     JLabel pwd;
 
+    @Deprecated
     public FileManager(DesktopPane window, Device device){
+        this(device);
+    }
 
+    public FileManager(Device device){
         this.device = device;
-        this.window = window;
-        path = new Path(device);
+        directoryPath = new DirectoryPath(device);
 
-        width = 800;
-        height = 600;
-        title = "FileManager";
-            init();
+        init();
+    }
+
+    public FileManager(DirectoryPath path){
+        this.device = path.getDevice();
+        directoryPath = path;
+        init();
 
     }
 
     @Override
     protected void init() {
+
+        width = 800;
+        height = 600;
+        title = "FileManager";
+
         super.init();
         this.setLayout(null);
 
@@ -46,7 +56,7 @@ public class FileManager extends App {
         this.add(pwd);
 
         try {
-            loadDirectory(device.getRootDirectory());
+            loadDirectory(directoryPath.getCurrentFile());
         } catch (NoDirectoryException | UnknownMicroserviceException | InvalidServerResponseException e) {
             e.printStackTrace();
         }
@@ -81,7 +91,7 @@ public class FileManager extends App {
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_F5){
                     try {
-                        loadDirectory(path.getCurrentDirectory());
+                        loadDirectory(directoryPath.getCurrentFile());
                     } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException unknownMicroserviceException) {
                         unknownMicroserviceException.printStackTrace();
                     }
@@ -114,7 +124,7 @@ public class FileManager extends App {
                     if(e.getButton() == MouseEvent.BUTTON1){
                         try {
                             File parentDir = filePane.getFile();
-                            path.setDirectory(parentDir);
+                            directoryPath.setDirectory(parentDir);
                             loadDirectory(parentDir);
                         } catch (UnknownMicroserviceException | NoDirectoryException | InvalidServerResponseException exception) {
                             exception.printStackTrace();
@@ -171,7 +181,7 @@ public class FileManager extends App {
         Dimension d = this.getSize();
         this.setSize(1, 1);
         this.setSize(d);
-        pwd.setText(path.getPwd());
+        pwd.setText(directoryPath.getPwd());
         pwd.repaint();
 
     }
@@ -190,7 +200,7 @@ public class FileManager extends App {
 
         // open walletApp if file ends with .wal
         if(f.getName().endsWith(".wal")){
-            Information.Desktop.startWalletApp(new WalletFile(f).getWallet());
+            Information.Desktop.startWalletApp(new WalletFile(f));
             return;
         }
 
@@ -204,7 +214,7 @@ public class FileManager extends App {
      */
     protected void dirAction(File dir) throws NoDirectoryException, InvalidServerResponseException, UnknownMicroserviceException {
         loadDirectory(dir);
-        path.setDirectory(dir);
+        directoryPath.setDirectory(dir);
     }
 
     /**
@@ -226,7 +236,7 @@ public class FileManager extends App {
 
        // adding the option to open the file in the Text-Editor
        JMenuItem open = new JMenuItem("open");
-       open.addActionListener(actionEvent -> window.startTextEditor(file));
+       open.addActionListener(actionEvent -> Information.Desktop.startTextEditor(file));
        options.add(open, 0);
 
 
@@ -240,7 +250,7 @@ public class FileManager extends App {
         // Adding option to execute if the file ends with .wal
         if(file.getName().endsWith(".wal")){
             JMenuItem show = new JMenuItem("show");
-            show.addActionListener(actionEvent -> window.startWalletApp(new WalletFile(file).getWallet()));
+            show.addActionListener(actionEvent -> Information.Desktop.startWalletApp(new WalletFile(file)));
             options.add(show, 0);
         }
 
@@ -255,10 +265,10 @@ public class FileManager extends App {
         JMenuItem rename = new JMenuItem("rename");
         rename.addActionListener(actionEvent -> {
             try {
-                String newName = (String) JOptionPane.showInternalInputDialog(window, "New Name", null,
+                String newName = (String) JOptionPane.showInternalInputDialog(Information.Desktop, "New Name", null,
                         JOptionPane.PLAIN_MESSAGE, null, null, f.getName());
                 f.rename(newName);
-                loadDirectory(path.getCurrentDirectory());
+                loadDirectory(directoryPath.getCurrentFile());
             } catch (InvalidServerResponseException | UnknownMicroserviceException | NoDirectoryException e) {
                 e.printStackTrace();
             }
@@ -267,12 +277,12 @@ public class FileManager extends App {
 
         JMenuItem delete = new JMenuItem("delete");
         delete.addActionListener(actionEvent -> {
-            int result = JOptionPane.showInternalConfirmDialog(window,
+            int result = JOptionPane.showInternalConfirmDialog(Information.Desktop,
                     "Should this " + type + " really be deleted?", null, JOptionPane.YES_NO_OPTION);
             if(result == JOptionPane.YES_OPTION){
                 try {
                     f.delete();
-                    loadDirectory(path.getCurrentDirectory());
+                    loadDirectory(directoryPath.getCurrentFile());
                 } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException e) {
                     e.printStackTrace();
                 }
@@ -291,9 +301,9 @@ public class FileManager extends App {
         newFile.addActionListener(actionEvent -> {
             String name = JOptionPane.showInputDialog("Name");
             try {
-                File f = File.createFile(name, "", path.getCurrentDirectory().getUuid(), path.getDevice());
-                loadDirectory(path.getCurrentDirectory());
-                window.startTextEditor(f);
+                File f = File.createFile(name, "", directoryPath.getCurrentFile().getUuid(), directoryPath.getDevice());
+                loadDirectory(directoryPath.getCurrentFile());
+                Information.Desktop.startTextEditor(f);
             } catch (InvalidServerResponseException | UnknownMicroserviceException | NoDirectoryException e) {
                 e.printStackTrace();
             }
@@ -303,8 +313,8 @@ public class FileManager extends App {
         newDir.addActionListener(actionEvent -> {
             String name = JOptionPane.showInputDialog("Name");
             try {
-                File f = File.createDirectory(name, path.getCurrentDirectory().getUuid(), path.getDevice());
-                loadDirectory(path.getCurrentDirectory());
+                File f = File.createDirectory(name, directoryPath.getCurrentFile().getUuid(), directoryPath.getDevice());
+                loadDirectory(directoryPath.getCurrentFile());
             } catch (InvalidServerResponseException | UnknownMicroserviceException | NoDirectoryException e) {
                 e.printStackTrace();
             }

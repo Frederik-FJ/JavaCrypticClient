@@ -6,7 +6,7 @@ import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import information.Information;
 import items.Device;
-import util.Path;
+import util.path.DirectoryPath;
 import util.file.File;
 import util.file.WalletFile;
 
@@ -17,8 +17,7 @@ import java.util.Objects;
 
 public class Terminal extends App {
 
-    JDesktopPane window = Information.Desktop;
-    Path path;
+    DirectoryPath directoryPath;
 
     Device device;
 
@@ -32,7 +31,7 @@ public class Terminal extends App {
         width = 800;
         height = 600;
         title = "Terminal - " + device.getName();
-        path = new Path(device);
+        directoryPath = new DirectoryPath(device);
         init();
     }
 
@@ -47,7 +46,7 @@ public class Terminal extends App {
         }
 
         commandArea = new CommandArea(this);
-        commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + path.getPwd() + "$ ");
+        commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + directoryPath.getPwd() + "$ ");
         this.add(commandArea);
     }
 
@@ -64,11 +63,11 @@ public class Terminal extends App {
             if (!result.equals(""))
                 commandArea.println(result);
             // print the new Line
-            commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + path.getPwd() + "$ ");
+            commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + directoryPath.getPwd() + "$ ");
         } catch (Exception e) {
             e.printStackTrace();
             commandArea.println(Arrays.toString(e.getStackTrace()));
-            commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + path.getPwd() + "$ ");
+            commandArea.print("[" + Information.client.user + "@" + device.getName() + "]" + directoryPath.getPwd() + "$ ");
         }
     }
 
@@ -150,15 +149,15 @@ public class Terminal extends App {
 
         // path cmd
         if(ls){
-            return path.listFiles();
+            return directoryPath.listFiles();
         }
 
         if(cd){
             try{
                 if(params.length < 2){
-                    return path.changeDirectory("/");
+                    return directoryPath.changeDirectory("/");
                 }
-                return path.changeDirectory(params[1]);
+                return directoryPath.changeDirectory(params[1]);
             } catch (InvalidServerResponseException | UnknownMicroserviceException e){
                 e.printStackTrace();
             }
@@ -166,15 +165,15 @@ public class Terminal extends App {
         }
 
         if(pwd){
-            path.updatePwd();
-            return path.getPwd();
+            directoryPath.updatePwd();
+            return directoryPath.getPwd();
         }
 
 
 
         if(usePath){
 
-            Path path =  new Path(this.path);
+            directoryPath = new DirectoryPath(this.directoryPath);
             String[] dirs = command.split("/");
             for(String dir : dirs){
                 if(dir.contains(" ") && !dir.contains("\"")){
@@ -182,7 +181,7 @@ public class Terminal extends App {
                 }
                 if(dir.equals(".")) continue;
                 try {
-                    for(File f: path.getCurrentDirectory().getFiles()){
+                    for(File f: directoryPath.getCurrentFile().getFiles()){
                         if(dir.equals(f.getName())){
                             if(!f.isDirectory()){
                                 if(command.replace(" ", "").endsWith("--new"))
@@ -198,7 +197,7 @@ public class Terminal extends App {
                     e.printStackTrace();
                 }
                 try{
-                    path.changeDirectory(dir);
+                    directoryPath.changeDirectory(dir);
                 } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
                     e.printStackTrace();
                     JOptionPane.showInternalMessageDialog(Information.Desktop, "Error");
@@ -210,7 +209,7 @@ public class Terminal extends App {
     }
 
     private File getFileFromPath(String path){
-        Path p = new Path(this.path);
+        DirectoryPath p = new DirectoryPath(this.directoryPath);
         String[] dirs = path.split("/");
         for(String dir : dirs) {
             if (dir.contains(" ") && !dir.contains("\"")) {
@@ -218,7 +217,7 @@ public class Terminal extends App {
             }
             if (dir.equals(".")) continue;
             try {
-                for (File f : p.getCurrentDirectory().getFiles()) {
+                for (File f : p.getCurrentFile().getFiles()) {
                     if (dir.equals(f.getName())) {
                         if (!f.isDirectory())
                             return f;

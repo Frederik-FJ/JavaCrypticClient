@@ -2,7 +2,7 @@ package connection;
 
 import Exceptions.*;
 import com.google.gson.Gson;
-import util.Path;
+import util.path.DirectoryPath;
 import information.Information;
 import items.Device;
 import items.HardwareElement;
@@ -22,7 +22,7 @@ public class Client {
     public String device = "";
     String token = "";
 
-    public Path path = null;
+    public DirectoryPath directoryPath = null;
 
     public Device connectedDevice = null;
     public boolean connected = false;
@@ -57,7 +57,7 @@ public class Client {
                 System.out.print("[" + this.user);
                 if (connected) System.out.print("@" + this.device);
                 System.out.print("]");
-                if (connected) System.out.print(path.getPwd());
+                if (connected) System.out.print(directoryPath.getPwd());
                 System.out.print(" $");
 
                 String st = s.nextLine();
@@ -128,19 +128,19 @@ public class Client {
             }
 
             if(ls){
-                return path.listFiles();
+                return directoryPath.listFiles();
             }
 
             if(cd){
                 if(params.length < 2){
-                    return path.changeDirectory("/");
+                    return directoryPath.changeDirectory("/");
                 }
-                return path.changeDirectory(params[1]);
+                return directoryPath.changeDirectory(params[1]);
             }
 
             if(pwd){
-                path.updatePwd();
-                return path.getPwd();
+                directoryPath.updatePwd();
+                return directoryPath.getPwd();
             }
 
             if(shopCmd) return shopCmd(cmd);
@@ -370,12 +370,12 @@ public class Client {
         connected = true;
         this.device = device.getName();
         connectedDevice = device;
-        path = new Path(connectedDevice);
+        directoryPath = new DirectoryPath(connectedDevice);
         return "connected";
     }
 
     public void disconnect(){
-        path = null;
+        directoryPath = null;
         connected = false;
         device = "";
         connectedDevice = null;

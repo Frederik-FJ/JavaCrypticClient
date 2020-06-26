@@ -5,6 +5,7 @@ import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
 import information.Information;
 import items.Device;
+import util.path.Path;
 
 import java.util.*;
 
@@ -31,6 +32,24 @@ public class File {
 
     public String getParentDirUuid() {
         return parentDirUuid;
+    }
+
+    public File getParentDir(){
+        if(this.getParentDirUuid() == null || this.getParentDirUuid().equals("")){
+            return this.device.getRootDirectory();
+        }
+        List<String> endpoint = Arrays.asList("file", "info");
+        Map<String, String> data = new HashMap<>();
+        data.put("file_uuid", this.parentDirUuid);
+        data.put("device_uuid", this.device.getUuid());
+        Map result = null;
+        try {
+            result = Information.webSocketClient.microservice("device", endpoint, data);
+            return new File(result.get("uuid").toString(), (String) result.get("parent_dir_uuid"), true, this.device);
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public boolean isDirectory() {
@@ -122,6 +141,12 @@ public class File {
         data.put("device_uuid", this.device.getUuid());
         data.put("file_uuid", this.uuid);
         Information.webSocketClient.microservice("device", endpoint, data);
+    }
+
+    public Path getPath(){
+        Path p = new Path(device);
+        p.setPath(this);
+        return p;
     }
 
 
