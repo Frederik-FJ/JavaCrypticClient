@@ -17,7 +17,9 @@ public class MinerApp extends App {
 
     JTextField walletUuid;
 
-    JTextField percent;
+    JSlider percentSlider;
+
+    JLabel percent;
     JButton setPower;
 
     public MinerApp(Device device, Miner miner){
@@ -40,16 +42,19 @@ public class MinerApp extends App {
 
         walletUuid.addActionListener(actionEvent -> setWalletUuid());
 
-        percent = new JTextField();
+        percent = new JLabel();
         percent.setText(miner.getPower()+"");
-        percent.addActionListener(actionEvent -> setPower());
+
+        percentSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, miner.getPower());
+        percentSlider.addChangeListener(changeEvent -> setPower(percentSlider.getValue()));
 
         setPower = new JButton("set power");
         setPower.addActionListener(actionEvent -> setPower());
 
         this.add(walletUuid);
         this.add(percent);
-        this.add(setPower);
+        this.add(percentSlider);
+        //this.add(setPower);
     }
 
     private void setPower(){
@@ -59,11 +64,17 @@ public class MinerApp extends App {
                 throw new NumberFormatException();
             }
             miner.setPower(power);
-        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
-            e.printStackTrace();
         } catch (NumberFormatException e){
             JOptionPane.showInternalMessageDialog(Information.Desktop, percent.getText() + " is not a valid number");
         }
+    }
+
+    private void setPower(int power){
+        if(power > 100 || power < 0){
+            return;
+        }
+        miner.setPower(power);
+        reload();
     }
 
     private void setWalletUuid(){
@@ -79,6 +90,7 @@ public class MinerApp extends App {
 
         walletUuid.setText(miner.getWallet().getUuid());
         percent.setText(miner.getPower()+"");
+        percentSlider.setValue(miner.getPower());
 
         this.revalidate();
         this.repaint();

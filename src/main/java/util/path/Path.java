@@ -62,6 +62,9 @@ public class Path {
                         .append(dirs.get(i).getName());
             }
             pwd = pwdBuilder.toString();
+            if(currentFile.isDirectory()){
+                pwd+="/";
+            }
         } catch (InvalidServerResponseException | UnknownMicroserviceException e){
             e.printStackTrace();
         }

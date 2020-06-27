@@ -4,6 +4,7 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import gui.desktop.DesktopPane;
+import gui.util.FilePathPane;
 import util.file.File;
 
 import javax.swing.*;
@@ -21,6 +22,7 @@ public class TextEditor extends App {
     JMenuBar menuBar;
 
     File file;
+    FilePathPane filePath;
 
     DesktopPane pane;
 
@@ -28,6 +30,7 @@ public class TextEditor extends App {
     public TextEditor(File file, DesktopPane pane){
         this.file = file;
         this.pane = pane;
+        filePath = new FilePathPane(file.getParentDir());
 
         this.width = 400;
         this.height = 300;
@@ -40,6 +43,7 @@ public class TextEditor extends App {
     @Override
     protected void init(){
         super.init();
+        this.setLayout(new BorderLayout());
 
         InternalFrameAdapter saveOnClose;
 
@@ -107,7 +111,9 @@ public class TextEditor extends App {
         textArea.setLineWrap(true);
         textArea.setCursor(new Cursor(Cursor.TEXT_CURSOR));
 
-        this.add(textArea);
+        this.add(textArea, BorderLayout.CENTER);
+
+        this.add(filePath, BorderLayout.NORTH);
 
         // Add Key-Listener for Strg+S
         textArea.addKeyListener(new KeyAdapter() {

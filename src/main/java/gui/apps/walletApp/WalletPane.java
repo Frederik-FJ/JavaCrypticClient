@@ -102,7 +102,7 @@ public class WalletPane extends Panel {
         uuidField.setLocation(relativeWidth(60), 100);
         amountField.setLocation(relativeWidth(10), 100);
         if(filePath != null){
-            filePath.setSize(this.getWidth(), 30);
+            filePath.setSize(this.getWidth()-relativeWidth(10), 30);
             filePath.setLocation(relativeWidth(10), 50);
         }
 

@@ -38,7 +38,7 @@ public class FilePathPane extends Panel{
         open = new JButton("open");
         open.addActionListener(actionEvent -> open());
 
-        this.add(open, BorderLayout.WEST);
+        this.add(open, BorderLayout.EAST);
         this.add(pathName, BorderLayout.CENTER);
 
         this.addMouseListener(new MouseAdapter() {

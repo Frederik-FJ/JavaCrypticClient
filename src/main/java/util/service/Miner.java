@@ -50,13 +50,17 @@ public class Miner extends Service {
         this.wallet = wallet;
     }
 
-    public void setPower(int power) throws UnknownMicroserviceException, InvalidServerResponseException {
+    public void setPower(int power) {
         List<String> endpoint = Arrays.asList("miner", "power");
         Map<String, Object> data = new HashMap<>();
         data.put("service_uuid", this.serviceUuid);
         data.put("power", power/100.0);
-        Information.webSocketClient.microservice("service", endpoint, data);
-        this.power = power;
+        try {
+            Information.webSocketClient.microservice("service", endpoint, data);
+            this.power = power;
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
     }
 
     public void collect() throws UnknownMicroserviceException, InvalidServerResponseException {
