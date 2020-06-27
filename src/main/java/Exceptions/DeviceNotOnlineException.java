@@ -1,8 +1,8 @@
 package Exceptions;
 
-public class DeviceNotOnlineException extends Exception{
+public class DeviceNotOnlineException extends Exception {
 
-    public DeviceNotOnlineException(){
+    public DeviceNotOnlineException() {
         super("Device not Online");
     }
 }

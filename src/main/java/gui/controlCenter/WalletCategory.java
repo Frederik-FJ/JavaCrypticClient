@@ -1,14 +1,13 @@
 package gui.controlCenter;
 
 import Exceptions.InvalidWalletException;
-import Exceptions.UnknownMicroserviceException;
 import information.Information;
 import util.Wallet;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class WalletCategory extends JPanel{
+public class WalletCategory extends JPanel {
 
     JPanel walletList;
     JPanel walletInfo;
@@ -17,7 +16,7 @@ public class WalletCategory extends JPanel{
     JTextField walletUuid;
     JTextField walletPw;
 
-    public WalletCategory(){
+    public WalletCategory() {
         this.setLayout(new BorderLayout());
 
         //wallet list
@@ -33,16 +32,16 @@ public class WalletCategory extends JPanel{
 
         currency = new JLabel();
         currency.setSize(300, 20);
-        currency.setLocation(50 ,50);
+        currency.setLocation(50, 50);
 
         walletUuid = new JTextField("uuid");
-        if(Information.walletUuid != null)
+        if (Information.walletUuid != null)
             walletUuid.setText(Information.walletUuid);
         walletUuid.setSize(200, 20);
         walletUuid.setLocation(50, 100);
 
         walletPw = new JTextField("pw");
-        if(Information.walletPw != null)
+        if (Information.walletPw != null)
             walletPw.setText(Information.walletPw);
         walletPw.setSize(200, 20);
         walletPw.setLocation(50, 150);
@@ -58,13 +57,13 @@ public class WalletCategory extends JPanel{
         reload();
     }
 
-    public void reload(){
+    public void reload() {
 
         Information.walletUuid = walletUuid.getText();
         Information.walletPw = walletPw.getText();
         try {
-            currency.setText(String.valueOf(new Wallet(Information.walletUuid, Information.walletPw).getMorphcoins()/1000.0));
-        } catch (InvalidWalletException e){
+            currency.setText(String.valueOf(new Wallet(Information.walletUuid, Information.walletPw).getMorphcoins() / 1000.0));
+        } catch (InvalidWalletException e) {
             e.printStackTrace();
         }
         walletInfo.repaint();

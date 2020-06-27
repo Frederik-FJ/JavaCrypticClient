@@ -6,9 +6,9 @@ import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import information.Information;
 import items.Device;
-import util.path.DirectoryPath;
 import util.file.File;
 import util.file.WalletFile;
+import util.path.DirectoryPath;
 
 import javax.swing.*;
 import java.beans.PropertyVetoException;
@@ -35,7 +35,7 @@ public class Terminal extends App {
         init();
     }
 
-    protected void init(){
+    protected void init() {
         super.init();
 
 
@@ -77,19 +77,18 @@ public class Terminal extends App {
         commandArea.getFocus();
     }
 
-    public CommandArea getCommandArea(){
+    public CommandArea getCommandArea() {
         return commandArea;
     }
 
     /**
-     *
      * @param command The command from the console as String
      * @return The output of the command
      */
-    public String processCommand(String command){
+    public String processCommand(String command) {
         String notFound = "Unknown command";
 
-        if(command.equals("")){
+        if (command.equals("")) {
             return "";
         }
 
@@ -109,38 +108,38 @@ public class Terminal extends App {
         boolean usePath = command.contains("/");
 
         // open programs
-        if(fileManager){
+        if (fileManager) {
             Information.Desktop.startFileManager(device);
             return "starting fileManager";
         }
 
-        if(miner){
+        if (miner) {
             Information.Desktop.startMinerApp(device);
             return "starting MinerApp";
         }
 
-        if(terminal){
+        if (terminal) {
             Information.Desktop.startTerminal(device);
             return "starting terminal";
         }
 
-        if(attack){
+        if (attack) {
             Information.Desktop.startServiceAttacker(device);
             return "starting attacker";
         }
 
-        if(serviceManager){
+        if (serviceManager) {
             Information.Desktop.startServiceManager(device);
             return "starting serviceManager";
         }
 
-        if(walletApp){
+        if (walletApp) {
             WalletFile walletFile;
-            try{
+            try {
                 walletFile = new WalletFile(Objects.requireNonNull(this.getFileFromPath(command.split(" ")[1])));
                 Information.Desktop.startWalletApp(walletFile.getWallet());
                 return "starting Wallet-App";
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
                 return "Invalid File";
             }
@@ -148,43 +147,42 @@ public class Terminal extends App {
 
 
         // path cmd
-        if(ls){
+        if (ls) {
             return directoryPath.listFiles();
         }
 
-        if(cd){
-            try{
-                if(params.length < 2){
+        if (cd) {
+            try {
+                if (params.length < 2) {
                     return directoryPath.changeDirectory("/");
                 }
                 return directoryPath.changeDirectory(params[1]);
-            } catch (InvalidServerResponseException | UnknownMicroserviceException e){
+            } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
                 e.printStackTrace();
             }
 
         }
 
-        if(pwd){
+        if (pwd) {
             directoryPath.updatePwd();
             return directoryPath.getPwd();
         }
 
 
-
-        if(usePath){
+        if (usePath) {
 
             directoryPath = new DirectoryPath(this.directoryPath);
             String[] dirs = command.split("/");
-            for(String dir : dirs){
-                if(dir.contains(" ") && !dir.contains("\"")){
+            for (String dir : dirs) {
+                if (dir.contains(" ") && !dir.contains("\"")) {
                     dir = dir.split(" ")[0];
                 }
-                if(dir.equals(".")) continue;
+                if (dir.equals(".")) continue;
                 try {
-                    for(File f: directoryPath.getCurrentFile().getFiles()){
-                        if(dir.equals(f.getName())){
-                            if(!f.isDirectory()){
-                                if(command.replace(" ", "").endsWith("--new"))
+                    for (File f : directoryPath.getCurrentFile().getFiles()) {
+                        if (dir.equals(f.getName())) {
+                            if (!f.isDirectory()) {
+                                if (command.replace(" ", "").endsWith("--new"))
                                     f.toExecutionFile().execute();
                                 else
                                     f.toExecutionFile().executeFromTerminal(this);
@@ -196,7 +194,7 @@ public class Terminal extends App {
                 } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException e) {
                     e.printStackTrace();
                 }
-                try{
+                try {
                     directoryPath.changeDirectory(dir);
                 } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
                     e.printStackTrace();
@@ -208,10 +206,10 @@ public class Terminal extends App {
         return notFound;
     }
 
-    private File getFileFromPath(String path){
+    private File getFileFromPath(String path) {
         DirectoryPath p = new DirectoryPath(this.directoryPath);
         String[] dirs = path.split("/");
-        for(String dir : dirs) {
+        for (String dir : dirs) {
             if (dir.contains(" ") && !dir.contains("\"")) {
                 dir = dir.split(" ")[0];
             }

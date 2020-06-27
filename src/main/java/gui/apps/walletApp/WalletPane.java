@@ -30,20 +30,20 @@ public class WalletPane extends Panel {
     String uuid;
     User owner;
 
-    public WalletPane(Wallet wallet){
+    public WalletPane(Wallet wallet) {
         this.wallet = wallet;
 
         init();
     }
 
-    public WalletPane(WalletFile walletFile){
+    public WalletPane(WalletFile walletFile) {
         this.walletFile = walletFile;
         this.wallet = walletFile.getWallet();
 
         init();
     }
 
-    private void init(){
+    private void init() {
         this.setLayout(null);
 
         try {
@@ -59,22 +59,22 @@ public class WalletPane extends Panel {
 
         title = new JLabel("Wallet von " + owner.getUserName());
         title.setSize(130, 25);
-        title.setLocation(relativeWidth(50) - title.getWidth()/2, 10);
+        title.setLocation(relativeWidth(50) - title.getWidth() / 2, 10);
         this.add(title);
 
-        if(walletFile != null){
+        if (walletFile != null) {
             filePath = new FilePathPane(walletFile);
             this.add(filePath);
         }
 
 
         amountField = new JLabel(amount + " Mc");
-        amountField.setSize(amountField.getText().length()*8+10, 20);
+        amountField.setSize(amountField.getText().length() * 8 + 10, 20);
         amountField.setLocation(relativeWidth(10), 50);
         this.add(amountField);
 
         uuidField = new JLabel("UUID: " + uuid);
-        uuidField.setSize(uuidField.getText().length()*8+10, 20);
+        uuidField.setSize(uuidField.getText().length() * 8 + 10, 20);
         uuidField.setLocation(relativeWidth(60), 50);
         this.add(uuidField);
 
@@ -94,15 +94,14 @@ public class WalletPane extends Panel {
         }, 5000, 5000);
 
 
-
     }
 
-    private void reload(){
+    private void reload() {
         title.setLocation(relativeWidth(50) - 50, 10);
         uuidField.setLocation(relativeWidth(60), 100);
         amountField.setLocation(relativeWidth(10), 100);
-        if(filePath != null){
-            filePath.setSize(this.getWidth()-relativeWidth(10), 30);
+        if (filePath != null) {
+            filePath.setSize(this.getWidth() - relativeWidth(10), 30);
             filePath.setLocation(relativeWidth(10), 50);
         }
 
@@ -110,20 +109,20 @@ public class WalletPane extends Panel {
         repaint();
     }
 
-    private void reloadMorphcoins(){
+    private void reloadMorphcoins() {
         try {
             amount = wallet.getMorphcoins();
         } catch (InvalidWalletException e) {
             e.printStackTrace();
         }
         amountField.setText(amount + "Mc");
-        amountField.setSize(amountField.getText().length()*8+10, 20);
+        amountField.setSize(amountField.getText().length() * 8 + 10, 20);
 
 
         reload();
     }
 
-    public void close(){
+    public void close() {
         timer.cancel();
     }
 

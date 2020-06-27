@@ -19,43 +19,43 @@ public class AttackPane extends JPanel {
     protected App app;
 
 
-    public AttackPane (Service s, App app){
+    public AttackPane(Service s, App app) {
         this.service = s;
 
         init();
     }
 
-    protected AttackPane(){
+    protected AttackPane() {
 
     }
 
-    private void init(){
+    private void init() {
         this.setLayout(new BorderLayout());
 
-        if(service == null){
+        if (service == null) {
             this.add(new HackedPane(), BorderLayout.CENTER);
         }
 
-        if(service instanceof Bruteforce){
+        if (service instanceof Bruteforce) {
             this.add(new BruteforceAttackPane(service), BorderLayout.CENTER);
-        }else if(service instanceof Portscan){
+        } else if (service instanceof Portscan) {
             this.add(new PortscanAttackPane(service), BorderLayout.CENTER);
-        }else {
+        } else {
             this.setLayout(new FlowLayout());
             this.add(new JLabel("Unknown Attack Service"), BorderLayout.CENTER);
         }
     }
 
-    public String getTitle(){
+    public String getTitle() {
         return title.getText();
     }
 
 
-    protected int relativeHeight(int percent){
-        return (int) (this.getHeight()*((double) percent/100));
+    protected int relativeHeight(int percent) {
+        return (int) (this.getHeight() * ((double) percent / 100));
     }
 
-    protected int relativeWidth(int percent){
-        return (int) (this.getWidth()*((double) percent/100));
+    protected int relativeWidth(int percent) {
+        return (int) (this.getWidth() * ((double) percent / 100));
     }
 }

@@ -12,7 +12,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FilePathPane extends Panel{
+public class FilePathPane extends Panel {
 
     File file;
     Path path;
@@ -20,19 +20,19 @@ public class FilePathPane extends Panel{
     JButton open;
     JLabel pathName;
 
-    public FilePathPane(File file){
+    public FilePathPane(File file) {
         this.file = file;
         this.path = file.getPath();
         init();
     }
 
-    public FilePathPane(Path path){
+    public FilePathPane(Path path) {
         this.path = path;
         this.file = path.getCurrentFile();
         init();
     }
 
-    private void init(){
+    private void init() {
         this.setLayout(new BorderLayout());
         pathName = new JLabel(path.getPwd());
         open = new JButton("open");
@@ -44,7 +44,7 @@ public class FilePathPane extends Panel{
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getButton() == MouseEvent.BUTTON3){
+                if (e.getButton() == MouseEvent.BUTTON3) {
                     JPopupMenu popupMenu = getPopupMenu();
                     popupMenu.show(e.getComponent(), e.getX(), e.getY());
                 }
@@ -52,8 +52,8 @@ public class FilePathPane extends Panel{
         });
     }
 
-    private void open(){
-        if(file.isDirectory()){
+    private void open() {
+        if (file.isDirectory()) {
             FileManager fileManager;
             try {
                 fileManager = new FileManager(new DirectoryPath(path));
@@ -62,19 +62,19 @@ public class FilePathPane extends Panel{
                 e.printStackTrace();
                 JOptionPane.showInternalMessageDialog(Information.Desktop, "Error with the connection to the server");
             }
-        }else {
+        } else {
             Information.Desktop.startTextEditor(file);
         }
     }
 
-    private JPopupMenu getPopupMenu(){
+    private JPopupMenu getPopupMenu() {
         JPopupMenu popupMenu = new JPopupMenu();
 
         JMenuItem open = new JMenuItem("open");
         open.addActionListener(actionEvent -> open());
         popupMenu.add(open);
 
-        if(!file.isDirectory()){
+        if (!file.isDirectory()) {
             JMenuItem openDir = new JMenuItem("open parent dir");
             FileManager fileManager = null;
             try {

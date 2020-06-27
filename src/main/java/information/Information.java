@@ -14,11 +14,9 @@ import java.util.Properties;
 
 public class Information {
 
+    public static final String path = Information.class.getProtectionDomain().getCodeSource().getLocation().getPath();
     public static Properties properties;
     public static Gui gui;
-
-    public static final String path = Information.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-
     public static Client client;
     public static WebSocketClient webSocketClient;
 
@@ -38,9 +36,9 @@ public class Information {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try{
+        try {
             dirIcon = new ImageIcon(ImageIO.read(new File(Information.path + "apps/file_manager/dir.png")).getScaledInstance(30, 30, Image.SCALE_SMOOTH));
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

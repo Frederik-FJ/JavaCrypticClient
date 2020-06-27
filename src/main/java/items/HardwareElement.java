@@ -5,7 +5,7 @@ public class HardwareElement {
     String type;
     String name;
 
-    public HardwareElement(String type, String name){
+    public HardwareElement(String type, String name) {
         this.type = type;
         this.name = name;
     }

@@ -3,7 +3,8 @@ package gui.desktop;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
-import gui.apps.*;
+import gui.apps.Settings;
+import gui.apps.TextEditor;
 import gui.apps.fileManager.FileManager;
 import gui.apps.service.attack.ServiceAttack;
 import gui.apps.service.manager.ServiceManager;
@@ -24,7 +25,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class DesktopPane extends JDesktopPane{
+public class DesktopPane extends JDesktopPane {
 
     Desktop window;
     Taskbar taskbar;
@@ -55,14 +56,14 @@ public class DesktopPane extends JDesktopPane{
     Settings sets;
 
 
-    public DesktopPane(Desktop window, Taskbar taskbar){
+    public DesktopPane(Desktop window, Taskbar taskbar) {
         this.window = window;
         this.taskbar = taskbar;
 
         this.init();
     }
 
-    private void init(){
+    private void init() {
 
         // prepare Icons for for the Apps
         try {
@@ -98,7 +99,7 @@ public class DesktopPane extends JDesktopPane{
         initComputer();
     }
 
-    public void initComputer(){
+    public void initComputer() {
 
         JPopupMenu menu = new JPopupMenu();
 
@@ -185,7 +186,7 @@ public class DesktopPane extends JDesktopPane{
     }
 
 
-    public Terminal startTerminal(Device device){
+    public Terminal startTerminal(Device device) {
         // open terminal
         Terminal ter = new Terminal(device);
         startApp(ter, terminalIcon);
@@ -193,63 +194,63 @@ public class DesktopPane extends JDesktopPane{
     }
 
 
-    public void startSettings(){
+    public void startSettings() {
         //if settings is already opened it won't open again
-        for(JInternalFrame f :this.getAllFrames()){
-            if(f instanceof Settings) return;
+        for (JInternalFrame f : this.getAllFrames()) {
+            if (f instanceof Settings) return;
         }
         //open settings
         sets = new Settings(this);
         startApp(sets, settingsIcon);
     }
 
-    public void startShop(){
+    public void startShop() {
         // open shop
         Shop shop = new Shop(this);
         startApp(shop, shopIcon);
     }
 
-    public void startFileManager(Device device){
+    public void startFileManager(Device device) {
         FileManager fileManager = new FileManager(this, device);
         startApp(fileManager, fileManagerIcon);
     }
 
-    public void startFileManager(FileManager fileManger){
+    public void startFileManager(FileManager fileManger) {
         startApp(fileManger, fileManagerIcon);
     }
 
-    public void startTextEditor(util.file.File file){
+    public void startTextEditor(util.file.File file) {
         TextEditor textEditor = new TextEditor(file, this);
         startApp(textEditor, textEditorIcon);
     }
 
-    public void startServiceManager(Device device){
+    public void startServiceManager(Device device) {
         ServiceManager serviceManager = new ServiceManager(device, this);
         startApp(serviceManager, null);
     }
 
-    public void startServiceAttacker(Device device){
+    public void startServiceAttacker(Device device) {
         ServiceAttack serviceAttack = new ServiceAttack(device);
         startApp(serviceAttack, null);
     }
 
-    public void startWalletApp(Wallet wallet){
+    public void startWalletApp(Wallet wallet) {
         WalletApp walletApp = new WalletApp(wallet);
         startApp(walletApp, null);
     }
 
-    public void startWalletApp(WalletFile walletFile){
+    public void startWalletApp(WalletFile walletFile) {
         WalletApp walletApp = new WalletApp(walletFile);
         startApp(walletApp, null);
     }
 
-    public void startMinerApp(Device device){
+    public void startMinerApp(Device device) {
         MinerApp minerApp = MinerApp.startMinerApp(device);
         startApp(minerApp, null);
     }
 
-    public void startApp(App app, ImageIcon icon){
-        if(icon != null){
+    public void startApp(App app, ImageIcon icon) {
+        if (icon != null) {
             ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
             app.setFrameIcon(scaledIcon);
         }

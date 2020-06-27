@@ -10,28 +10,28 @@ import java.util.List;
 
 public class Path {
 
+    protected final Device device;
     protected File currentFile;
     protected String pwd = "/";
-    protected final Device device;
 
 
-    public Path(Device device){
+    public Path(Device device) {
         this.device = device;
         currentFile = device.getRootDirectory();
     }
 
-    public Path(Path path){
+    public Path(Path path) {
         this(path.device);
         this.currentFile = path.currentFile;
         this.pwd = path.pwd;
     }
 
-    public Device getDevice(){
-        return  device;
+    public Device getDevice() {
+        return device;
     }
 
-    public void setPath(File f){
-        if(f == null){
+    public void setPath(File f) {
+        if (f == null) {
             throw new NullPointerException();
         }
         this.currentFile = f;
@@ -41,7 +41,7 @@ public class Path {
     /**
      * Updates the pwd variable
      */
-    public void updatePwd(){
+    public void updatePwd() {
         if (currentFile.getUuid() == null) {
             pwd = "/";
             return;
@@ -62,19 +62,19 @@ public class Path {
                         .append(dirs.get(i).getName());
             }
             pwd = pwdBuilder.toString();
-            if(currentFile.isDirectory()){
-                pwd+="/";
+            if (currentFile.isDirectory()) {
+                pwd += "/";
             }
-        } catch (InvalidServerResponseException | UnknownMicroserviceException e){
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
             e.printStackTrace();
         }
     }
 
-    public String getPwd(){
+    public String getPwd() {
         return pwd;
     }
 
-    public File getCurrentFile(){
+    public File getCurrentFile() {
         return currentFile;
     }
 

@@ -1,8 +1,8 @@
 package Exceptions;
 
-public class InvalidWalletException extends Exception{
+public class InvalidWalletException extends Exception {
 
-    public InvalidWalletException(){
+    public InvalidWalletException() {
         new Error("Invalid Wallet Key").printStackTrace();
     }
 }

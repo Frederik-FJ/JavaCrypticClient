@@ -16,12 +16,12 @@ public class CommandArea extends JPanel {
     JTextField commandInput;
     JButton commitButton;
 
-    public CommandArea(App app){
+    public CommandArea(App app) {
         this.app = app;
         init();
     }
 
-    public void init(){
+    public void init() {
 
         this.setSize(app.getSize());
         this.setBackground(Color.BLACK);
@@ -46,8 +46,10 @@ public class CommandArea extends JPanel {
             public void focusGained(FocusEvent focusEvent) {
                 CommandArea.this.getFocus();
             }
+
             @Override
-            public void focusLost(FocusEvent focusEvent) { }
+            public void focusLost(FocusEvent focusEvent) {
+            }
         });
 
         textAreaRead.addFocusListener(new FocusListener() {
@@ -55,8 +57,10 @@ public class CommandArea extends JPanel {
             public void focusGained(FocusEvent focusEvent) {
                 CommandArea.this.getFocus();
             }
+
             @Override
-            public void focusLost(FocusEvent focusEvent) { }
+            public void focusLost(FocusEvent focusEvent) {
+            }
         });
         this.add(jsp, BorderLayout.CENTER);
 
@@ -76,34 +80,35 @@ public class CommandArea extends JPanel {
         commandLine.add(commitButton, BorderLayout.EAST);
 
 
-
         this.add(commandLine, BorderLayout.SOUTH);
 
     }
 
     /**
      * write in the textArea
+     *
      * @param content String to write
      */
-    public void print(String content){
+    public void print(String content) {
         textAreaRead.setText(textAreaRead.getText() + content);
     }
 
     /**
      * write in the textArea
+     *
      * @param content String to write
      */
-    public void println(String content){
+    public void println(String content) {
         textAreaRead.setText(textAreaRead.getText() + content + "\n");
     }
 
-    private void execute(){
+    private void execute() {
         execute(commandInput.getText());
         commandInput.setText("");
         commandInput.requestFocus();
     }
 
-    public void execute(String command){
+    public void execute(String command) {
         print(command + "\n");
         app.handleCommand(command);
     }
@@ -111,7 +116,7 @@ public class CommandArea extends JPanel {
     /**
      * Method to give the Focus to the commandInputField
      */
-    public void getFocus(){
+    public void getFocus() {
         this.requestFocus();
         commandInput.requestFocus();
     }

@@ -22,15 +22,24 @@ public class MinerApp extends App {
     JLabel percent;
     JButton setPower;
 
-    public MinerApp(Device device, Miner miner){
+    public MinerApp(Device device, Miner miner) {
         this.miner = miner;
         this.device = device;
 
-        width=300;
-        height=200;
-        title="Miner";
+        width = 300;
+        height = 200;
+        title = "Miner";
 
         init();
+    }
+
+    public static MinerApp startMinerApp(Device device) {
+        Miner miner = device.getMinerService();
+        if (miner == null) {
+            JOptionPane.showInternalMessageDialog(Information.Desktop, "You need to register a Miner service first");
+            return null;
+        }
+        return new MinerApp(device, miner);
     }
 
     @Override
@@ -43,7 +52,7 @@ public class MinerApp extends App {
         walletUuid.addActionListener(actionEvent -> setWalletUuid());
 
         percent = new JLabel();
-        percent.setText(miner.getPower()+"");
+        percent.setText(miner.getPower() + "");
 
         percentSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100, miner.getPower());
         percentSlider.addChangeListener(changeEvent -> setPower(percentSlider.getValue()));
@@ -57,27 +66,27 @@ public class MinerApp extends App {
         //this.add(setPower);
     }
 
-    private void setPower(){
+    private void setPower() {
         try {
             int power = Integer.parseInt(percent.getText());
-            if(power > 100 || power < 0){
+            if (power > 100 || power < 0) {
                 throw new NumberFormatException();
             }
             miner.setPower(power);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             JOptionPane.showInternalMessageDialog(Information.Desktop, percent.getText() + " is not a valid number");
         }
     }
 
-    private void setPower(int power){
-        if(power > 100 || power < 0){
+    private void setPower(int power) {
+        if (power > 100 || power < 0) {
             return;
         }
         miner.setPower(power);
         reload();
     }
 
-    private void setWalletUuid(){
+    private void setWalletUuid() {
         try {
             miner.connectWallet(new Wallet(walletUuid.getText()));
         } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
@@ -86,22 +95,13 @@ public class MinerApp extends App {
         walletUuid.setText(miner.getWallet().getUuid());
     }
 
-    private void reload(){
+    private void reload() {
 
         walletUuid.setText(miner.getWallet().getUuid());
-        percent.setText(miner.getPower()+"");
+        percent.setText(miner.getPower() + "");
         percentSlider.setValue(miner.getPower());
 
         this.revalidate();
         this.repaint();
-    }
-
-    public static MinerApp startMinerApp(Device device){
-        Miner miner = device.getMinerService();
-        if(miner == null){
-            JOptionPane.showInternalMessageDialog(Information.Desktop, "You need to register a Miner service first");
-            return null;
-        }
-        return new MinerApp(device, miner);
     }
 }

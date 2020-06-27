@@ -26,14 +26,13 @@ public class ComputerCategory extends JPanel {
     Map<String, Device> devices = new HashMap<>();
     List<String> deviceNames = new ArrayList<>();
 
-    public ComputerCategory(Desktop desktop){
+    public ComputerCategory(Desktop desktop) {
         this.desktop = desktop;
         this.setLayout(new BorderLayout());
 
 
-
         try {
-            for(Map map :(List<Map>) Information.client.getDevices().get("devices")){
+            for (Map map : (List<Map>) Information.client.getDevices().get("devices")) {
                 devices.put((String) map.get("name"), new Device((String) map.get("uuid")));
                 deviceNames.add((String) map.get("name"));
             }
@@ -43,7 +42,7 @@ public class ComputerCategory extends JPanel {
 
         deviceList = new JPanel();
         deviceList.setLayout(new BoxLayout(deviceList, BoxLayout.Y_AXIS));
-        for(String name : devices.keySet()){
+        for (String name : devices.keySet()) {
             JButton b = new JButton(name);
             System.out.println(name);
             b.addActionListener((actionEvent) -> {
@@ -76,13 +75,13 @@ public class ComputerCategory extends JPanel {
         JLabel name = new JLabel(device.getName());
 
         JButton connect = new JButton("connect");
-        connect.addActionListener(actionEvent ->  connect(device));
+        connect.addActionListener(actionEvent -> connect(device));
 
         boolean state = device.isOnline();
 
-        JLabel stateField = new JLabel(state?"online":"offline");
+        JLabel stateField = new JLabel(state ? "online" : "offline");
 
-        JButton powerButton = new JButton(state?"shutdown":"boot");
+        JButton powerButton = new JButton(state ? "shutdown" : "boot");
         powerButton.addActionListener(actionEvent -> {
             try {
                 if (state) {
@@ -106,11 +105,11 @@ public class ComputerCategory extends JPanel {
 
     }
 
-    private void connect(Device device){
+    private void connect(Device device) {
         try {
             Information.client.connect(device);
             desktop.connect();
-        } catch (DeviceNotOnlineException e){
+        } catch (DeviceNotOnlineException e) {
             JOptionPane.showMessageDialog(null, "Device not online");
         }
     }

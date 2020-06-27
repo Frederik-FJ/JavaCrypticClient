@@ -1,6 +1,5 @@
 package gui.apps;
 
-import connection.Client;
 import gui.App;
 
 import javax.swing.*;
@@ -10,7 +9,7 @@ public class Inventory extends App {
 
     JDesktopPane window;
 
-    public Inventory(JDesktopPane window){
+    public Inventory(JDesktopPane window) {
         super();
         this.window = window;
 
@@ -20,7 +19,7 @@ public class Inventory extends App {
         init();
     }
 
-    protected void init(){
+    protected void init() {
         setBackground(Color.WHITE);
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -31,7 +30,6 @@ public class Inventory extends App {
         //List<HardwareElement> items = client.getInventory();
 
     }
-
 
 
     @Override

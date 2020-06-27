@@ -15,18 +15,17 @@ public class HardwareInventory {
     WebSocketClient client;
 
     @Deprecated
-    public HardwareInventory(WebSocketClient client){
+    public HardwareInventory(WebSocketClient client) {
         this.client = client;
     }
 
-    public HardwareInventory(){
+    public HardwareInventory() {
         this.client = Information.webSocketClient;
     }
 
     /**
-     *
      * @return returns a Map with the Inventory (Map< String elementName, List< int number, Map elementSourceFromResponse > >)
-     * @throws UnknownMicroserviceException server don't know the microservice
+     * @throws UnknownMicroserviceException   server don't know the microservice
      * @throws InvalidServerResponseException the server response can't be read correctly
      */
     public Map<String, List> getInventory() throws UnknownMicroserviceException, InvalidServerResponseException {
