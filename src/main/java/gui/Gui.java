@@ -10,6 +10,7 @@ import information.Information;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -72,7 +73,9 @@ public class Gui extends JFrame {
         Information.server = server;
         Information.properties = new Properties();
         try {
-            Information.properties.load(new FileInputStream(Information.path + server + "Server.properties"));
+            final File file = new File(server + "Server.properties");
+            if (file.exists())
+                Information.properties.load(new FileInputStream(file));
         } catch (IOException e) {
             e.printStackTrace();
         }

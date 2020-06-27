@@ -22,7 +22,6 @@ import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 
 public class DesktopPane extends JDesktopPane {
@@ -67,12 +66,12 @@ public class DesktopPane extends JDesktopPane {
 
         // prepare Icons for for the Apps
         try {
-            terminalIconImage = ImageIO.read(new File(Information.path + "apps/terminal/icon.png"));
-            settingsIconImage = ImageIO.read(new File(Information.path + "apps/settings/icon.png"));
-            shopImage = ImageIO.read(new File(Information.path + "apps/shop/icon.png"));
-            controlCenterImage = ImageIO.read(new File(Information.path + "apps/control_center/icon.png"));
-            fileManagerImage = ImageIO.read(new File(Information.path + "apps/file_manager/icon.png"));
-            textEditorImage = ImageIO.read(new File(Information.path + "apps/text_editor/icon.png"));
+            terminalIconImage = ImageIO.read(Information.class.getResourceAsStream("/apps/terminal/icon.png"));
+            settingsIconImage = ImageIO.read(Information.class.getResourceAsStream("/apps/settings/icon.png"));
+            shopImage = ImageIO.read(Information.class.getResourceAsStream("/apps/shop/icon.png"));
+            controlCenterImage = ImageIO.read(Information.class.getResourceAsStream("/apps/control_center/icon.png"));
+            fileManagerImage = ImageIO.read(Information.class.getResourceAsStream("/apps/file_manager/icon.png"));
+            textEditorImage = ImageIO.read(Information.class.getResourceAsStream("/apps/text_editor/icon.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

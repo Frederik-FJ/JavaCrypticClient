@@ -16,6 +16,7 @@ public class Miner extends Service {
     public Miner(String serviceUuid, Device device) {
         super(serviceUuid, device);
     }
+
     public Miner(Service service) {
         super(service.serviceUuid, service.device);
     }

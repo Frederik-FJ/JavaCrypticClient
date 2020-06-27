@@ -12,7 +12,7 @@ public class Main {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                Information.properties.store(new FileOutputStream(Information.path + Information.server + "Server.properties"), "");
+                Information.properties.store(new FileOutputStream(Information.server + "Server.properties"), "");
             } catch (IOException e) {
                 e.printStackTrace();
             }
