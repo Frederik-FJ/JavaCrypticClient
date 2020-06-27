@@ -27,7 +27,7 @@ public class TextEditor extends App {
     DesktopPane pane;
 
 
-    public TextEditor(File file, DesktopPane pane){
+    public TextEditor(File file, DesktopPane pane) {
         this.file = file;
         this.pane = pane;
         filePath = new FilePathPane(file.getParentDir());
@@ -41,7 +41,7 @@ public class TextEditor extends App {
     }
 
     @Override
-    protected void init(){
+    protected void init() {
         super.init();
         this.setLayout(new BorderLayout());
 
@@ -51,12 +51,12 @@ public class TextEditor extends App {
         this.addInternalFrameListener(saveOnClose = new InternalFrameAdapter() {
             @Override
             public void internalFrameClosing(InternalFrameEvent e) {
-            if(!textArea.getText().equals(file.getContent())){
-                int save = JOptionPane.showInternalConfirmDialog(pane, "Save File?", null, JOptionPane.YES_NO_OPTION);
-                if(save == JOptionPane.YES_OPTION){
-                    save();
+                if (!textArea.getText().equals(file.getContent())) {
+                    int save = JOptionPane.showInternalConfirmDialog(pane, "Save File?", null, JOptionPane.YES_NO_OPTION);
+                    if (save == JOptionPane.YES_OPTION) {
+                        save();
+                    }
                 }
-            }
 
             }
         });
@@ -84,7 +84,7 @@ public class TextEditor extends App {
             int result = JOptionPane.showInternalConfirmDialog(pane,
                     "Should this file really be deleted?", null, JOptionPane.YES_NO_OPTION);
             try {
-                if(result == JOptionPane.YES_OPTION) {
+                if (result == JOptionPane.YES_OPTION) {
                     file.delete();
                     TextEditor.this.removeInternalFrameListener(saveOnClose);
                     TextEditor.this.setClosed(true);
@@ -119,7 +119,7 @@ public class TextEditor extends App {
         textArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.isControlDown() && e.getKeyCode() == KeyEvent.VK_S){
+                if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_S) {
                     TextEditor.this.save();
                 }
             }
@@ -133,7 +133,7 @@ public class TextEditor extends App {
     /**
      * load the content of a file into the TextArea from the TextEditor
      */
-    private void load(){
+    private void load() {
         textArea.setText(file.getContent());
     }
 
@@ -141,18 +141,18 @@ public class TextEditor extends App {
      * save the content from the textArea into the file
      */
     public void save() {
-        if(textArea.getText().length() > 255){
+        if (textArea.getText().length() > 255) {
             int confirmed = JOptionPane.showInternalConfirmDialog(pane, "Your Text is too long. The " +
-                    "file can maximally contain 255 chars. Your Text contains " + textArea.getText().length() +
-                    " chars. Do you want to store your Text with the first 255 chars?","Too long",
+                            "file can maximally contain 255 chars. Your Text contains " + textArea.getText().length() +
+                            " chars. Do you want to store your Text with the first 255 chars?", "Too long",
                     JOptionPane.YES_NO_OPTION);
-            if(confirmed == JOptionPane.YES_OPTION){
+            if (confirmed == JOptionPane.YES_OPTION) {
                 textArea.setText(textArea.getText().substring(0, 255));
-            }else {
+            } else {
                 return;
             }
         }
-        try{
+        try {
             file.setContent(textArea.getText());
         } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
             JOptionPane.showMessageDialog(null, "Error occurred during the conversation with the Server");
@@ -160,7 +160,7 @@ public class TextEditor extends App {
     }
 
     @Override
-    public void getFocus(){
+    public void getFocus() {
         super.getFocus();
         textArea.requestFocus();
     }

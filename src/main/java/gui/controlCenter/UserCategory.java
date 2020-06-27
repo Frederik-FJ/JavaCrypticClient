@@ -13,11 +13,11 @@ public class UserCategory extends Panel {
     JButton reLogin;
     JButton logout;
 
-    public UserCategory(){
+    public UserCategory() {
         init();
     }
 
-    private void init(){
+    private void init() {
         this.setLayout(null);
 
         name = new JLabel(Information.client.user);
@@ -54,15 +54,15 @@ public class UserCategory extends Panel {
         this.reload();
     }
 
-    public void reload(){
-        name.setSize(name.getText().length()*8, 20);
-        name.setLocation(this.relativeWidth(50)-(name.getWidth()/2), this.relativeHeight(1)+name.getHeight());
+    public void reload() {
+        name.setSize(name.getText().length() * 8, 20);
+        name.setLocation(this.relativeWidth(50) - (name.getWidth() / 2), this.relativeHeight(1) + name.getHeight());
 
-        reLogin.setSize(reLogin.getText().length()*8, 15);
+        reLogin.setSize(reLogin.getText().length() * 8, 15);
         reLogin.setLocation(this.relativeWidth(10), this.relativeHeight(30));
 
-        logout.setSize(logout.getText().length()*8, 15);
-        logout.setLocation(this.relativeWidth(10), reLogin.getY()+reLogin.getHeight()+20);
+        logout.setSize(logout.getText().length() * 8, 15);
+        logout.setLocation(this.relativeWidth(10), reLogin.getY() + reLogin.getHeight() + 20);
 
         this.revalidate();
         this.repaint();

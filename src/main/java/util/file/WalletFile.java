@@ -6,11 +6,11 @@ import util.Wallet;
 
 import javax.swing.*;
 
-public class WalletFile extends File{
+public class WalletFile extends File {
 
     Wallet wallet;
 
-    public WalletFile(File file){
+    public WalletFile(File file) {
         this(file.uuid, file.parentDirUuid, file.isDirectory, file.device);
     }
 
@@ -21,12 +21,11 @@ public class WalletFile extends File{
     }
 
 
-
-    private void init(){
+    private void init() {
         String[] content = this.getContent().split(" ");
         try {
             wallet = new Wallet(content[0], content[1]);
-        }catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             JOptionPane.showInternalMessageDialog(Information.Desktop, "There is a mistake in the File " + this.getName());
         }
     }

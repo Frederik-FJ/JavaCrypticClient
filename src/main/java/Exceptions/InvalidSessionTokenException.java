@@ -1,8 +1,8 @@
 package Exceptions;
 
-public class InvalidSessionTokenException extends Exception{
+public class InvalidSessionTokenException extends Exception {
 
-    public InvalidSessionTokenException(){
+    public InvalidSessionTokenException() {
         new Error("Invalid Session token").printStackTrace();
     }
 }

@@ -1,12 +1,15 @@
 package connection;
 
-import Exceptions.*;
+import Exceptions.DeviceNotOnlineException;
+import Exceptions.InvalidLoginException;
+import Exceptions.InvalidServerResponseException;
+import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
-import util.path.DirectoryPath;
 import information.Information;
 import items.Device;
 import items.HardwareElement;
 import items.HardwareInventory;
+import util.path.DirectoryPath;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,18 +18,15 @@ import java.util.*;
 public class Client {
 
     public WebSocketClient clientEndPoint;
-    String server;
-    volatile boolean online = false;
-
     public String user = "";
     public String device = "";
-    String token = "";
-
     public DirectoryPath directoryPath = null;
-
     public Device connectedDevice = null;
     public boolean connected = false;
     public boolean loggedIn = false;
+    String server;
+    volatile boolean online = false;
+    String token = "";
 
     public Client(String server) {
         this.server = server;
@@ -36,7 +36,7 @@ public class Client {
         return clientEndPoint;
     }
 
-    public boolean isOnline(){
+    public boolean isOnline() {
         return online;
     }
 
@@ -63,7 +63,7 @@ public class Client {
                 String st = s.nextLine();
                 try {
                     System.out.println(processCommand(st));
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -84,9 +84,10 @@ public class Client {
     }
 
 
-    public String processCommand(String cmd) throws InvalidServerResponseException, UnknownMicroserviceException { Gson gson = new Gson();
+    public String processCommand(String cmd) throws InvalidServerResponseException, UnknownMicroserviceException {
+        Gson gson = new Gson();
 
-        while(cmd.contains("  ")){
+        while (cmd.contains("  ")) {
             cmd = cmd.replace("  ", " ");
         }
 
@@ -105,45 +106,45 @@ public class Client {
         boolean ls = cmd.startsWith("ls") || cmd.startsWith("dir");
         boolean cd = cmd.startsWith("cd");
 
-        String[] params = cmd.split( " ");
+        String[] params = cmd.split(" ");
 
         // Commands which do the same in every case
-        if(status) return "Online Player: " + onlinePlayer();
-        if(empty) return "";
+        if (status) return "Online Player: " + onlinePlayer();
+        if (empty) return "";
 
         // Commands if you're logged in (doesn't matter if you're connected to a device)
 
-        if(loggedIn ){
-            if(cmd.equalsIgnoreCase("info")){
+        if (loggedIn) {
+            if (cmd.equalsIgnoreCase("info")) {
                 Map response = info();
                 String res = "Name: \t" + response.get("name").toString();
                 res += "\nPlayer UUID: \t" + response.get("uuid").toString();
                 return res;
             }
-            if(inventoryCmd) return inventoryCmd(cmd);
+            if (inventoryCmd) return inventoryCmd(cmd);
         }
         if (connected) {  // if you're connected with a device
             if (exit) {
                 disconnect();
             }
 
-            if(ls){
+            if (ls) {
                 return directoryPath.listFiles();
             }
 
-            if(cd){
-                if(params.length < 2){
+            if (cd) {
+                if (params.length < 2) {
                     return directoryPath.changeDirectory("/");
                 }
                 return directoryPath.changeDirectory(params[1]);
             }
 
-            if(pwd){
+            if (pwd) {
                 directoryPath.updatePwd();
                 return directoryPath.getPwd();
             }
 
-            if(shopCmd) return shopCmd(cmd);
+            if (shopCmd) return shopCmd(cmd);
 
         } else if (loggedIn) {  // if you're logged in in an account but not connected
 
@@ -152,13 +153,13 @@ public class Client {
                 System.exit(1);
             }
 
-            if(logout){
+            if (logout) {
                 this.logout();
                 System.out.println("logged out");
                 System.exit(1);
             }
 
-            if(deviceCmd) return deviceCmd(cmd);
+            if (deviceCmd) return deviceCmd(cmd);
 
         } else { // if you're not logged in
 
@@ -167,7 +168,7 @@ public class Client {
                 System.exit(1);
             }
 
-            if(login){
+            if (login) {
                 Scanner s = new Scanner(System.in);
                 System.out.print("Username: ");
                 String uname = s.nextLine();
@@ -189,23 +190,21 @@ public class Client {
     }
 
 
-
-
     // info
     public int onlinePlayer() {
         Map<String, String> cmd = new HashMap<>();
-        if(!loggedIn) cmd.put("action", "status");
-        if(loggedIn) cmd.put("action", "info");
+        if (!loggedIn) cmd.put("action", "status");
+        if (loggedIn) cmd.put("action", "info");
         int response = 0;
         try {
             Map resp = sendCommand(cmd);
-            if(resp.containsKey("error")) throw new InvalidServerResponseException(resp);
+            if (resp.containsKey("error")) throw new InvalidServerResponseException(resp);
             Double d = (double) resp.get("online");
             response = d.intValue();
         } catch (ClassCastException e) {
             e.printStackTrace();
             System.out.println("Es kam eine unerwartete Anwort zurück");
-        } catch (InvalidServerResponseException e){
+        } catch (InvalidServerResponseException e) {
             e.printStackTrace();
         }
         return response;
@@ -215,7 +214,7 @@ public class Client {
         Map<String, String> cmd = new HashMap<>();
         cmd.put("action", "info");
         Map resp = sendCommand(cmd);
-        if(resp.containsKey("error")) throw new InvalidServerResponseException(resp);
+        if (resp.containsKey("error")) throw new InvalidServerResponseException(resp);
         return resp;
     }
 
@@ -230,17 +229,19 @@ public class Client {
 
         if (response.containsKey("error")) {
             String error = response.get("error").toString();
-            if(error.equals("permissions denied")) throw new InvalidLoginException();
+            if (error.equals("permissions denied")) throw new InvalidLoginException();
             throw new InvalidServerResponseException(response);
         }
-        if(!response.containsKey("token")) throw new InvalidServerResponseException(response);
+        if (!response.containsKey("token")) throw new InvalidServerResponseException(response);
         loggedIn = true;
         this.user = info().get("name").toString();
         return response.get("token").toString();
     }
 
     public void logout() {
-        Map<String, String> cmd = new HashMap<String, String>(){{put("action", "logout");}};
+        Map<String, String> cmd = new HashMap<String, String>() {{
+            put("action", "logout");
+        }};
         clientEndPoint.request(cmd, true);
         online = false;
         clientEndPoint.close();
@@ -260,31 +261,30 @@ public class Client {
         String usage = "device list|build";
 
         String[] command = cmd.split(" ");
-        try{
+        try {
             cmd = command[1];
-        }catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             return usage;
         }
 
 
-
-        String[] params = new String[command.length-2];
-        for(int i = 2; i < command.length; i++){
-            params[i-2] = command[i];
+        String[] params = new String[command.length - 2];
+        for (int i = 2; i < command.length; i++) {
+            params[i - 2] = command[i];
         }
 
         // general device commands
-        if(cmd.equalsIgnoreCase("list")){
+        if (cmd.equalsIgnoreCase("list")) {
             Map res = getDevices();
             List devices = (List) res.get("devices");
             String ret = "";
-            for(Object d: devices){
+            for (Object d : devices) {
                 Map device = (Map) d;
-                ret = "\t" + device.get("name") + " (" + device.get("uuid") + ") \t" + ((boolean) device.get("powered_on")?"on":"off") + "\n";
+                ret = "\t" + device.get("name") + " (" + device.get("uuid") + ") \t" + ((boolean) device.get("powered_on") ? "on" : "off") + "\n";
             }
             return ret;
         }
-        if(cmd.equalsIgnoreCase("build")) {
+        if (cmd.equalsIgnoreCase("build")) {
             if (params.length != 8) {
                 return "device build <mainboard> <cpu> <gpu> <ram> <disk> <cooler> <powerPack> <case>";
             }
@@ -293,25 +293,25 @@ public class Client {
         }
 
         // device commands for a specific device
-        if(params.length < 1) return "specify a uuid as parameter";
+        if (params.length < 1) return "specify a uuid as parameter";
         Device device = null;
-        if(params[0].length() == 32+4){
+        if (params[0].length() == 32 + 4) {
             device = new Device(params[0], clientEndPoint);
-        }else {
+        } else {
             Map res = getDevices();
             List<Map> devices = (List<Map>) res.get("devices");
-            for(Map d: devices){
-                if(d.get("name").equals(params[0])){
+            for (Map d : devices) {
+                if (d.get("name").equals(params[0])) {
                     device = new Device((String) d.get("uuid"), clientEndPoint);
                 }
             }
         }
-        if(device == null){
+        if (device == null) {
             return "Unknown Device";
         }
 
 
-        if(cmd.equalsIgnoreCase("connect")){
+        if (cmd.equalsIgnoreCase("connect")) {
             try {
                 return connect(device);
             } catch (DeviceNotOnlineException e) {
@@ -319,7 +319,7 @@ public class Client {
             }
         }
 
-        if(cmd.equals("info")){
+        if (cmd.equals("info")) {
             String uuid = params[0];
             Map info = device.deviceInfo();
             List<Map> hardware = (List<Map>) info.get("hardware");
@@ -327,37 +327,37 @@ public class Client {
             ret.append("\nUUID: \t").append(info.get("uuid"));
             ret.append("\nStatus: \t").append((boolean) info.get("powered_on") ? "on" : "off");
             ret.append("\nHardware:");
-            for(Map component : hardware){
+            for (Map component : hardware) {
                 ret.append("\n\t").append(component.get("hardware_type")).append(":\t ").append(component.get("hardware_element"));
             }
             return ret + gson.toJson(hardware);
         }
 
-        if(cmd.equals("ping")){
+        if (cmd.equals("ping")) {
 
             return device.isOnline() + "";
         }
 
-        if(cmd.equals("boot")){
+        if (cmd.equals("boot")) {
 
             return gson.toJson(device.boot());
         }
 
-        if(cmd.equals("shutdown")){
+        if (cmd.equals("shutdown")) {
 
             return gson.toJson(device.shutdown());
         }
 
-        if(cmd.equals("elements")){
+        if (cmd.equals("elements")) {
             HardwareElement[] elements = device.getElements();
             StringBuilder ret = new StringBuilder();
-            for(HardwareElement e: elements){
+            for (HardwareElement e : elements) {
                 ret.append(e.getType()).append(": \t").append(e.getName()).append("\n");
             }
             return ret.toString();
         }
 
-        if(cmd.equals("owner")){
+        if (cmd.equals("owner")) {
             //return gson.toJson(device.getOwner());
         }
 
@@ -365,7 +365,7 @@ public class Client {
     }
 
     public String connect(Device device) throws DeviceNotOnlineException {
-            if(!device.isOnline()) throw new DeviceNotOnlineException();
+        if (!device.isOnline()) throw new DeviceNotOnlineException();
 
         connected = true;
         this.device = device.getName();
@@ -374,7 +374,7 @@ public class Client {
         return "connected";
     }
 
-    public void disconnect(){
+    public void disconnect() {
         directoryPath = null;
         connected = false;
         device = "";
@@ -390,42 +390,42 @@ public class Client {
     public Map buildDeviceCmd(String mainboard, String cpu, String gpu, List<String> ram, List<String> disk, List<String> processCooler, String powerPack, String computerCase) throws InvalidServerResponseException, UnknownMicroserviceException {
         Map<String, List> inventory = new HardwareInventory(clientEndPoint).getInventory();
 
-        for(String s: inventory.keySet()){
+        for (String s : inventory.keySet()) {
 
-            if(s.replace(" ", "").equals(mainboard)) {
+            if (s.replace(" ", "").equals(mainboard)) {
                 mainboard = s;
                 continue;
             }
 
-            if(s.replace(" ", "").equals(cpu)) {
+            if (s.replace(" ", "").equals(cpu)) {
                 cpu = s;
                 continue;
             }
 
-            if(s.replace(" ", "").equals(gpu)) {
+            if (s.replace(" ", "").equals(gpu)) {
                 gpu = s;
                 continue;
             }
-            if(s.replace(" ", "").equals(powerPack)){
+            if (s.replace(" ", "").equals(powerPack)) {
                 powerPack = s;
                 continue;
             }
-            if(s.replace(" ", "").equals(computerCase)){
+            if (s.replace(" ", "").equals(computerCase)) {
                 computerCase = s;
                 continue;
             }
-            for(int i = 0; i < ram.size(); i++){
-                if(s.replace(" ", "").equals(ram.get(i))){
+            for (int i = 0; i < ram.size(); i++) {
+                if (s.replace(" ", "").equals(ram.get(i))) {
                     ram.set(i, s);
                 }
             }
-            for(int i = 0; i < disk.size(); i++){
-                if(s.replace(" ", "").equals(disk.get(i))){
+            for (int i = 0; i < disk.size(); i++) {
+                if (s.replace(" ", "").equals(disk.get(i))) {
                     disk.set(i, s);
                 }
             }
-            for(int i = 0; i < processCooler.size(); i++){
-                if(s.replace(" ", "").equals(processCooler.get(i))){
+            for (int i = 0; i < processCooler.size(); i++) {
+                if (s.replace(" ", "").equals(processCooler.get(i))) {
                     processCooler.set(i, s);
                 }
             }
@@ -436,7 +436,7 @@ public class Client {
 
     }
 
-    public Map buildDevice(String mainboard, String cpu, String gpu, List<String> ram, List<String> disk, List<String> processCooler,String powerPack, String computerCase) throws UnknownMicroserviceException, InvalidServerResponseException {
+    public Map buildDevice(String mainboard, String cpu, String gpu, List<String> ram, List<String> disk, List<String> processCooler, String powerPack, String computerCase) throws UnknownMicroserviceException, InvalidServerResponseException {
 
         Gson gson = new Gson();
 
@@ -459,13 +459,11 @@ public class Client {
 
 
     //files
-    public String fileCmd(String cmd){
+    public String fileCmd(String cmd) {
 
 
         return "";
     }
-
-
 
 
     // inventory
@@ -475,12 +473,12 @@ public class Client {
         String command[] = cmd.split(" ");
         cmd = command[1];
 
-        if(cmd.equalsIgnoreCase("list")){
+        if (cmd.equalsIgnoreCase("list")) {
             Map<String, List> inventory = new HardwareInventory(clientEndPoint).getInventory();
 
             final String[] ret = {""};
 
-            inventory.forEach((k, v) -> ret[0] += v.get(0) + "x " +  k + "\n");
+            inventory.forEach((k, v) -> ret[0] += v.get(0) + "x " + k + "\n");
 
             return ret[0] + inventory.get("ATX"); // inventory.get("ATX"); ist eine Ausgabe zum sehen, wie das Json aufgebaut ist
         }
@@ -495,18 +493,18 @@ public class Client {
         String usage = "shop list|(buy)";
 
         String command[] = cmd.split(" ");
-        try{
+        try {
             cmd = command[1];
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return usage;
         }
 
-        String[] params = new String[command.length-2];
-        for(int i = 2; i < command.length; i++){
-            params[i-2] = command[i];
+        String[] params = new String[command.length - 2];
+        for (int i = 2; i < command.length; i++) {
+            params[i - 2] = command[i];
         }
 
-        if(cmd.equals("list")){
+        if (cmd.equals("list")) {
             Map items = getShopItems();
             return gson.toJson(items);
         }

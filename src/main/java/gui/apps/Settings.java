@@ -11,8 +11,7 @@ public class Settings extends App {
     JDesktopPane window;
 
 
-
-    public Settings(JDesktopPane window){
+    public Settings(JDesktopPane window) {
         super();
         this.window = window;
 
@@ -23,7 +22,7 @@ public class Settings extends App {
         this.init();
     }
 
-    protected void init(){
+    protected void init() {
         super.init();
         this.setLayout(new FlowLayout());
 

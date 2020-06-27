@@ -1,8 +1,8 @@
 package Exceptions;
 
-public class InvalidServerAddressException extends Exception{
+public class InvalidServerAddressException extends Exception {
 
-    public InvalidServerAddressException(){
+    public InvalidServerAddressException() {
         new Exception("Invalid Server Address").printStackTrace();
     }
 

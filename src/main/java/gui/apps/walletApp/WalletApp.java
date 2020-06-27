@@ -18,13 +18,13 @@ public class WalletApp extends App {
 
     JTabbedPane content = new JTabbedPane();
 
-    public WalletApp(Wallet wallet){
+    public WalletApp(Wallet wallet) {
         this.wallet = wallet;
 
         init();
     }
 
-    public WalletApp(WalletFile walletFile){
+    public WalletApp(WalletFile walletFile) {
         this.wallet = walletFile.getWallet();
         this.walletFile = walletFile;
 
@@ -41,9 +41,9 @@ public class WalletApp extends App {
         super.init();
         this.setLayout(new BorderLayout());
 
-        if(walletFile != null){
+        if (walletFile != null) {
             walletPane = new WalletPane(walletFile);
-        }else{
+        } else {
             walletPane = new WalletPane(wallet);
         }
         content.addTab("Wallet", walletPane);

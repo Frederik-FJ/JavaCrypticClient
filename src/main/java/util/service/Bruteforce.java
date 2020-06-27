@@ -5,14 +5,17 @@ import Exceptions.UnknownMicroserviceException;
 import information.Information;
 import items.Device;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Bruteforce extends Service{
+public class Bruteforce extends Service {
     public Bruteforce(String serviceUuid, Device device) {
         super(serviceUuid, device);
     }
 
-    public Bruteforce(Service service){
+    public Bruteforce(Service service) {
         super(service.serviceUuid, service.device);
     }
 
@@ -26,16 +29,16 @@ public class Bruteforce extends Service{
         return true;
     }
 
-    public boolean inAttack(){
-        try{
+    public boolean inAttack() {
+        try {
             status();
             return true;
-        }catch (InvalidServerResponseException ignore){
+        } catch (InvalidServerResponseException ignore) {
             return false;
         }
     }
 
-    public void attack(Device targetDevice, Service targetService) throws InvalidServerResponseException{
+    public void attack(Device targetDevice, Service targetService) throws InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("bruteforce", "attack");
         Map<String, String> data = new HashMap<>();
         data.put("service_uuid", this.serviceUuid);
@@ -59,7 +62,7 @@ public class Bruteforce extends Service{
         }
     }
 
-    public Map stop(){
+    public Map stop() {
         List<String> endpoint = Arrays.asList("bruteforce", "stop");
         try {
             return command(endpoint);

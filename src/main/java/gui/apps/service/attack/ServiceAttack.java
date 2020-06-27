@@ -14,7 +14,7 @@ public class ServiceAttack extends App {
 
     Device device;
 
-    public ServiceAttack(Device device){
+    public ServiceAttack(Device device) {
         super();
         this.device = device;
 
@@ -30,8 +30,8 @@ public class ServiceAttack extends App {
         super.init();
         this.setLayout(new BorderLayout());
 
-        for(Service s: Service.getServiceList(device)){
-            if(s.isAttackService()){
+        for (Service s : Service.getServiceList(device)) {
+            if (s.isAttackService()) {
                 AttackPane attackPane = new AttackPane(s, this);
                 content.addTab(s.getName(), attackPane);
             }

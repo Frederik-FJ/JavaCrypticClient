@@ -2,7 +2,7 @@ package util.service;
 
 import items.Device;
 
-public class UnknownService extends Service{
+public class UnknownService extends Service {
     public UnknownService(String serviceUuid, Device device) {
         super(serviceUuid, device);
     }

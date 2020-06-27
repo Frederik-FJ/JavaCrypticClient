@@ -1,8 +1,8 @@
 package Exceptions;
 
-public class AlreadyOwnAWalletException extends Exception{
+public class AlreadyOwnAWalletException extends Exception {
 
-    public AlreadyOwnAWalletException(){
+    public AlreadyOwnAWalletException() {
         new Exception("You already own a wallet").printStackTrace();
     }
 }

@@ -1,8 +1,8 @@
 package Exceptions;
 
-public class UnknownServiceException extends Exception{
+public class UnknownServiceException extends Exception {
 
-    public UnknownServiceException(){
+    public UnknownServiceException() {
         new Error("Unknown service ").printStackTrace();
     }
 }

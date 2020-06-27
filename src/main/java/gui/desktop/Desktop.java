@@ -13,7 +13,7 @@ public class Desktop extends JPanel {
 
     JFrame window;
 
-    public Desktop(JFrame window){
+    public Desktop(JFrame window) {
         this.window = window;
         this.setLayout(new BorderLayout());
 
@@ -21,7 +21,7 @@ public class Desktop extends JPanel {
 
     }
 
-    private void initComputer(){
+    private void initComputer() {
         taskbar = new Taskbar(pane);
         pane = new DesktopPane(this, taskbar);
         Information.Desktop = pane;
@@ -30,7 +30,7 @@ public class Desktop extends JPanel {
         this.add(taskbar, BorderLayout.WEST);
     }
 
-    public void connect(){
+    public void connect() {
         this.removeAll();
 
         repaint();
@@ -41,7 +41,7 @@ public class Desktop extends JPanel {
         this.revalidate();
     }
 
-    public void disconnect(){
+    public void disconnect() {
         this.removeAll();
         Information.Desktop = null;
 
@@ -50,8 +50,6 @@ public class Desktop extends JPanel {
 
         this.revalidate();
     }
-
-
 
 
 }

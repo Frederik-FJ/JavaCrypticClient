@@ -4,7 +4,7 @@ public class User {
 
     String uuid;
 
-    public User(String uuid){
+    public User(String uuid) {
         this.uuid = uuid;
     }
 
@@ -12,7 +12,7 @@ public class User {
         return uuid;
     }
 
-    public String getUserName(){
+    public String getUserName() {
         return "Anonym";
     }
 }

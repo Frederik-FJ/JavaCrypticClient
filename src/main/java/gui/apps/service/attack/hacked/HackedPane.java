@@ -1,7 +1,7 @@
 package gui.apps.service.attack.hacked;
 
-import items.Device;
 import gui.util.Panel;
+import items.Device;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,16 +12,16 @@ public class HackedPane extends JScrollPane {
 
     Panel panel = new Panel();
 
-    public HackedPane(){
+    public HackedPane() {
         init();
     }
 
-    private void init(){
+    private void init() {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         this.getVerticalScrollBar().setUnitIncrement(16);
 
         int y = 10;
-        for(Device d: Device.getHackedDevices()){
+        for (Device d : Device.getHackedDevices()) {
             HackedDevicePane devicePane = new HackedDevicePane(d);
             devicePane.setWidth(this.getWidth() - 30 - 20);
             devicePane.setLocation(30, y);
@@ -41,9 +41,9 @@ public class HackedPane extends JScrollPane {
         reload();
     }
 
-    private void reload(){
-        for(Component c : panel.getComponents()){
-            if(c instanceof HackedDevicePane){
+    private void reload() {
+        for (Component c : panel.getComponents()) {
+            if (c instanceof HackedDevicePane) {
                 HackedDevicePane pane = (HackedDevicePane) c;
                 pane.setWidth(this.getWidth() - 35);
             }

@@ -17,26 +17,38 @@ public class Wallet {
 
     User owner;
 
-    public Wallet(String uuid){
+    public Wallet(String uuid) {
         this.uuid = uuid;
     }
 
-    public Wallet(String uuid, String pw){
+    public Wallet(String uuid, String pw) {
         this.uuid = uuid;
         this.pw = pw;
+    }
+
+    public static List<Wallet> getWallets() throws UnknownMicroserviceException, InvalidServerResponseException {
+        List<String> endpoint = Collections.singletonList("list");
+        Map result = Information.webSocketClient.microservice("currency", endpoint, new HashMap<>());
+
+        List<Wallet> ret = new ArrayList<>();
+        // list wallets
+        for (String uuid : (List<String>) result.get("wallets")) {
+            ret.add(new Wallet(uuid));
+        }
+        return ret;
     }
 
     public void setPassword(String pw) {
         this.pw = pw;
     }
 
-    public double getMorphcoins()throws  InvalidWalletException {
+    public double getMorphcoins() throws InvalidWalletException {
 
-        if(pw == null){
+        if (pw == null) {
             throw new InvalidWalletException();
         }
 
-        if(uuid == null || uuid.length() < 32 || pw.length() != 10){
+        if (uuid == null || uuid.length() < 32 || pw.length() != 10) {
             return -1;
         }
 
@@ -46,17 +58,17 @@ public class Wallet {
 
         Map result;
 
-        try{
+        try {
             result = Information.webSocketClient.microservice("currency", Collections.singletonList("get"), data);
-        }catch (InvalidServerResponseException | UnknownMicroserviceException e){
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
             return -1;
         }
 
         owner = new User(result.get("user_uuid").toString());
 
-        try{
-            return ((double) result.get("amount"))/1000;
-        } catch (ClassCastException e){
+        try {
+            return ((double) result.get("amount")) / 1000;
+        } catch (ClassCastException e) {
             return -1;
         }
     }
@@ -68,7 +80,6 @@ public class Wallet {
         return Information.webSocketClient.microservice("service", endpoint, data);
     }
 
-
     public void stopMiners() throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("miner", "stop");
         Map<String, String> data = new HashMap<>();
@@ -77,7 +88,7 @@ public class Wallet {
     }
 
     public User getOwner() {
-        if(owner == null) {
+        if (owner == null) {
             try {
                 getMorphcoins();
             } catch (InvalidWalletException e) {
@@ -88,7 +99,7 @@ public class Wallet {
     }
 
     public void delete() throws InvalidWalletException, UnknownMicroserviceException, InvalidServerResponseException {
-        if(this.pw == null){
+        if (this.pw == null) {
             throw new InvalidWalletException();
         }
         List<String> endpoint = Collections.singletonList("delete");
@@ -106,7 +117,7 @@ public class Wallet {
     }
 
     public void send(int amount, Wallet destination, String cause) throws InvalidWalletException, UnknownMicroserviceException, InvalidServerResponseException {
-        if(pw == null){
+        if (pw == null) {
             throw new InvalidWalletException();
         }
         List<String> endpoint = Collections.singletonList("send");
@@ -118,19 +129,6 @@ public class Wallet {
         data.put("usage", cause);
         Information.webSocketClient.microservice("currency", endpoint, data);
     }
-
-    public static List<Wallet> getWallets() throws UnknownMicroserviceException, InvalidServerResponseException {
-        List<String> endpoint = Collections.singletonList("list");
-        Map result = Information.webSocketClient.microservice("currency", endpoint, new HashMap<>());
-
-        List<Wallet> ret = new ArrayList<>();
-        // list wallets
-        for(String uuid : (List<String>)result.get("wallets")){
-            ret.add(new Wallet(uuid));
-        }
-        return ret;
-    }
-
 
     public String getUuid() {
         return uuid;

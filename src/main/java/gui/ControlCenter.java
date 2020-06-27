@@ -7,7 +7,7 @@ import gui.desktop.Desktop;
 
 import javax.swing.*;
 
-public class ControlCenter extends JTabbedPane{
+public class ControlCenter extends JTabbedPane {
 
     Desktop desktop;
 
@@ -16,8 +16,7 @@ public class ControlCenter extends JTabbedPane{
     UserCategory userCategory;
 
 
-
-    public ControlCenter(Desktop desktop){
+    public ControlCenter(Desktop desktop) {
         this.desktop = desktop;
 
         computerCategory = new ComputerCategory(desktop);

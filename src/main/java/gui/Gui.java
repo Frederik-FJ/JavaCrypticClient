@@ -10,6 +10,7 @@ import information.Information;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -21,7 +22,7 @@ public class Gui extends JFrame {
     WebSocketClient webClient;
 
 
-    public Gui(){
+    public Gui() {
 
 
         setTitle("CrypticClient");
@@ -39,7 +40,7 @@ public class Gui extends JFrame {
             server = "wss://ws.test.cryptic-game.net";
         }
 
-        Information.client= new Client(server);
+        Information.client = new Client(server);
         webClient = Information.client.getClient();
 
         // new Thread wait for inputs in the console
@@ -52,7 +53,7 @@ public class Gui extends JFrame {
 
     }
 
-    public void initialize(){
+    public void initialize() {
 
         this.pane = getContentPane();
         pane.removeAll();
@@ -72,34 +73,36 @@ public class Gui extends JFrame {
         Information.server = server;
         Information.properties = new Properties();
         try {
-            Information.properties.load(new FileInputStream(Information.path + server + "Server.properties"));
+            final File file = new File(server + "Server.properties");
+            if (file.exists())
+                Information.properties.load(new FileInputStream(file));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(server.equalsIgnoreCase("main")){
+        if (server.equalsIgnoreCase("main")) {
             return "wss://ws.cryptic-game.net";
-        }else if(server.equalsIgnoreCase("test")){
+        } else if (server.equalsIgnoreCase("test")) {
             return "wss://ws.test.cryptic-game.net";
-        }else{
+        } else {
             throw new InvalidServerAddressException();
         }
     }
 
 
-    public void login(){
+    public void login() {
 
-        while(!Information.client.isOnline()){
+        while (!Information.client.isOnline()) {
             Thread.onSpinWait();
         }
 
         // load with data from properties
-        if(Information.properties.containsKey("uname") && Information.properties.containsKey("pw")){
-            try{
+        if (Information.properties.containsKey("uname") && Information.properties.containsKey("pw")) {
+            try {
                 Information.client.login(Information.properties.getProperty("uname"), Information.properties.getProperty("pw"));
                 return;
-            } catch (InvalidLoginException ignore){
+            } catch (InvalidLoginException ignore) {
 
-            } catch (InvalidServerResponseException e){
+            } catch (InvalidServerResponseException e) {
                 return;
             }
         }

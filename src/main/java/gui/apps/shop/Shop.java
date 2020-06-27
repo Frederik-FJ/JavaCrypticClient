@@ -4,8 +4,6 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
 import gui.App;
-import gui.apps.shop.ShopCategory;
-import gui.apps.shop.ShoppingCart;
 import information.Information;
 
 import javax.swing.*;
@@ -25,7 +23,7 @@ public class Shop extends App {
 
     Map<String, Map> outputMap;
 
-    public Shop(JDesktopPane window){
+    public Shop(JDesktopPane window) {
         this.window = window;
 
         this.width = 800;
@@ -36,7 +34,7 @@ public class Shop extends App {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent componentEvent) {
-                if(!componentEvent.paramString().equals("COMPONENT_RESIZED (0,0 800x600)")) ownRepaint();
+                if (!componentEvent.paramString().equals("COMPONENT_RESIZED (0,0 800x600)")) ownRepaint();
             }
         });
 
@@ -60,7 +58,7 @@ public class Shop extends App {
 
         Map ram = outputMap.get("RAM");
         ShopCategory ramCategory = new ShopCategory(this,
-                (Map<String, Map<String, Object>>) ram.get("categories"), (Map) ram.get("items"),shoppingCart, "ram" +
+                (Map<String, Map<String, Object>>) ram.get("categories"), (Map) ram.get("items"), shoppingCart, "ram" +
                 "");
 
         Map cpu = outputMap.get("Processor");
@@ -94,28 +92,28 @@ public class Shop extends App {
 
         this.outputMap = (Map<String, Map>) Information.client.getShopItems().get("categories");
         System.out.println(gson.toJson(outputMap));
-        for(String key : outputMap.keySet()){
+        for (String key : outputMap.keySet()) {
             Map<String, Map> category = outputMap.get(key);
             ret += "\n" + key + ":";
 
-            for(String item: (Set<String>) category.get("items").keySet()){
+            for (String item : (Set<String>) category.get("items").keySet()) {
                 ret += "\n\t" + item;
             }
-            for(String sub: (Set<String>) category.get("categories").keySet()){
+            for (String sub : (Set<String>) category.get("categories").keySet()) {
                 Map<String, Map> subcategory = (Map<String, Map>) category.get("categories").get(sub);
                 ret += "\n\t" + sub + ":";
-                for(String item: (Set<String>) subcategory.get("items").keySet()){
+                for (String item : (Set<String>) subcategory.get("items").keySet()) {
                     ret += "\n\t\t" + item;
                 }
             }
         }
         //System.out.println(ret + "test");
-        outputString =  ret;
+        outputString = ret;
     }
 
     @Override
     public void handleCommand(String command) {
-        if(command.equals("list") || command.equals("reload")){
+        if (command.equals("list") || command.equals("reload")) {
             try {
                 getItems();
             } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
@@ -125,9 +123,9 @@ public class Shop extends App {
     }
 
 
-    public void ownRepaint(){
-        for(Component c: tabbedPane.getComponents()){
-            if(c instanceof  ShopCategory){
+    public void ownRepaint() {
+        for (Component c : tabbedPane.getComponents()) {
+            if (c instanceof ShopCategory) {
                 ((ShopCategory) c).ownRepaint();
             }
         }

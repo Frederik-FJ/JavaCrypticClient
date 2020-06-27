@@ -27,21 +27,21 @@ public class PortscanAttackPane extends AttackPane {
         init();
     }
 
-    private void init(){
+    private void init() {
         this.setLayout(null);
 
         title = new JLabel(service.getName().toUpperCase());
         title.setSize(100, 20);
-        title.setLocation(relativeWidth(50) - title.getWidth()/2, 10);
+        title.setLocation(relativeWidth(50) - title.getWidth() / 2, 10);
         this.add(title);
 
         deviceUuid = new JTextField("Device UUID");
-        deviceUuid.setSize(deviceUuid.getText().length()*9, 20);
+        deviceUuid.setSize(deviceUuid.getText().length() * 9, 20);
         deviceUuid.setLocation(relativeWidth(10), 40);
         this.add(deviceUuid);
 
         activate = new JButton("run");
-        activate.setSize(activate.getText().length()*10 + 20, 20);
+        activate.setSize(activate.getText().length() * 10 + 20, 20);
         activate.setLocation(deviceUuid.getX() + deviceUuid.getWidth() + relativeWidth(10), 40);
         activate.addActionListener(actionEvent -> run());
         this.add(activate);
@@ -56,12 +56,12 @@ public class PortscanAttackPane extends AttackPane {
         ports.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                for(Component c: ports.getComponents()){
-                    if(c instanceof ServicePane){
+                for (Component c : ports.getComponents()) {
+                    if (c instanceof ServicePane) {
                         ((ServicePane) c).setWidth(PortscanAttackPane.this.getWidth() - 15);
                     }
-                    if(c instanceof JLabel){
-                        c.setLocation(relativeWidth(50) - c.getWidth()/2, c.getY());
+                    if (c instanceof JLabel) {
+                        c.setLocation(relativeWidth(50) - c.getWidth() / 2, c.getY());
                     }
                     ports.revalidate();
                     ports.repaint();
@@ -72,10 +72,10 @@ public class PortscanAttackPane extends AttackPane {
         reload();
     }
 
-    private void reload(){
+    private void reload() {
 
-        title.setLocation(relativeWidth(50) - title.getWidth()/2, 10);
-        deviceUuid.setSize(deviceUuid.getText().length()*9, 20);
+        title.setLocation(relativeWidth(50) - title.getWidth() / 2, 10);
+        deviceUuid.setSize(deviceUuid.getText().length() * 9, 20);
         deviceUuid.setLocation(relativeWidth(10), 40);
         activate.setLocation(deviceUuid.getX() + deviceUuid.getWidth() + relativeWidth(10), 40);
 
@@ -86,21 +86,21 @@ public class PortscanAttackPane extends AttackPane {
         this.repaint();
     }
 
-    private void run(){
-        for(Component c: ports.getComponents()){
-            if(c instanceof JLabel || c instanceof  ServicePane){
+    private void run() {
+        for (Component c : ports.getComponents()) {
+            if (c instanceof JLabel || c instanceof ServicePane) {
                 ports.remove(c);
             }
         }
         ports.setLayout(null);
 
         JLabel deviceLabel = new JLabel(new Device(deviceUuid.getText()).getName());
-        deviceLabel.setSize(deviceLabel.getText().length()*9, 20);
-        deviceLabel.setLocation(relativeWidth(50)-deviceLabel.getWidth()/2, 0);
+        deviceLabel.setSize(deviceLabel.getText().length() * 9, 20);
+        deviceLabel.setLocation(relativeWidth(50) - deviceLabel.getWidth() / 2, 0);
         ports.add(deviceLabel);
 
         int y = 30;
-        for(Service s: portscan.run(new Device(deviceUuid.getText()))){
+        for (Service s : portscan.run(new Device(deviceUuid.getText()))) {
             ServicePane pane = new ServicePane(s);
             pane.add(new JLabel(s.getRunningPort() + "-->"), BorderLayout.WEST);
             pane.setSize(ports.getWidth() - 15, 30);

@@ -9,7 +9,7 @@ import util.file.File;
 import javax.swing.*;
 import java.awt.*;
 
-public class FilePane extends JPanel{
+public class FilePane extends JPanel {
 
     File file;
 
@@ -22,7 +22,7 @@ public class FilePane extends JPanel{
     JLabel nameContainer;
     JLabel sizeContainer;
 
-    public FilePane(File file){
+    public FilePane(File file) {
         this.file = file;
 
         load();
@@ -30,7 +30,7 @@ public class FilePane extends JPanel{
         init();
     }
 
-    public FilePane(File file, String name){
+    public FilePane(File file, String name) {
         this.file = file;
 
         this.isDirectory = file.isDirectory();
@@ -38,18 +38,18 @@ public class FilePane extends JPanel{
         init();
     }
 
-    public void load(){
+    public void load() {
         this.isDirectory = file.isDirectory();
         this.name = file.getName();
     }
 
-    private void init(){
+    private void init() {
         this.setLayout(new BorderLayout());
         this.setHeight(30);
 
-        if(isDirectory){
+        if (isDirectory) {
             this.icon = Information.dirIcon;
-        }else {
+        } else {
             this.icon = Information.fileIcon;
         }
 
@@ -57,14 +57,14 @@ public class FilePane extends JPanel{
         nameContainer = new JLabel(name);
 
 
-        if(isDirectory){
+        if (isDirectory) {
             try {
                 sizeContainer = new JLabel(file.getFiles().size() + " Files");
             } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException e) {
                 e.printStackTrace();
             }
-        }else {
-            sizeContainer = new JLabel(file.getContent().length()+ " byte");
+        } else {
+            sizeContainer = new JLabel(file.getContent().length() + " byte");
         }
 
 
@@ -73,19 +73,19 @@ public class FilePane extends JPanel{
         this.add(sizeContainer, BorderLayout.EAST);
     }
 
-    public void setWidth(int width){
+    public void setWidth(int width) {
         this.setSize(width, this.getHeight());
     }
 
-    public void setHeight(int height){
+    public void setHeight(int height) {
         this.setSize(this.getWidth(), height);
     }
 
-    public void setFileName(String name){
+    public void setFileName(String name) {
         this.name = name;
     }
 
-    public File getFile(){
+    public File getFile() {
         return file;
     }
 

@@ -17,15 +17,15 @@ public class InappFileManager extends FileManager {
         super(null, device);
 
         submit = new JButton("ok");
-        submit.setLocation(this.getWidth() - 70, this.getHeight()- 30);
+        submit.setLocation(this.getWidth() - 70, this.getHeight() - 30);
         submit.setSize(40, 20);
-        submit.addActionListener(actionEvent -> submitted=true);
+        submit.addActionListener(actionEvent -> submitted = true);
 
         this.add(submit);
     }
 
 
-    public File getChoseFile(){
+    public File getChoseFile() {
         return choseFile;
     }
 

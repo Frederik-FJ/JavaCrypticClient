@@ -18,24 +18,56 @@ public class File {
 
     String name = null;
 
-    public File(String uuid, String parentDirUuid, boolean isDirectory, Device device){
-        this.isDirectory  = isDirectory;
+    public File(String uuid, String parentDirUuid, boolean isDirectory, Device device) {
+        this.isDirectory = isDirectory;
         this.uuid = uuid;
         this.parentDirUuid = parentDirUuid;
         this.device = device;
     }
 
-    private File(String uuid, String parentDirUuid, boolean isDirectory, Device device, String name){
+    private File(String uuid, String parentDirUuid, boolean isDirectory, Device device, String name) {
         this(uuid, parentDirUuid, isDirectory, device);
         this.name = name;
+    }
+
+    private static File create(Device device, String filename, String content, String parentDirUuid, boolean isDirectory) throws UnknownMicroserviceException, InvalidServerResponseException {
+        List<String> endpoint = Arrays.asList("file", "create");
+        Map<String, Object> data = new HashMap<>();
+        data.put("device_uuid", device.getUuid());
+        data.put("filename", filename);
+        data.put("content", content);
+        data.put("parent_dir_uuid", parentDirUuid);
+        data.put("is_directory", isDirectory);
+        Map result = Information.webSocketClient.microservice("device", endpoint, data);
+        return new File(result.get("uuid").toString(), (String) result.get("parent_dir_uuid"), (boolean) result.get("is_directory"), new Device(result.get("device").toString()));
+    }
+
+    public static File createFile(String filename, String content, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
+        return create(device, filename, content, parentDirUuid, false);
+    }
+
+    public static File createDirectory(String name, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
+        return create(device, name, "", parentDirUuid, true);
+    }
+
+    public static File getParentDir(File f) throws UnknownMicroserviceException, InvalidServerResponseException {
+        if (f.getParentDirUuid() == null || f.getParentDirUuid().equals("")) {
+            return f.device.getRootDirectory();
+        }
+        List<String> endpoint = Arrays.asList("file", "info");
+        Map<String, String> data = new HashMap<>();
+        data.put("file_uuid", f.parentDirUuid);
+        data.put("device_uuid", f.device.getUuid());
+        Map result = Information.webSocketClient.microservice("device", endpoint, data);
+        return new File(result.get("uuid").toString(), (String) result.get("parent_dir_uuid"), true, f.device);
     }
 
     public String getParentDirUuid() {
         return parentDirUuid;
     }
 
-    public File getParentDir(){
-        if(this.getParentDirUuid() == null || this.getParentDirUuid().equals("")){
+    public File getParentDir() {
+        if (this.getParentDirUuid() == null || this.getParentDirUuid().equals("")) {
             return this.device.getRootDirectory();
         }
         List<String> endpoint = Arrays.asList("file", "info");
@@ -68,8 +100,8 @@ public class File {
         return Information.webSocketClient.microservice("device", endpoint, data);
     }
 
-    public String getName(){
-        if(name == null) {
+    public String getName() {
+        if (name == null) {
             try {
                 this.name = getInfo().get("filename").toString();
             } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
@@ -79,7 +111,7 @@ public class File {
         return name;
     }
 
-    public String getContent(){
+    public String getContent() {
         try {
             return this.getInfo().get("content").toString();
         } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
@@ -88,15 +120,24 @@ public class File {
         return null;
     }
 
+    public void setContent(String newContent) throws UnknownMicroserviceException, InvalidServerResponseException {
+        List<String> endpoint = Arrays.asList("file", "update");
+        Map<String, String> data = new HashMap<>();
+        data.put("device_uuid", this.device.getUuid());
+        data.put("file_uuid", this.uuid);
+        data.put("content", newContent);
+        Information.webSocketClient.microservice("device", endpoint, data);
+    }
+
     public List<File> getFiles() throws UnknownMicroserviceException, InvalidServerResponseException, NoDirectoryException {
-        if(!isDirectory) throw new NoDirectoryException(this);
+        if (!isDirectory) throw new NoDirectoryException(this);
         List<String> endpoint = Arrays.asList("file", "all");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", device.getUuid());
         data.put("parent_dir_uuid", this.uuid);
-        Map result =  Information.webSocketClient.microservice("device", endpoint, data);
+        Map result = Information.webSocketClient.microservice("device", endpoint, data);
         List<File> fileList = new ArrayList<>();
-        for(Map<String, Object> m: (List<Map<String, Object>>)result.get("files")){
+        for (Map<String, Object> m : (List<Map<String, Object>>) result.get("files")) {
             File f = new File(m.get("uuid").toString(),
                     (String) m.get("parent_dir_uuid"),
                     (boolean) m.get("is_directory"),
@@ -126,15 +167,6 @@ public class File {
         this.move(newParentDirUuid, this.getName());
     }
 
-    public void setContent(String newContent) throws UnknownMicroserviceException, InvalidServerResponseException {
-        List<String> endpoint = Arrays.asList("file", "update");
-        Map<String, String> data = new HashMap<>();
-        data.put("device_uuid", this.device.getUuid());
-        data.put("file_uuid", this.uuid);
-        data.put("content", newContent);
-        Information.webSocketClient.microservice("device", endpoint, data);
-    }
-
     public void delete() throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("file", "delete");
         Map<String, String> data = new HashMap<>();
@@ -143,49 +175,13 @@ public class File {
         Information.webSocketClient.microservice("device", endpoint, data);
     }
 
-    public Path getPath(){
+    public Path getPath() {
         Path p = new Path(device);
         p.setPath(this);
         return p;
     }
 
-
-
-
-
-    private static File create(Device device, String filename, String content, String parentDirUuid, boolean isDirectory) throws UnknownMicroserviceException, InvalidServerResponseException {
-        List<String> endpoint = Arrays.asList("file", "create");
-        Map<String, Object> data = new HashMap<>();
-        data.put("device_uuid", device.getUuid());
-        data.put("filename", filename);
-        data.put("content", content);
-        data.put("parent_dir_uuid", parentDirUuid);
-        data.put("is_directory", isDirectory);
-        Map result = Information.webSocketClient.microservice("device", endpoint, data);
-        return new File(result.get("uuid").toString(), (String) result.get("parent_dir_uuid"), (boolean) result.get("is_directory"), new Device(result.get("device").toString()));
-    }
-
-    public static File createFile(String filename, String content, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
-        return create(device, filename, content, parentDirUuid, false);
-    }
-
-    public static File createDirectory(String name, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
-        return create(device, name, "", parentDirUuid, true);
-    }
-
-    public static File getParentDir(File f) throws UnknownMicroserviceException, InvalidServerResponseException {
-        if(f.getParentDirUuid() == null || f.getParentDirUuid().equals("")){
-            return f.device.getRootDirectory();
-        }
-        List<String> endpoint = Arrays.asList("file", "info");
-        Map<String, String> data = new HashMap<>();
-        data.put("file_uuid", f.parentDirUuid);
-        data.put("device_uuid", f.device.getUuid());
-        Map result =  Information.webSocketClient.microservice("device", endpoint, data);
-        return new File(result.get("uuid").toString(), (String) result.get("parent_dir_uuid"), true, f.device);
-    }
-
-    public ExecutionFile toExecutionFile(){
+    public ExecutionFile toExecutionFile() {
         return new ExecutionFile(this);
     }
 }
