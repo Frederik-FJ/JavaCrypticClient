@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FilePathPane extends Panel {
 
     File file;
@@ -20,10 +23,24 @@ public class FilePathPane extends Panel {
     JButton open;
     JLabel pathName;
 
+    boolean openParentDir = false;
+
+    boolean fileChanging = false;
+
+    List<FileChangeListener> fileChangeListener = new ArrayList<>();
+
     public FilePathPane(File file) {
         this.file = file;
         this.path = file.getPath();
         init();
+    }
+
+    public void openAsParentDir(boolean openParentDir) {
+        this.openParentDir = openParentDir;
+    }
+
+    public void setFileChanging(boolean fileChanging) {
+        this.fileChanging = fileChanging;
     }
 
     public FilePathPane(Path path) {
@@ -53,6 +70,15 @@ public class FilePathPane extends Panel {
     }
 
     private void open() {
+        if (openParentDir){
+            try {
+                FileManager fileManager = new FileManager(new DirectoryPath(path.getCurrentFile().getParentDir()));
+                Information.Desktop.startFileManager(fileManager);
+            } catch (NoDirectoryException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
         if (file.isDirectory()) {
             FileManager fileManager;
             try {
@@ -60,7 +86,6 @@ public class FilePathPane extends Panel {
                 Information.Desktop.startFileManager(fileManager);
             } catch (NoDirectoryException e) {
                 e.printStackTrace();
-                JOptionPane.showInternalMessageDialog(Information.Desktop, "Error with the connection to the server");
             }
         } else {
             Information.Desktop.startTextEditor(file);
@@ -87,7 +112,37 @@ public class FilePathPane extends Panel {
             popupMenu.add(openDir);
         }
 
+        popupMenu.addSeparator();
+
+        if (fileChanging) {
+            JMenuItem changeFile = new JMenuItem("change file");
+            changeFile.addActionListener(actionEvent -> changeFile());
+            popupMenu.add(changeFile);
+        }
+
+
+
 
         return popupMenu;
+    }
+
+    private void changeFile() {
+        for (FileChangeListener l: fileChangeListener) {
+            l.beforeFileChanging();
+        }
+        //TODO option for changing the file
+
+        for (FileChangeListener l: fileChangeListener) {
+            l.onFileChanged();
+        }
+    }
+
+    public void addFileChangeListener(FileChangeListener fileChangeListener) {
+        this.fileChangeListener.add(fileChangeListener);
+    }
+
+    public static abstract class FileChangeListener {
+        public abstract void onFileChanged();
+        public abstract void beforeFileChanging();
     }
 }

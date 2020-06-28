@@ -66,6 +66,10 @@ public class File {
         return parentDirUuid;
     }
 
+    public Device getDevice() {
+        return device;
+    }
+
     public File getParentDir() {
         if (this.getParentDirUuid() == null || this.getParentDirUuid().equals("")) {
             return this.device.getRootDirectory();

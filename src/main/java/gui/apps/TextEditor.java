@@ -21,6 +21,8 @@ public class TextEditor extends App {
     JTextArea textArea;
     JMenuBar menuBar;
 
+    JLabel chars;
+
     File file;
     FilePathPane filePath;
 
@@ -30,7 +32,8 @@ public class TextEditor extends App {
     public TextEditor(File file, DesktopPane pane) {
         this.file = file;
         this.pane = pane;
-        filePath = new FilePathPane(file.getParentDir());
+        filePath = new FilePathPane(file);
+        filePath.openAsParentDir(true);
 
         this.width = 400;
         this.height = 300;
@@ -111,9 +114,12 @@ public class TextEditor extends App {
         textArea.setLineWrap(true);
         textArea.setCursor(new Cursor(Cursor.TEXT_CURSOR));
 
-        this.add(textArea, BorderLayout.CENTER);
+        chars = new JLabel();
+        chars.setText(file.getContent().length() + " / 255");
 
+        this.add(textArea, BorderLayout.CENTER);
         this.add(filePath, BorderLayout.NORTH);
+        this.add(chars, BorderLayout.SOUTH);
 
         // Add Key-Listener for Strg+S
         textArea.addKeyListener(new KeyAdapter() {
@@ -122,6 +128,11 @@ public class TextEditor extends App {
                 if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_S) {
                     TextEditor.this.save();
                 }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                chars.setText(textArea.getText().length() + " / 255");
             }
         });
 

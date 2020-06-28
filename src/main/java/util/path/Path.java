@@ -26,6 +26,12 @@ public class Path {
         this.pwd = path.pwd;
     }
 
+    public Path(File file) {
+        this(file.getDevice());
+        this.currentFile = file;
+        updatePwd();
+    }
+
     public Device getDevice() {
         return device;
     }

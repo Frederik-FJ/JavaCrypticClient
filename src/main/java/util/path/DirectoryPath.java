@@ -30,6 +30,17 @@ public class DirectoryPath extends Path {
         super(path);
     }
 
+    public DirectoryPath(File file) throws NoDirectoryException {
+        super(file);
+        if(!file.isDirectory()){
+            try {
+                throw new NoDirectoryException(file);
+            } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void setDirectory(File f) throws NoDirectoryException {
         if (!f.isDirectory()) {
             try {
