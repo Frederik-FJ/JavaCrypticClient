@@ -105,6 +105,9 @@ public class File {
     }
 
     public String getName() {
+        if(uuid == null){
+            return null;
+        }
         if (name == null) {
             try {
                 this.name = getInfo().get("filename").toString();

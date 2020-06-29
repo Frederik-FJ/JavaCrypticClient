@@ -48,8 +48,8 @@ public class DirectoryPath extends Path {
             } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
                 e.printStackTrace();
             }
-            super.setPath(f);
         }
+        super.setPath(f);
     }
 
     @Deprecated

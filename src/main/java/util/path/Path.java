@@ -6,6 +6,7 @@ import items.Device;
 import util.file.File;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Path {
@@ -13,6 +14,8 @@ public class Path {
     protected final Device device;
     protected File currentFile;
     protected String pwd = "/";
+
+    List<PathChangeListener> pathChangeListeners = new ArrayList<>();
 
 
     public Path(Device device) {
@@ -50,6 +53,9 @@ public class Path {
     public void updatePwd() {
         if (currentFile.getUuid() == null) {
             pwd = "/";
+            for(PathChangeListener p: pathChangeListeners){
+                p.onPathChanged();
+            }
             return;
         }
         List<File> dirs = new ArrayList<>();
@@ -71,9 +77,30 @@ public class Path {
             if (currentFile.isDirectory()) {
                 pwd += "/";
             }
+            for(PathChangeListener p: pathChangeListeners){
+                p.onPathChanged();
+            }
         } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
             e.printStackTrace();
         }
+    }
+
+    public  List<File> getPathFiles(){
+        List<File> dirs = new ArrayList<>();
+        dirs.add(currentFile);
+        File dir = currentFile;
+        try {
+            while ((dir = File.getParentDir(dir)).getUuid() != null) {
+                dirs.add(dir);
+            }
+            if(currentFile.getUuid() != null){
+                dirs.add(dir);
+            }
+        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
+            e.printStackTrace();
+        }
+        Collections.reverse(dirs);
+        return dirs;
     }
 
     public String getPwd() {
@@ -82,6 +109,14 @@ public class Path {
 
     public File getCurrentFile() {
         return currentFile;
+    }
+
+    public void addPathChangeListener(PathChangeListener pathChangeListener) {
+        this.pathChangeListeners.add(pathChangeListener);
+    }
+
+    public static abstract class PathChangeListener {
+        public abstract void onPathChanged();
     }
 
 

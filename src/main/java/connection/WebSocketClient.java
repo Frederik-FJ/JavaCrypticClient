@@ -90,12 +90,7 @@ public class WebSocketClient {
 
     public Map request(Map command, boolean noResponse) {
 
-        GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
-        String tag = "";
-        if (command.get("ms") != null)
-            tag = command.get("tag").toString();
-        Gson gson = gsonBuilder.create();
-        Map result;
+        Gson gson = new GsonBuilder().serializeNulls().create();
         this.response = false;
 
         //waiting for free connection
@@ -141,7 +136,7 @@ public class WebSocketClient {
 
     public Map microservice(String ms, List<String> endpoint, Map data) throws InvalidServerResponseException, UnknownMicroserviceException {
 
-        Gson gson = new Gson();
+
 
         Map<String, Object> req = new HashMap<>();
         req.put("ms", ms);
@@ -155,7 +150,7 @@ public class WebSocketClient {
             if (error.equals("unknown microservice")) {
                 throw new UnknownMicroserviceException(ms);
             }
-            throw new InvalidServerResponseException(response);
+            throw new InvalidServerResponseException(req, response);
         }
 
 		/*if(!response.containsKey("response")){
@@ -166,7 +161,7 @@ public class WebSocketClient {
         Map dats = (Map) response.get("data");
         if (dats.containsKey("error")) {
             //TODO richtigen Fehler suchen und diesen werfen
-            throw new InvalidServerResponseException(response);
+            throw new InvalidServerResponseException(req, response);
         }
         return dats;
 
