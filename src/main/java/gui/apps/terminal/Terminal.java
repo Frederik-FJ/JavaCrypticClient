@@ -4,6 +4,7 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
+import gui.apps.fileManager.FileManager;
 import information.Information;
 import items.Device;
 import util.file.File;
@@ -11,6 +12,7 @@ import util.file.WalletFile;
 import util.path.DirectoryPath;
 
 import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyVetoException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -109,7 +111,12 @@ public class Terminal extends App {
 
         // open programs
         if (fileManager) {
-            Information.Desktop.startFileManager(device);
+            FileManager f = Information.Desktop.startFileManager(device);
+
+            // loading the app
+            Dimension d = f.getSize();
+            f.setSize(1, 1);
+            f.setSize(d);
             return "starting fileManager";
         }
 

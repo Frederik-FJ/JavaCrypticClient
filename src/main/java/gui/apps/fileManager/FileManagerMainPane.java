@@ -14,7 +14,6 @@ import java.awt.event.*;
 
 public class FileManagerMainPane extends Panel {
 
-    JLabel pwd;
     DirectoryPath directoryPath;
 
 
@@ -24,21 +23,8 @@ public class FileManagerMainPane extends Panel {
     }
 
 
-
-    public void setPath(File f) throws NoDirectoryException {
-        try {
-            dirAction(f);
-        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
-            e.printStackTrace();
-        }
-    }
-
     protected void init() {
         this.setLayout(null);
-
-        pwd = new JLabel("/Hier/ist/der/Pfad");
-        pwd.setLocation(10, 10);
-        this.add(pwd);
 
         try {
             loadDirectory(directoryPath.getCurrentFile());
@@ -86,11 +72,25 @@ public class FileManagerMainPane extends Panel {
     }
 
     /**
+     *
+     * @param file  THe directory to go into
+     * @throws NoDirectoryException  If the file isn't a directory
+     */
+    public void setPath(File file) throws NoDirectoryException {
+        try {
+            dirAction(file);
+        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Loads the files and dirs of a dir into the file-Manager
      *
      * @param dir the dir from which the dirs/files should be loaded
      */
     private void loadDirectory(File dir) throws UnknownMicroserviceException, InvalidServerResponseException, NoDirectoryException {
+        //removing all file all filePane
         for (Component c : this.getComponents()) {
             if (c instanceof FilePane) {
                 this.remove(c);
@@ -100,7 +100,7 @@ public class FileManagerMainPane extends Panel {
         int y = 10;
 
 
-        // Verzeichnis mit dem Namen .. um zum vorherigen Ordner zurück zu kommen
+        // Directory .. to go back
         if (dir.getUuid() != null) {
             FilePane filePane = new FilePane(File.getParentDir(dir), "..");
             filePane.setWidth(this.getWidth() - 30);
@@ -123,53 +123,44 @@ public class FileManagerMainPane extends Panel {
             this.add(filePane);
         }
 
-        // Verzeichnisse aus dem Pfad
+        // files in that directory
         for (File f : dir.getFiles()) {
             FilePane filePane = new FilePane(f);
             filePane.setWidth(this.getWidth() - 30);
-            if (f.isDirectory()) {
-                filePane.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON1) {
-                            try {
+
+            filePane.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    //left-click
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        try {
+                            if (f.isDirectory())
                                 dirAction(f);
-                            } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException unknownMicroserviceException) {
-                                unknownMicroserviceException.printStackTrace();
-                            }
-                        }
-                        if (e.getButton() == MouseEvent.BUTTON3) {
-                            JPopupMenu menu = dirPopupMenu(f);
-                            menu.show(e.getComponent(), e.getX(), e.getY());
+                            else
+                                fileAction(f);
+                        } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException unknownMicroserviceException) {
+                            unknownMicroserviceException.printStackTrace();
                         }
                     }
-                });
-            } else {
-                filePane.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON1) {
-                            fileAction(f);
-                            filePane.setBackground(new Color(0x777777));
-                        }
-                        if (e.getButton() == MouseEvent.BUTTON3) {
-                            JPopupMenu menu = filePopupMenu(f);
-                            menu.show(e.getComponent(), e.getX(), e.getY());
-                        }
+
+                    //right-click
+                    if (e.getButton() == MouseEvent.BUTTON3) {
+
+                        JPopupMenu menu;
+                        if (f.isDirectory())
+                            menu = dirPopupMenu(f);
+                        else
+                            menu = filePopupMenu(f);
+                        menu.show(e.getComponent(), e.getX(), e.getY());
                     }
-                });
-            }
+                }
+            });
+
             filePane.setLocation(15, y);
             y += 30;
             this.add(filePane);
         }
         reload();
-        Dimension d = this.getSize();
-        this.setSize(1, 1);
-        this.setSize(d);
-        pwd.setText(directoryPath.getPwd());
-        pwd.repaint();
-
     }
 
     /**
@@ -255,8 +246,8 @@ public class FileManagerMainPane extends Panel {
         JMenuItem rename = new JMenuItem("rename");
         rename.addActionListener(actionEvent -> {
             try {
-                String newName = (String) JOptionPane.showInternalInputDialog(Information.Desktop, "New Name", null,
-                        JOptionPane.PLAIN_MESSAGE, null, null, f.getName());
+                String newName = (String) JOptionPane.showInternalInputDialog(Information.Desktop, "New Name",
+                                null, JOptionPane.PLAIN_MESSAGE, null, null, f.getName());
                 f.rename(newName);
                 loadDirectory(directoryPath.getCurrentFile());
             } catch (InvalidServerResponseException | UnknownMicroserviceException | NoDirectoryException e) {
@@ -268,7 +259,7 @@ public class FileManagerMainPane extends Panel {
         JMenuItem delete = new JMenuItem("delete");
         delete.addActionListener(actionEvent -> {
             int result = JOptionPane.showInternalConfirmDialog(Information.Desktop,
-                    "Should this " + type + " really be deleted?", null, JOptionPane.YES_NO_OPTION);
+                        "Should this " + type + " really be deleted?", null, JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 try {
                     f.delete();
@@ -283,7 +274,9 @@ public class FileManagerMainPane extends Panel {
         return popupMenu;
     }
 
-
+    /**
+     * Popup-Menu for right-clicking empty space in the fileManager
+     */
     protected JPopupMenu popupMenu() {
         JPopupMenu popupMenu = new JPopupMenu();
 

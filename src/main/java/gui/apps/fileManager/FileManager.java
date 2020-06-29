@@ -2,7 +2,6 @@ package gui.apps.fileManager;
 
 import Exceptions.NoDirectoryException;
 import gui.App;
-import gui.desktop.DesktopPane;
 import items.Device;
 import util.file.File;
 import util.path.DirectoryPath;
@@ -18,11 +17,6 @@ public class FileManager extends App {
     FileManagerMainPane mainPane;
     PathPane pathPane;
 
-
-    @Deprecated
-    public FileManager(DesktopPane window, Device device) {
-        this(device);
-    }
 
     public FileManager(Device device) {
         this.device = device;

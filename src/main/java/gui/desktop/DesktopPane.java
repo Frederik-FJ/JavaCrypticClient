@@ -209,9 +209,10 @@ public class DesktopPane extends JDesktopPane {
         startApp(shop, shopIcon);
     }
 
-    public void startFileManager(Device device) {
-        FileManager fileManager = new FileManager(this, device);
+    public FileManager startFileManager(Device device) {
+        FileManager fileManager = new FileManager(device);
         startApp(fileManager, fileManagerIcon);
+        return fileManager;
     }
 
     public void startFileManager(FileManager fileManger) {
