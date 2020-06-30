@@ -2,7 +2,9 @@ package util.file;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
+import Exceptions.file.UnknownFileSourceException;
 import Exceptions.UnknownMicroserviceException;
+import com.google.gson.Gson;
 import information.Information;
 import items.Device;
 import util.path.Path;
@@ -46,8 +48,42 @@ public class File {
         return create(device, filename, content, parentDirUuid, false);
     }
 
+    public static File createFile(String filename, String content, Path path, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
+        return create(device, filename, content, path.getCurrentFile().getUuid(), false);
+    }
+
     public static File createDirectory(String name, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
         return create(device, name, "", parentDirUuid, true);
+    }
+
+    public static File getFileByUuid(String uuid, Device device) throws UnknownFileSourceException {
+        Gson gson = new Gson();
+        List<String> endpoint = Arrays.asList("file", "info");
+        Map<String, String> data = new HashMap<>();
+        data.put("file_uuid", uuid);
+        data.put("device_uuid", device.getUuid());
+        try {
+            Map response = Information.webSocketClient.microservice("device", endpoint, data);
+            String parentDir;
+            try {
+                parentDir = response.get("parent_dir_uuid").toString();
+            } catch (NullPointerException e) {
+                parentDir = null;
+            }
+            return new File(response.get("uuid").toString(),
+                    parentDir,
+                    (boolean) response.get("is_directory"),
+                    new Device(response.get("device").toString()),
+                    response.get("filename").toString());
+        } catch (InvalidServerResponseException e) {
+            if(gson.toJson(e.getResponse()).contains("file_not_found")){
+                throw new UnknownFileSourceException(uuid);
+            }
+            e.printStackTrace();
+        } catch (UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static File getParentDir(File f) throws UnknownMicroserviceException, InvalidServerResponseException {

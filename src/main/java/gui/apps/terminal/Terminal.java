@@ -3,8 +3,11 @@ package gui.apps.terminal;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
+import Exceptions.file.MissingFileException;
+import Exceptions.file.UnknownFileSourceException;
 import gui.App;
 import gui.apps.fileManager.FileManager;
+import gui.apps.walletApp.WalletApp;
 import information.Information;
 import items.Device;
 import util.file.File;
@@ -141,10 +144,20 @@ public class Terminal extends App {
         }
 
         if (walletApp) {
-            WalletFile walletFile;
+            if (params.length == 1) {
+                try {
+                    WalletApp w = new WalletApp(this.device);
+                    Information.Desktop.startApp(w, null);
+                    return "starting Wallet-App";
+                } catch (UnknownFileSourceException | MissingFileException e) {
+                    e.printStackTrace();
+                    return e.getMessage();
+                }
+            }
+
             try {
-                walletFile = new WalletFile(Objects.requireNonNull(this.getFileFromPath(command.split(" ")[1])));
-                Information.Desktop.startWalletApp(walletFile.getWallet());
+                WalletFile walletFile = new WalletFile(Objects.requireNonNull(this.getFileFromPath(command.split(" ")[1])));
+                Information.Desktop.startWalletApp(walletFile);
                 return "starting Wallet-App";
             } catch (NullPointerException e) {
                 e.printStackTrace();

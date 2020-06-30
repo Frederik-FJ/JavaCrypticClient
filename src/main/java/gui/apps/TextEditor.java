@@ -32,19 +32,21 @@ public class TextEditor extends App {
     public TextEditor(File file, DesktopPane pane) {
         this.file = file;
         this.pane = pane;
-        filePath = new FilePathPane(file);
-        filePath.openAsParentDir(true);
 
         this.width = 400;
         this.height = 300;
         title = "TextEditor";
-        title = "TextEditor - " + file.getName();
 
         init();
     }
 
     @Override
     protected void init() {
+
+        filePath = new FilePathPane(file);
+        filePath.openAsParentDir(true);
+        title = "TextEditor - " + file.getName();
+
         super.init();
         this.setLayout(new BorderLayout());
 
@@ -68,7 +70,6 @@ public class TextEditor extends App {
         JMenu fileMenu = new JMenu("File");
 
         JMenuItem save = new JMenuItem("save");
-        //JMenuItem saveAs = new JMenuItem("save as");
         JMenuItem rename = new JMenuItem("rename");
         JMenuItem delete = new JMenuItem("delete");
 
@@ -99,7 +100,6 @@ public class TextEditor extends App {
 
         // Add the Items to the JMenuBar
         fileMenu.add(save);
-        //fileMenu.add(saveAs);
         fileMenu.addSeparator();
         fileMenu.add(rename);
         fileMenu.add(delete);

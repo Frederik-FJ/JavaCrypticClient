@@ -1,6 +1,8 @@
 package gui.desktop;
 
 import Exceptions.InvalidServerResponseException;
+import Exceptions.file.MissingFileException;
+import Exceptions.file.UnknownFileSourceException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import gui.apps.Settings;
@@ -37,6 +39,7 @@ public class DesktopPane extends JDesktopPane {
     JButton serviceManager;
     JButton serviceAttack;
     JButton miner;
+    JButton walletApp;
 
     Image settingsIconImage;
     Image terminalIconImage;
@@ -164,13 +167,13 @@ public class DesktopPane extends JDesktopPane {
         fileManager.addActionListener(actionEvent -> startFileManager(Information.client.connectedDevice));
         this.add(fileManager);
 
-        serviceManager = new JButton("Service Manager");
+        serviceManager = new JButton("S");
         serviceManager.setSize(50, 50);
         serviceManager.setLocation(50, 550);
         serviceManager.addActionListener(actionEvent -> startServiceManager(Information.client.connectedDevice));
         this.add(serviceManager);
 
-        serviceAttack = new JButton("Service Attack");
+        serviceAttack = new JButton("A");
         serviceAttack.setSize(50, 50);
         serviceAttack.setLocation(150, 50);
         serviceAttack.addActionListener(actionEvent -> startServiceAttacker(Information.client.connectedDevice));
@@ -181,6 +184,12 @@ public class DesktopPane extends JDesktopPane {
         miner.setLocation(150, 150);
         miner.addActionListener(actionEvent -> startMinerApp(Information.client.connectedDevice));
         this.add(miner);
+
+        walletApp = new JButton("W");
+        walletApp.setSize(50, 50);
+        walletApp.setLocation(150, 250);
+        walletApp.addActionListener(actionEvent -> startWalletApp(Information.client.connectedDevice));
+        this.add(walletApp);
 
     }
 
@@ -232,6 +241,19 @@ public class DesktopPane extends JDesktopPane {
     public void startServiceAttacker(Device device) {
         ServiceAttack serviceAttack = new ServiceAttack(device);
         startApp(serviceAttack, null);
+    }
+
+    public void startWalletApp(Device device) {
+        try {
+            WalletApp walletApp = new WalletApp(device);
+            startApp(walletApp, null);
+        } catch (MissingFileException e) {
+            e.printStackTrace();
+            JOptionPane.showInternalMessageDialog(this, "No stored wallet found");
+        } catch (UnknownFileSourceException e) {
+            JOptionPane.showInternalMessageDialog(this, "Unknown File stored. You may have deleted the file");
+            e.printStackTrace();
+        }
     }
 
     public void startWalletApp(Wallet wallet) {
