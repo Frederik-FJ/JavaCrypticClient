@@ -2,7 +2,7 @@ package gui.apps.fileManager;
 
 import Exceptions.NoDirectoryException;
 import gui.App;
-import items.Device;
+import util.items.Device;
 import util.file.File;
 import util.path.DirectoryPath;
 import util.path.Path;

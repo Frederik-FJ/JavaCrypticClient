@@ -22,4 +22,9 @@ public class Panel extends JPanel {
     public int relativeWidth(int percent) {
         return (int) (this.getWidth() * ((double) percent / 100));
     }
+
+    public void reload() {
+        this.revalidate();
+        this.repaint();
+    }
 }

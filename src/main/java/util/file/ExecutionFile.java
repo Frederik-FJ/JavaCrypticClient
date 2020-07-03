@@ -2,7 +2,7 @@ package util.file;
 
 import gui.apps.terminal.Terminal;
 import information.Information;
-import items.Device;
+import util.items.Device;
 
 public class ExecutionFile extends File {
 

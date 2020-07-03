@@ -1,6 +1,6 @@
 package util.service;
 
-import items.Device;
+import util.items.Device;
 
 public class UnknownService extends Service {
     public UnknownService(String serviceUuid, Device device) {

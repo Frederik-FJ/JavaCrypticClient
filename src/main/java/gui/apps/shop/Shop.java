@@ -90,7 +90,7 @@ public class Shop extends App {
         String ret = "";
         Gson gson = new Gson();
 
-        this.outputMap = (Map<String, Map>) Information.client.getShopItems().get("categories");
+        this.outputMap = (Map<String, Map>) util.items.Shop.getShopItems().get("categories");
         System.out.println(gson.toJson(outputMap));
         for (String key : outputMap.keySet()) {
             Map<String, Map> category = outputMap.get(key);

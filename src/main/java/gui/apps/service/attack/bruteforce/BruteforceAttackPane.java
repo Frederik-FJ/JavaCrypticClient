@@ -3,7 +3,7 @@ package gui.apps.service.attack.bruteforce;
 import Exceptions.InvalidServerResponseException;
 import gui.apps.service.attack.AttackPane;
 import information.Information;
-import items.Device;
+import util.items.Device;
 import util.service.Bruteforce;
 import util.service.Portscan;
 import util.service.Service;

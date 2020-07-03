@@ -1,4 +1,4 @@
-package items;
+package util.items;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
@@ -142,13 +142,13 @@ public class Device {
         return client.microservice("device", endpoint, data);
     }
 
-    private void setComponents(List<Map> components) {
+/*    private void setComponents(List<Map> components) {
         this.components = new HardwareElement[components.size()];
         for (Map component : components) {
             HardwareElement element = new HardwareElement(component.get("hardware_type").toString(), component.get("hardware_element").toString());
             this.components[components.indexOf(component)] = element;
         }
-    }
+    }*/
 
     public boolean hasAccess() throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Collections.singletonList("part_owner");

@@ -7,6 +7,7 @@ import connection.Client;
 import connection.WebSocketClient;
 import gui.desktop.Desktop;
 import information.Information;
+import util.items.Shop;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,6 +48,13 @@ public class Gui extends JFrame {
         new Thread(() -> Information.client.init()).start();
 
         login();
+
+        try {
+            Shop.rootCategory = Shop.reloadCategories();
+        } catch (InvalidServerResponseException e) {
+            e.printStackTrace();
+        }
+
         initialize();
         Information.gui = this;
         setVisible(true);

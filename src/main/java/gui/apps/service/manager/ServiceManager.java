@@ -2,7 +2,7 @@ package gui.apps.service.manager;
 
 import gui.App;
 import gui.desktop.DesktopPane;
-import items.Device;
+import util.items.Device;
 import util.service.Service;
 
 import java.awt.*;

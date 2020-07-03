@@ -9,7 +9,7 @@ import gui.App;
 import gui.apps.fileManager.FileManager;
 import gui.apps.walletApp.WalletApp;
 import information.Information;
-import items.Device;
+import util.items.Device;
 import util.file.File;
 import util.file.WalletFile;
 import util.path.DirectoryPath;

@@ -4,7 +4,7 @@ import Exceptions.file.MissingFileException;
 import Exceptions.file.UnknownFileSourceException;
 import gui.App;
 import information.Information;
-import items.Device;
+import util.items.Device;
 import util.Wallet;
 import util.file.File;
 import util.file.WalletFile;

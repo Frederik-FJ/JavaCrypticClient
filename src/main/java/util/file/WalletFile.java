@@ -1,7 +1,7 @@
 package util.file;
 
 import information.Information;
-import items.Device;
+import util.items.Device;
 import util.Wallet;
 
 import javax.swing.*;

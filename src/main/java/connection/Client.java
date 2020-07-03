@@ -6,9 +6,10 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
 import information.Information;
-import items.Device;
-import items.HardwareElement;
-import items.HardwareInventory;
+import util.items.Device;
+import util.items.HardwareElement;
+import util.items.HardwareInventory;
+import util.items.Shop;
 import util.path.DirectoryPath;
 
 import java.net.URI;
@@ -288,7 +289,7 @@ public class Client {
             if (params.length != 8) {
                 return "device build <mainboard> <cpu> <gpu> <ram> <disk> <cooler> <powerPack> <case>";
             }
-            Map result = buildDeviceCmd(params[0], params[1], params[2], Arrays.asList(params[3]), Arrays.asList(params[4]), Arrays.asList(params[5]), params[6], params[7]);
+            //Map result = buildDeviceCmd(params[0], params[1], params[2], Arrays.asList(params[3]), Arrays.asList(params[4]), Arrays.asList(params[5]), params[6], params[7]);
             return "gson.toJson(result)";
         }
 
@@ -348,14 +349,14 @@ public class Client {
             return gson.toJson(device.shutdown());
         }
 
-        if (cmd.equals("elements")) {
+/*        if (cmd.equals("elements")) {
             HardwareElement[] elements = device.getElements();
             StringBuilder ret = new StringBuilder();
             for (HardwareElement e : elements) {
                 ret.append(e.getType()).append(": \t").append(e.getName()).append("\n");
             }
             return ret.toString();
-        }
+        }*/
 
         if (cmd.equals("owner")) {
             //return gson.toJson(device.getOwner());
@@ -387,8 +388,8 @@ public class Client {
         return result;
     }
 
-    public Map buildDeviceCmd(String mainboard, String cpu, String gpu, List<String> ram, List<String> disk, List<String> processCooler, String powerPack, String computerCase) throws InvalidServerResponseException, UnknownMicroserviceException {
-        Map<String, List> inventory = new HardwareInventory(clientEndPoint).getInventory();
+    /*public Map buildDeviceCmd(String mainboard, String cpu, String gpu, List<String> ram, List<String> disk, List<String> processCooler, String powerPack, String computerCase) throws InvalidServerResponseException, UnknownMicroserviceException {
+        Map<String, List> inventory = HardwareInventory.getInventory();
 
         for (String s : inventory.keySet()) {
 
@@ -434,7 +435,7 @@ public class Client {
 
         return buildDevice(mainboard, cpu, gpu, ram, disk, processCooler, powerPack, computerCase);
 
-    }
+    }*/
 
     public Map buildDevice(String mainboard, String cpu, String gpu, List<String> ram, List<String> disk, List<String> processCooler, String powerPack, String computerCase) throws UnknownMicroserviceException, InvalidServerResponseException {
 
@@ -473,15 +474,15 @@ public class Client {
         String command[] = cmd.split(" ");
         cmd = command[1];
 
-        if (cmd.equalsIgnoreCase("list")) {
-            Map<String, List> inventory = new HardwareInventory(clientEndPoint).getInventory();
+        /*if (cmd.equalsIgnoreCase("list")) {
+            Map<String, List> inventory = HardwareInventory.getInventory();
 
             final String[] ret = {""};
 
             inventory.forEach((k, v) -> ret[0] += v.get(0) + "x " + k + "\n");
 
             return ret[0] + inventory.get("ATX"); // inventory.get("ATX"); ist eine Ausgabe zum sehen, wie das Json aufgebaut ist
-        }
+        }*/
 
         return "inventory list|(trade)";
     }
@@ -505,7 +506,7 @@ public class Client {
         }
 
         if (cmd.equals("list")) {
-            Map items = getShopItems();
+            Map items = Shop.getShopItems();
             return gson.toJson(items);
         }
 
@@ -513,9 +514,6 @@ public class Client {
     }
 
 
-    public Map getShopItems() throws UnknownMicroserviceException, InvalidServerResponseException {
-        return clientEndPoint.microservice("inventory", Arrays.asList("shop", "list"), new HashMap<>());
-    }
 
 
     public class ConnectionThread extends Thread {

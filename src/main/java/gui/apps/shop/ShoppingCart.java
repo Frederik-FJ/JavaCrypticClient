@@ -1,6 +1,6 @@
 package gui.apps.shop;
 
-import items.HardwareElement;
+import util.items.HardwareElement;
 
 import javax.swing.*;
 import java.util.ArrayList;

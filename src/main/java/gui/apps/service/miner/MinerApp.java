@@ -4,7 +4,7 @@ import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import information.Information;
-import items.Device;
+import util.items.Device;
 import util.Wallet;
 import util.service.Miner;
 

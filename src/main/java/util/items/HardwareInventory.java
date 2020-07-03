@@ -1,8 +1,8 @@
-package items;
+package util.items;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
-import connection.WebSocketClient;
+import com.google.gson.Gson;
 import information.Information;
 
 import java.util.Arrays;
@@ -12,15 +12,9 @@ import java.util.Map;
 
 public class HardwareInventory {
 
-    WebSocketClient client;
 
-    @Deprecated
-    public HardwareInventory(WebSocketClient client) {
-        this.client = client;
-    }
 
     public HardwareInventory() {
-        this.client = Information.webSocketClient;
     }
 
     /**
@@ -28,21 +22,33 @@ public class HardwareInventory {
      * @throws UnknownMicroserviceException   server don't know the microservice
      * @throws InvalidServerResponseException the server response can't be read correctly
      */
-    public Map<String, List> getInventory() throws UnknownMicroserviceException, InvalidServerResponseException {
+    public static Map<HardwareElement, Integer> getInventory(){
         //request
         List<String> endpoint = Arrays.asList("inventory", "list");
-        Map result = client.microservice("inventory", endpoint, new HashMap<>());
+        Map result;
+        try {
+            result = Information.webSocketClient.microservice("inventory", endpoint, new HashMap<>());
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+            return null;
+        }
 
         List elements = (List) result.get("elements");
-        Map<String, List> inventory = new HashMap<>();
+        Map<String, Integer> inventory = new HashMap<>();
         for (Object e : elements) {
             Map element = (Map) e;
-            List<Object> count = Arrays.asList(0, element);
+            Integer count = 0;
             String elementName = element.get("element_name").toString();
+            // adding element to map
             if (!inventory.containsKey(elementName)) inventory.put(elementName, count);
-            count.set(0, (Integer) inventory.get(elementName).get(0) + 1);
+            // counting
+            count = inventory.get(elementName) + 1;
             inventory.put(elementName, count);
         }
-        return inventory;
+        Map<HardwareElement, Integer> ret = new HashMap<>();
+        for(String s: inventory.keySet()){
+            ret.put(HardwareElement.getItemByName(s), inventory.get(s));
+        }
+        return ret;
     }
 }

@@ -6,7 +6,7 @@ import Exceptions.file.UnknownFileSourceException;
 import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
 import information.Information;
-import items.Device;
+import util.items.Device;
 import util.path.Path;
 
 import java.util.*;

@@ -96,7 +96,8 @@ public class WalletPane extends Panel {
 
     }
 
-    private void reload() {
+    @Override
+    public void reload() {
         title.setLocation(relativeWidth(50) - 50, 10);
         uuidField.setLocation(relativeWidth(60), 100);
         amountField.setLocation(relativeWidth(10), 100);

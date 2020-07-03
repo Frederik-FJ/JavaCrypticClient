@@ -2,7 +2,7 @@ package gui.apps.shop;
 
 import com.google.gson.Gson;
 import gui.App;
-import items.HardwareElement;
+import util.items.HardwareElement;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,14 +45,14 @@ public class ShopCategory extends JPanel {
             JButton b = new JButton();
             b.setText("Generell");
             b.setSize(200, 100);
-            b.addActionListener(actionEvent -> showItems());
+//            b.addActionListener(actionEvent -> showItems());
             buttons.add(b);
         }
         for (String s : this.subcategories.keySet()) {
             JButton b = new JButton();
             b.setText(s);
             b.setSize(200, 100);
-            b.addActionListener(actionEvent -> showItemsFromSubcategories(s));
+//            b.addActionListener(actionEvent -> showItemsFromSubcategories(s));
             buttons.add(b);
         }
 
@@ -69,49 +69,49 @@ public class ShopCategory extends JPanel {
 
     }
 
-    private void showItemsFromSubcategories(String subcategory) {
-        Gson gson = new Gson();
-        panel.removeAll();
-        String ret = "";
-        int counter = 0;
-        Map sub = subcategories.get(subcategory);
-        for (String s : (Set<String>) sub.keySet()) {
-            if (!s.equals("items")) continue;
-            Map subcat = (Map) sub.get(s);
-            System.out.println(subcategory + gson.toJson(subcat));
-            for (String item : (Set<String>) subcat.keySet()) {
-                JButton b = new JButton();
-                b.setText(item + "--------------> Price:" + ((Map) subcat.get(item)).get("price"));
-                b.setSize(panel.getWidth(), 100);
-                HardwareElement element = new HardwareElement(type, item);
-                b.addActionListener(actionEvent -> shoppingCart.addElement(element, shoppingCart.elementExists(element) ? shoppingCart.getNumber(element) + 1 : 1));
-                shoppingCart.repaint();
-                b.setLocation(0, 100 * counter);
-                counter++;
-                panel.add(b);
-                panel.repaint();
-                scrollPane.repaint();
-            }
-        }
-
-        //add(panel, BorderLayout.CENTER);
-    }
-
-    private void showItems() {
-        int counter = 0;
-        for (String item : (Set<String>) items.keySet()) {
-            JButton b = new JButton();
-            b.setText(item + "--------------> Price:" + ((Map) items.get(item)).get("price"));
-            b.setSize(panel.getWidth(), 100);
-            b.setLocation(0, 100 * counter);
-            counter++;
-            panel.add(b);
-            HardwareElement element = new HardwareElement(type, item);
-            b.addActionListener(actionEvent -> shoppingCart.addElement(element, shoppingCart.elementExists(element) ? shoppingCart.getNumber(element) + 1 : 1));
-            panel.repaint();
-            scrollPane.repaint();
-        }
-    }
+//    private void showItemsFromSubcategories(String subcategory) {
+//        Gson gson = new Gson();
+//        panel.removeAll();
+//        String ret = "";
+//        int counter = 0;
+//        Map sub = subcategories.get(subcategory);
+//        for (String s : (Set<String>) sub.keySet()) {
+//            if (!s.equals("util/items")) continue;
+//            Map subcat = (Map) sub.get(s);
+//            System.out.println(subcategory + gson.toJson(subcat));
+//            for (String item : (Set<String>) subcat.keySet()) {
+//                JButton b = new JButton();
+//                b.setText(item + "--------------> Price:" + ((Map) subcat.get(item)).get("price"));
+//                b.setSize(panel.getWidth(), 100);
+//                HardwareElement element = new HardwareElement(type, item);
+//                b.addActionListener(actionEvent -> shoppingCart.addElement(element, shoppingCart.elementExists(element) ? shoppingCart.getNumber(element) + 1 : 1));
+//                shoppingCart.repaint();
+//                b.setLocation(0, 100 * counter);
+//                counter++;
+//                panel.add(b);
+//                panel.repaint();
+//                scrollPane.repaint();
+//            }
+//        }
+//
+//        //add(panel, BorderLayout.CENTER);
+//    }
+//
+//    private void showItems() {
+//        int counter = 0;
+//        for (String item : (Set<String>) items.keySet()) {
+//            JButton b = new JButton();
+//            b.setText(item + "--------------> Price:" + ((Map) items.get(item)).get("price"));
+//            b.setSize(panel.getWidth(), 100);
+//            b.setLocation(0, 100 * counter);
+//            counter++;
+//            panel.add(b);
+//            HardwareElement element = new HardwareElement(type, item);
+//            b.addActionListener(actionEvent -> shoppingCart.addElement(element, shoppingCart.elementExists(element) ? shoppingCart.getNumber(element) + 1 : 1));
+//            panel.repaint();
+//            scrollPane.repaint();
+//        }
+//    }
 
     /**
      * resizes the size of the Buttons

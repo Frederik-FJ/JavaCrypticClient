@@ -8,6 +8,7 @@ import gui.App;
 import gui.apps.Settings;
 import gui.apps.TextEditor;
 import gui.apps.fileManager.FileManager;
+import gui.apps.inventory.InventoryApp;
 import gui.apps.service.attack.ServiceAttack;
 import gui.apps.service.manager.ServiceManager;
 import gui.apps.service.miner.MinerApp;
@@ -15,7 +16,7 @@ import gui.apps.shop.Shop;
 import gui.apps.terminal.Terminal;
 import gui.apps.walletApp.WalletApp;
 import information.Information;
-import items.Device;
+import util.items.Device;
 import util.Wallet;
 import util.file.WalletFile;
 
@@ -40,6 +41,7 @@ public class DesktopPane extends JDesktopPane {
     JButton serviceAttack;
     JButton miner;
     JButton walletApp;
+    JButton inventoryApp;
 
     Image settingsIconImage;
     Image terminalIconImage;
@@ -151,7 +153,7 @@ public class DesktopPane extends JDesktopPane {
         shop.setSize(50, 50);
         shop.setLocation(50, 250);
         shop.addActionListener(actionEvent -> startShop());
-        this.add(shop);
+        //this.add(shop);
 
         controlCenter = new JButton();
         controlCenter.setIcon(controlCenterIcon);
@@ -190,6 +192,12 @@ public class DesktopPane extends JDesktopPane {
         walletApp.setLocation(150, 250);
         walletApp.addActionListener(actionEvent -> startWalletApp(Information.client.connectedDevice));
         this.add(walletApp);
+
+        inventoryApp = new JButton("I");
+        inventoryApp.setSize(50, 50);
+        inventoryApp.setLocation(150, 350);
+        inventoryApp.addActionListener(actionEvent -> startInventoryApp());
+        this.add(inventoryApp);
 
     }
 
@@ -271,6 +279,11 @@ public class DesktopPane extends JDesktopPane {
         startApp(minerApp, null);
     }
 
+    public void startInventoryApp(){
+        InventoryApp inventoryApp = new InventoryApp();
+        startApp(inventoryApp, null);
+    }
+
     public void startApp(App app, ImageIcon icon) {
         if (icon != null) {
             ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
@@ -291,6 +304,4 @@ public class DesktopPane extends JDesktopPane {
             }
         });
     }
-
-
 }

@@ -3,7 +3,7 @@ package util.service;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
 import information.Information;
-import items.Device;
+import util.items.Device;
 import util.Wallet;
 
 import java.util.*;

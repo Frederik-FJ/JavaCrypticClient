@@ -2,7 +2,7 @@ package gui.apps.service.attack;
 
 import gui.App;
 import gui.apps.service.attack.hacked.HackedPane;
-import items.Device;
+import util.items.Device;
 import util.service.Service;
 
 import javax.swing.*;

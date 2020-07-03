@@ -6,7 +6,7 @@ import Exceptions.UnknownMicroserviceException;
 import com.google.gson.Gson;
 import gui.desktop.Desktop;
 import information.Information;
-import items.Device;
+import util.items.Device;
 
 import javax.swing.*;
 import java.awt.*;

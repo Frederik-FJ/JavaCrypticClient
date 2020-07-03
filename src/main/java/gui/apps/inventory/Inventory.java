@@ -1,4 +1,4 @@
-package gui.apps;
+package gui.apps.inventory;
 
 import gui.App;
 
@@ -27,7 +27,7 @@ public class Inventory extends App {
         JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
 
-        //List<HardwareElement> items = client.getInventory();
+        //List<HardwareElement> util.items = client.getInventory();
 
     }
 

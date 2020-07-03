@@ -1,6 +1,6 @@
 package gui.apps.shop;
 
-import items.HardwareElement;
+import util.items.HardwareElement;
 
 import javax.swing.*;
 
@@ -21,7 +21,7 @@ public class ShoppingCartItem extends JPanel {
         numberField = new JTextField(2);
         numberField.setText(Integer.toString(number));
         numberField.setSize(100, numberField.getHeight());
-        this.add(new JLabel(element.getType() + "-------->" + element.getName()));
+        //this.add(new JLabel(element.getType() + "-------->" + element.getName()));
         this.add(numberField);
     }
 

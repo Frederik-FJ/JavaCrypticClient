@@ -1,6 +1,6 @@
 package util.service;
 
-import items.Device;
+import util.items.Device;
 
 public class Telnet extends Service {
     public Telnet(String serviceUuid, Device device) {

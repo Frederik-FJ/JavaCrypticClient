@@ -2,7 +2,7 @@ package gui.apps.service.attack.portscan;
 
 import gui.apps.service.attack.AttackPane;
 import gui.apps.service.manager.ServicePane;
-import items.Device;
+import util.items.Device;
 import util.service.Portscan;
 import util.service.Service;
 

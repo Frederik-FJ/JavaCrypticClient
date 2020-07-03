@@ -1,7 +1,7 @@
 package gui.apps.service.attack.hacked;
 
 import gui.util.Panel;
-import items.Device;
+import util.items.Device;
 
 import javax.swing.*;
 import java.awt.*;

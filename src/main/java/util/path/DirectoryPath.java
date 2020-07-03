@@ -3,7 +3,7 @@ package util.path;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
-import items.Device;
+import util.items.Device;
 import util.file.File;
 
 import java.util.Arrays;

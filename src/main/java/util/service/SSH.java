@@ -1,6 +1,6 @@
 package util.service;
 
-import items.Device;
+import util.items.Device;
 
 public class SSH extends Service {
     public SSH(String serviceUuid, Device device) {
