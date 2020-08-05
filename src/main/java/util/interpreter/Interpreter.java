@@ -4,7 +4,6 @@ package util.interpreter;
 import Exceptions.interpreterExceptions.InvalidVariableNameException;
 import gui.util.OutputApp;
 import util.file.File;
-import util.interpreter.functions.Function;
 import util.interpreter.functions.Functions;
 import util.items.Device;
 import util.network.Network;
@@ -13,7 +12,6 @@ import util.service.Miner;
 import util.service.Portscan;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
