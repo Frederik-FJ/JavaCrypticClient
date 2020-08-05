@@ -134,7 +134,7 @@ public class WebSocketClient {
         response = false;
     }
 
-    public Map microservice(String ms, List<String> endpoint, Map data) throws InvalidServerResponseException, UnknownMicroserviceException {
+    public Map microservice(String ms, List<String> endpoint, Map<?, ?> data) throws InvalidServerResponseException, UnknownMicroserviceException {
 
 
 
@@ -143,7 +143,7 @@ public class WebSocketClient {
         req.put("endpoint", endpoint);
         req.put("data", data);
         req.put("tag", uuid());
-        Map response = this.request(req, false);
+        Map<?, ?> response = this.request(req, false);
 
         if (response.containsKey("error")) {
             String error = response.get("error").toString();

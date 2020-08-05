@@ -1,7 +1,9 @@
 package util.file;
 
+import Exceptions.interpreterExceptions.InvalidVariableNameException;
 import gui.apps.terminal.Terminal;
 import information.Information;
+import util.interpreter.Interpreter;
 import util.items.Device;
 
 public class ExecutionFile extends File {
@@ -21,6 +23,16 @@ public class ExecutionFile extends File {
         Terminal ter = Information.Desktop.startTerminal(device);
 
         executeFromTerminal(ter);
+    }
+
+    public void executeWithInterpreter() {
+        Terminal ter = Information.Desktop.startTerminal(device);
+        Interpreter interpreter = new Interpreter(ter, device);
+        try {
+            interpreter.interpret(this.getContent());
+        } catch (InvalidVariableNameException e) {
+            e.printStackTrace();
+        }
     }
 
     public void executeFromTerminal(Terminal terminal) {

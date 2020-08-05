@@ -1,13 +1,14 @@
 package gui.apps.terminal;
 
 import gui.App;
+import gui.util.OutputApp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-public class CommandArea extends JPanel {
+public class CommandArea extends JPanel implements OutputApp {
 
     App app;
 
@@ -89,8 +90,10 @@ public class CommandArea extends JPanel {
      *
      * @param content String to write
      */
-    public void print(String content) {
-        textAreaRead.setText(textAreaRead.getText() + content);
+    public void print(Object content) {
+        if (content == null)
+            content = "null";
+        textAreaRead.setText(textAreaRead.getText() + content.toString());
     }
 
     /**
@@ -98,8 +101,10 @@ public class CommandArea extends JPanel {
      *
      * @param content String to write
      */
-    public void println(String content) {
-        textAreaRead.setText(textAreaRead.getText() + content + "\n");
+    public void println(Object content) {
+        if (content == null)
+            content = "null";
+        textAreaRead.setText(textAreaRead.getText() + content.toString() + "\n");
     }
 
     private void execute() {
@@ -120,6 +125,4 @@ public class CommandArea extends JPanel {
         this.requestFocus();
         commandInput.requestFocus();
     }
-
-
 }

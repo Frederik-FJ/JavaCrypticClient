@@ -279,7 +279,7 @@ public class DesktopPane extends JDesktopPane {
         startApp(minerApp, null);
     }
 
-    public void startInventoryApp(){
+    public void startInventoryApp() {
         InventoryApp inventoryApp = new InventoryApp();
         startApp(inventoryApp, null);
     }

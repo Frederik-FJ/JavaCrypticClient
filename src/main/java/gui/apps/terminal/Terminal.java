@@ -8,6 +8,7 @@ import Exceptions.file.UnknownFileSourceException;
 import gui.App;
 import gui.apps.fileManager.FileManager;
 import gui.apps.walletApp.WalletApp;
+import gui.util.OutputApp;
 import information.Information;
 import util.items.Device;
 import util.file.File;
@@ -20,7 +21,7 @@ import java.beans.PropertyVetoException;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class Terminal extends App {
+public class Terminal extends App implements OutputApp {
 
     DirectoryPath directoryPath;
 
@@ -110,6 +111,8 @@ public class Terminal extends App {
         boolean cd = command.startsWith("cd");
         boolean pwd = command.equals("pwd");
 
+        boolean run = command.startsWith("run");
+
         boolean usePath = command.contains("/");
 
         // open programs
@@ -189,6 +192,13 @@ public class Terminal extends App {
         }
 
 
+        if (run) {
+            if (params[0].equals("run-interpret"))
+                getFileFromPath(params[1]).toExecutionFile().executeWithInterpreter();
+            else
+                getFileFromPath(params[1]).toExecutionFile().execute();
+        }
+
         if (usePath) {
 
             directoryPath = new DirectoryPath(this.directoryPath);
@@ -256,4 +266,13 @@ public class Terminal extends App {
         return null;
     }
 
+    @Override
+    public void println(Object o) {
+        commandArea.println(o);
+    }
+
+    @Override
+    public void print(Object o) {
+        commandArea.print(o);
+    }
 }

@@ -14,14 +14,14 @@ public class ItemField extends Panel {
     HardwareElement item;
     int number;
 
-    public ItemField(HardwareElement item, int number){
+    public ItemField(HardwareElement item, int number) {
         this.item = item;
         this.number = number;
 
         init();
     }
 
-    private void init(){
+    private void init() {
         setLayout(new BorderLayout());
         setHeight(20);
 

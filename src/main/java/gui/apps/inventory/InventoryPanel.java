@@ -52,8 +52,8 @@ public class InventoryPanel extends Panel {
 
     public void reload() {
         int contentHeight = 0;
-        for(Component c : content.getComponents()){
-            if(c instanceof ItemField){
+        for (Component c : content.getComponents()) {
+            if (c instanceof ItemField) {
                 ((Panel) c).setWidth(this.getWidth()-20);
             }
             contentHeight += c.getHeight()+10;
