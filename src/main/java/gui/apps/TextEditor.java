@@ -76,26 +76,24 @@ public class TextEditor extends App {
         // Adding Actions to the Items
         save.addActionListener(actionEvent -> save());
         rename.addActionListener(actionEvent -> {
-            try {
-                String newName = (String) JOptionPane.showInternalInputDialog(pane, "New Name", null,
-                        JOptionPane.PLAIN_MESSAGE, null, null, file.getName());
-                file.rename(newName);
-            } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
-                e.printStackTrace();
-            }
+            String newName = (String) JOptionPane.showInternalInputDialog(pane, "New Name", null,
+                    JOptionPane.PLAIN_MESSAGE, null, null, file.getName());
+            file.rename(newName);
+
         });
         delete.addActionListener(actionEvent -> {
             int result = JOptionPane.showInternalConfirmDialog(pane,
                     "Should this file really be deleted?", null, JOptionPane.YES_NO_OPTION);
-            try {
                 if (result == JOptionPane.YES_OPTION) {
                     file.delete();
                     TextEditor.this.removeInternalFrameListener(saveOnClose);
-                    TextEditor.this.setClosed(true);
+                    try {
+                        TextEditor.this.setClosed(true);
+                    } catch (PropertyVetoException e) {
+                        e.printStackTrace();
+                    }
                 }
-            } catch (UnknownMicroserviceException | InvalidServerResponseException | PropertyVetoException e) {
-                e.printStackTrace();
-            }
+
         });
 
         // Add the Items to the JMenuBar
@@ -165,7 +163,7 @@ public class TextEditor extends App {
         }
         try {
             file.setContent(textArea.getText());
-        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+        } catch (InvalidServerResponseException e) {
             JOptionPane.showMessageDialog(null, "Error occurred during the conversation with the Server");
         }
     }

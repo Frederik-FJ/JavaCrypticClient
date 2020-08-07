@@ -18,6 +18,10 @@ public class Variable{
         return content;
     }
 
+    public void setContent(Object content) {
+        this.content = content;
+    }
+
     @Override
     public String toString() {
         return "name='" + name + '\'' +

@@ -62,13 +62,13 @@ public class Bruteforce extends Service {
         }
     }
 
-    public Map stop() {
+    public boolean stop() {
         List<String> endpoint = Arrays.asList("bruteforce", "stop");
         try {
-            return command(endpoint);
+            return (boolean) command(endpoint).get("access");
         } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
             e.printStackTrace();
-            return null;
+            return false;
         }
     }
 }

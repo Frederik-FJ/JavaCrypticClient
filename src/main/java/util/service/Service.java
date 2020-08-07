@@ -66,7 +66,7 @@ public abstract class Service {
         return runningPort;
     }
 
-    public void setRunningPort(int runningPort) {
+    protected void setRunningPort(int runningPort) {
         this.runningPort = runningPort;
     }
 
@@ -85,13 +85,18 @@ public abstract class Service {
         return Information.webSocketClient.microservice("service", endpoint, data);
     }
 
-    protected Map getInfo(boolean privat) throws UnknownMicroserviceException, InvalidServerResponseException {
+    protected Map getInfo(boolean privat) {
         List<String> endpoint;
         if (privat)
             endpoint = Collections.singletonList("private_info");
         else
             endpoint = Collections.singletonList("public_info");
-        return command(endpoint);
+        try {
+            return command(endpoint);
+        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void delete() throws InvalidServerResponseException, UnknownMicroserviceException {

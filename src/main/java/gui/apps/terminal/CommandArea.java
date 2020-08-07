@@ -96,6 +96,12 @@ public class CommandArea extends JPanel implements OutputApp {
         textAreaRead.setText(textAreaRead.getText() + content.toString());
     }
 
+    @Override
+    public void toNextFreeLine() {
+        if (!textAreaRead.getText().endsWith("\n"))
+            println("");
+    }
+
     /**
      * write in the textArea
      *

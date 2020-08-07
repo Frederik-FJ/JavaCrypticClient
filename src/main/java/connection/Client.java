@@ -341,12 +341,14 @@ public class Client {
 
         if (cmd.equals("boot")) {
 
-            return gson.toJson(device.boot());
+            device.boot();
+            return "Device started";
         }
 
         if (cmd.equals("shutdown")) {
 
-            return gson.toJson(device.shutdown());
+            device.shutdown();
+            return "Device shutdowned";
         }
 
 /*        if (cmd.equals("elements")) {

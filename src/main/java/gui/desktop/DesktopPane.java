@@ -1,14 +1,13 @@
 package gui.desktop;
 
-import Exceptions.InvalidServerResponseException;
 import Exceptions.file.MissingFileException;
 import Exceptions.file.UnknownFileSourceException;
-import Exceptions.UnknownMicroserviceException;
 import gui.App;
 import gui.apps.Settings;
 import gui.apps.TextEditor;
 import gui.apps.fileManager.FileManager;
 import gui.apps.inventory.InventoryApp;
+import gui.apps.live_console.LiveConsole;
 import gui.apps.service.attack.ServiceAttack;
 import gui.apps.service.manager.ServiceManager;
 import gui.apps.service.miner.MinerApp;
@@ -111,12 +110,8 @@ public class DesktopPane extends JDesktopPane {
         JMenuItem disconnect = new JMenuItem("disconnect");
 
         shutdown.addActionListener(actionEvent -> {
-            try {
-                Information.client.connectedDevice.shutdown();
-                window.disconnect();
-            } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
-                e.printStackTrace();
-            }
+            Information.client.connectedDevice.shutdown();
+            window.disconnect();
         });
         disconnect.addActionListener(actionEvent -> window.disconnect());
 
@@ -282,6 +277,10 @@ public class DesktopPane extends JDesktopPane {
     public void startInventoryApp() {
         InventoryApp inventoryApp = new InventoryApp();
         startApp(inventoryApp, null);
+    }
+
+    public void startLiveConsole(LiveConsole console) {
+        startApp(console, null);
     }
 
     public void startApp(App app, ImageIcon icon) {

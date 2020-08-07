@@ -104,22 +104,27 @@ public class Device {
 
     }
 
-    private Map changeStatus() throws UnknownMicroserviceException, InvalidServerResponseException {
+    private Map changeStatus() {
         List<String> endpoint = Arrays.asList("device", "power");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", uuid);
-        Map result = client.microservice("device", endpoint, data);
+        Map result = null;
+        try {
+            result = client.microservice("device", endpoint, data);
+        } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
+            e.printStackTrace();
+        }
         return result;
     }
 
-    public Map boot() throws InvalidServerResponseException, UnknownMicroserviceException {
-        if (isOnline()) return null;
-        return changeStatus();
+    public void boot() {
+        if (!isOnline())
+            changeStatus();
     }
 
-    public Map shutdown() throws InvalidServerResponseException, UnknownMicroserviceException {
-        if (isOnline()) return changeStatus();
-        return null;
+    public void shutdown() {
+        if (isOnline())
+            changeStatus();
     }
 
     public HardwareElement[] getElements() throws InvalidServerResponseException, UnknownMicroserviceException {
@@ -127,12 +132,17 @@ public class Device {
         return components;
     }
 
-    public Map changeName(String newName) throws UnknownMicroserviceException, InvalidServerResponseException {
+    public void changeName(String newName) {
         List<String> endpoint = Arrays.asList("device", "change_name");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", uuid);
         data.put("name", newName);
-        return client.microservice("device", endpoint, data);
+        try {
+            client.microservice("device", endpoint, data);
+            reloadName();
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
     }
 
     public Map getOwner() throws UnknownMicroserviceException, InvalidServerResponseException {

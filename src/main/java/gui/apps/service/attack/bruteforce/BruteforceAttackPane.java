@@ -249,9 +249,7 @@ public class BruteforceAttackPane extends AttackPane {
         stop = null;
         reload();
 
-        Map result = bruteforce.stop();
-
-        if ((boolean) result.get("access")) {
+        if (bruteforce.stop()) {
             Information.Desktop.startTerminal(targetDevice);
         } else {
             JOptionPane.showInternalMessageDialog(Information.Desktop, "Access denied");

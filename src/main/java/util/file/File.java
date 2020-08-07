@@ -163,13 +163,17 @@ public class File {
         return null;
     }
 
-    public void setContent(String newContent) throws UnknownMicroserviceException, InvalidServerResponseException {
+    public void setContent(String newContent) throws InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("file", "update");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", this.device.getUuid());
         data.put("file_uuid", this.uuid);
         data.put("content", newContent);
-        Information.webSocketClient.microservice("device", endpoint, data);
+        try {
+            Information.webSocketClient.microservice("device", endpoint, data);
+        } catch (UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<File> getFiles() throws UnknownMicroserviceException, InvalidServerResponseException, NoDirectoryException {
@@ -192,30 +196,38 @@ public class File {
         return fileList;
     }
 
-    public void move(String newParentDirUuid, String newName) throws UnknownMicroserviceException, InvalidServerResponseException {
+    public void move(String newParentDirUuid, String newName) {
         List<String> endpoint = Arrays.asList("file", "move");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", this.device.getUuid());
         data.put("file_uuid", this.getUuid());
         data.put("new_parent_dir_uuid", newParentDirUuid);
         data.put("new_filename", newName);
-        Information.webSocketClient.microservice("device", endpoint, data);
+        try {
+            Information.webSocketClient.microservice("device", endpoint, data);
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void rename(String newName) throws InvalidServerResponseException, UnknownMicroserviceException {
+    public void rename(String newName) {
         this.move(this.parentDirUuid, newName);
     }
 
-    public void moveOnly(String newParentDirUuid) throws UnknownMicroserviceException, InvalidServerResponseException {
+    public void moveOnly(String newParentDirUuid) {
         this.move(newParentDirUuid, this.getName());
     }
 
-    public void delete() throws UnknownMicroserviceException, InvalidServerResponseException {
+    public void delete() {
         List<String> endpoint = Arrays.asList("file", "delete");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", this.device.getUuid());
         data.put("file_uuid", this.uuid);
-        Information.webSocketClient.microservice("device", endpoint, data);
+        try {
+            Information.webSocketClient.microservice("device", endpoint, data);
+        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
     }
 
     public Path getPath() {

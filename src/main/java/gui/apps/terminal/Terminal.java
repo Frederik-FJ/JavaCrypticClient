@@ -275,4 +275,9 @@ public class Terminal extends App implements OutputApp {
     public void print(Object o) {
         commandArea.print(o);
     }
+
+    @Override
+    public void toNextFreeLine() {
+        commandArea.toNextFreeLine();
+    }
 }

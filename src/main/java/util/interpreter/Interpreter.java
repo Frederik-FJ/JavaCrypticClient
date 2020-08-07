@@ -3,13 +3,12 @@ package util.interpreter;
 
 import Exceptions.interpreterExceptions.InvalidVariableNameException;
 import gui.util.OutputApp;
-import util.file.File;
+import util.interpreter.annotations.UsableClass;
+import util.interpreter.classes.ClassStore;
+import util.interpreter.classes.DeviceClass;
+import util.interpreter.classes.FileClass;
 import util.interpreter.functions.Functions;
 import util.items.Device;
-import util.network.Network;
-import util.service.Bruteforce;
-import util.service.Miner;
-import util.service.Portscan;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -25,27 +24,18 @@ public class Interpreter {
     List<Variable> vars = new ArrayList<>();
 
 
-    static Map<String, Class<?>> classes = new HashMap<>();
-    static Map<String, Method> methods = new HashMap<>();
+    static Map<String, ClassStore> classes = new HashMap<>();
+
+    static Class<?>[] usableClasses = {
+            DeviceClass.class,
+            Functions.class,
+            FileClass.class
+    };
 
     static {
 
-
-        classes.put("Device", Device.class);
-        classes.put("File", File.class);
-        classes.put("Network", Network.class);
-        classes.put("Bruteforce", Bruteforce.class);
-        classes.put("Portscan", Portscan.class);
-        classes.put("Miner", Miner.class);
-
-        try {
-            Class<?> sysClass = Functions.class;
-
-            methods.put("println", sysClass.getMethod("println", Object.class));
-            methods.put("print", sysClass.getMethod("print", Object.class));
-
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+        for (Class<?> c : usableClasses) {
+            classes.put(c.getAnnotation(UsableClass.class).name(), new ClassStore(c));
         }
     }
 
@@ -66,12 +56,16 @@ public class Interpreter {
                 }
             } catch (InvalidVariableNameException e) {
                 e.setLine(i+1);
+                outputApp.toNextFreeLine();
+                outputApp.println(e.getClass().getSimpleName() + " at line " + e.getLine() + " due to: \n\t" + e.getMessage());
                 throw e;
             }
         }
+        /*
         for (Variable var: vars) {
             System.out.println(var);
         }
+        */
     }
 
     public Object interpretCommand(String command) throws InvalidVariableNameException {
@@ -103,21 +97,9 @@ public class Interpreter {
             tmp.append(c);
         }
         parts.add(tmp.toString());
-        for (String s : parts) {
-            System.err.println(command + "-->" + s);
-        }
-        System.out.println();
-/*
-        // TODO auf Klammern beim Punkt trennen achten (oben angefangen, noch testen); checken, was in der Liste steht & verbessern
-        for (String s: command.split("\\.")) {
-            value = interpretSingleCommand(value, s);
-            System.out.println(value);
-        }
- */
+
         for (String s : parts) {
             value = interpretSingleCommand(value, s);
-            System.out.println(value);
-            System.out.println(s);
         }
         return value;
     }
@@ -173,74 +155,96 @@ public class Interpreter {
             }
 
             // for defined methods
-            for (String s : methods.keySet()) {
+            ClassStore func = classes.get("Functions");
+            Map<String, List<Method>> functions = func.getMethods();
+            for (String s : functions.keySet()) {
                 if (cmd.split("\\(")[0].equals(s)) {
+                    List<Method> methods = functions.get(s);
                     String arg = cmd.split("\\(", 2)[1];
-                    arg = arg.substring(0, arg.length()-1);
                     System.out.println("ARG --> " + arg + "\nCMD --> " + cmd);
-                    try {
-                        methods.get(s).invoke(this.functions, interpretCommand(arg));
-                        System.err.println(arg);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
+                    // without arguments
+                    if (arg.equals(")")) {
+                        try {
+                            return classes.get("Functions").getMethod(s).invoke(this.functions);
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    // with arguments
+                    else {
+                        System.out.println(arg);
+                        String[] args = arg.substring(0, arg.length()-1).split(",");
+                        Object[] arguments = new Object[args.length];
+                        Class<?>[] argTypes = new Class<?>[args.length];
+
+                        for (int i = 0; i < args.length; i++) {
+                            arguments[i] = interpretCommand(args[i]);
+                            argTypes[i] = arguments[i].getClass();
+                        }
+                        try {
+                            return func.getMethod(s, argTypes).invoke(this.functions, arguments);
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
+
+
             return classes.getOrDefault(cmd, null);
         }
 
-        // extras for Device
-        if (value == Device.class) {
-            if (cmd.equals("this")) {
-                return sourceDevice;
+
+        // Methods
+        if (cmd.contains("(") && cmd.contains(")")) {
+            // Preparation for Methods
+            String methodName = cmd.split("\\(")[0];
+            System.out.println(cmd);
+            String tmp = cmd.split("\\(")[1];
+            String[] arguments = tmp.substring(0, tmp.length() - 1).split(",");
+
+            Object[] args = new Object[arguments.length];
+            Class<?>[] argTypes = new Class[args.length];
+
+            for (int i = 0; i < args.length; i++) {
+                args[i] = interpretCommand(arguments[i]);
+                if (args[i] != null)
+                    argTypes[i] = args[i].getClass();
             }
-        }
-
-        // Preparation for Methods
-        String methodName = cmd.split("\\(")[0];
-        System.out.println(cmd);
-        String tmp = cmd.split("\\(")[1];
-        String[] arguments = tmp.substring(0, tmp.length()-1).split(",");
-
-        Object[] args = new Object[arguments.length];
-        Class<?>[] argTypes = new Class[args.length];
-
-        for (int i = 0; i < args.length; i++) {
-            args[i] = interpretCommand(arguments[i]);
-            if (args[i] != null)
-                argTypes[i] = args[i].getClass();
-        }
 
 
-        // Finding and calling methods
-        try {
-            Method method;
+            // Finding and calling methods
+            try {
+                Method method;
 
-            // without arguments
-            if (arguments.length == 1 && arguments[0].equals("")) {
-                if (value instanceof Class) {
-                    method = ((Class<?>) value).getMethod(methodName);
-                    return method.invoke(null);
-                } else {
-                    method = value.getClass().getMethod(methodName);
-                    return method.invoke(value);
+                // without arguments
+                if (arguments.length == 1 && arguments[0].equals("")) {
+                    if (value instanceof ClassStore) {
+                        method = ((ClassStore) value).getFunction(methodName);
+                        return method.invoke(null);
+                    } else {
+                        method = classes.get(Functions.getUsableName(value.getClass())).getMethod(methodName);
+                        return method.invoke(value);
+                    }
                 }
-            }
-            // with arguments
-            else {
-                if (value instanceof Class) {
-                    method = ((Class<?>) value).getMethod(methodName, argTypes);
-                    return method.invoke(null, args);
-                }else {
-                    method = value.getClass().getMethod(methodName, argTypes);
-                    return method.invoke(value, args);
+                // with arguments
+                else {
+                    if (value instanceof ClassStore) {
+                        method = ((ClassStore) value).getFunction(methodName, argTypes);
+                        return method.invoke(null, args);
+                    } else {
+                        method = classes.get(Functions.getUsableName(value.getClass())).getMethod(methodName, argTypes);
+                        return method.invoke(value, args);
+                    }
                 }
+            } catch (NoSuchMethodException e) {
+                System.err.println("Die Methode " + methodName + " wurde nicht gefundend");
+                e.printStackTrace();
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
             }
-        } catch (NoSuchMethodException e) {
-            System.err.println("Die Methode " + methodName + " wurde nicht gefundend");
-            e.printStackTrace();
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+        }else  if (!cmd.contains("(") && !cmd.contains(")")) {
+            //TODO fields
         }
 
 
@@ -254,6 +258,16 @@ public class Interpreter {
         if (name.contains("'") || name.contains("\"") || name.contains(".")) {
             throw new InvalidVariableNameException(name);
         }
+
+        // overwrite old value
+        for (Variable var : vars) {
+            if (var.getName().equals(name)) {
+                var.setContent(interpretCommand(value));
+                return;
+            }
+        }
+
+        // new Var
         Variable var = new Variable(name, interpretCommand(value));
         vars.add(var);
     }
@@ -261,5 +275,9 @@ public class Interpreter {
 
     public OutputApp getOutputApp() {
         return outputApp;
+    }
+
+    public Device getSourceDevice() {
+        return sourceDevice;
     }
 }
