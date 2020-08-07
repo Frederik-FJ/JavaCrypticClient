@@ -2,7 +2,7 @@ package Exceptions.interpreterExceptions;
 
 public class InterpreterException extends Exception{
 
-    int line;
+    int line = 0;
 
     public InterpreterException(String message) {
         super(message);

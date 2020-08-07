@@ -19,7 +19,7 @@ public class LiveConsole extends App implements OutputApp {
 
 
     OutputAndInput outputAndInput;
-    Interpreter interpreter;
+    volatile Interpreter interpreter;
 
     public LiveConsole(ExecutionFile executionFile) {
         this.device = executionFile.getDevice();

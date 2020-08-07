@@ -1,6 +1,7 @@
 package util.interpreter.classes;
 
-import util.file.File;
+import Exceptions.InvalidServerResponseException;
+import Exceptions.interpreterExceptions.PermissionDeniedException;
 import util.interpreter.annotations.*;
 import util.items.Device;
 import util.service.Bruteforce;
@@ -57,8 +58,15 @@ public class DeviceClass extends Device {
 
     @Override
     @UsableMethod(name = "changeName")
-    public void changeName(String name) {
-        super.changeName(name);
+    public void changeName(String name) throws PermissionDeniedException {
+        try {
+            super.changeName(name);
+        } catch (InvalidServerResponseException e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("\"error\":\"permission_denied\"")) {
+                throw new PermissionDeniedException("No Permission to change Name for this Device");
+            }
+        }
     }
 
     @Override
@@ -92,6 +100,9 @@ public class DeviceClass extends Device {
 
     @Override
     public String toString() {
-        return "Device:\n\tName: " + getName() + "\n\tUUID: " + getUuid();
+        return "Device:" +
+                "\n\tName: " + getName() +
+                "\n\tUUID: " + getUuid() +
+                "\n\tReference: Device@" + Integer.toHexString(this.hashCode());
     }
 }

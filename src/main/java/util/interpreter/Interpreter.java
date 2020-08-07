@@ -1,7 +1,10 @@
 package util.interpreter;
 
 
+import Exceptions.interpreterExceptions.InterpreterException;
 import Exceptions.interpreterExceptions.InvalidVariableNameException;
+import Exceptions.interpreterExceptions.NotFoundException;
+import Exceptions.interpreterExceptions.SyntaxException;
 import gui.util.OutputApp;
 import util.interpreter.annotations.UsableClass;
 import util.interpreter.classes.ClassStore;
@@ -45,22 +48,56 @@ public class Interpreter {
         this.functions = new Functions(this);
     }
 
-    public void interpret(String text) throws InvalidVariableNameException {
-        for (int i = 0; i < text.split("\n").length; i++) {
-            String line = text.split("\n")[i];
-            try {
-                for (String s : line.split(";")) {
-                    if (s.strip().equals(""))
-                        continue;
-                    interpretCommand(s);
+    public void interpret(String text) throws InterpreterException {
+        int br1 = 0;
+        int br2 = 0;
+        int line = 1;
+        StringBuilder cmd = new StringBuilder();
+        try {
+            for (char i : text.toCharArray()) {
+                if (i == '(')
+                    br1++;
+                if (i == ')')
+                    br1--;
+                if (i == '{')
+                    br2++;
+                if (i == '}')
+                    br2--;
+
+                if (i == '\n')
+                    line++;
+
+                if (br1 < 0) {
+                    throw new SyntaxException("missing (", line);
                 }
-            } catch (InvalidVariableNameException e) {
-                e.setLine(i+1);
-                outputApp.toNextFreeLine();
-                outputApp.println(e.getClass().getSimpleName() + " at line " + e.getLine() + " due to: \n\t" + e.getMessage());
-                throw e;
+
+                if (br2 < 0) {
+                    throw new SyntaxException("missing {", line);
+                }
+
+                if ((i == ';' || i == '}') && br1 == 0 && br2 == 0){
+                    interpretCommand(cmd.toString());
+                    cmd = new StringBuilder();
+                    continue;
+                }
+                cmd.append(i);
             }
+
+            if (br1 != 0) {
+                throw new SyntaxException("missing )");
+            }
+
+            if (br2 != 0) {
+                throw new SyntaxException("missing }");
+            }
+        } catch (InterpreterException e) {
+            if (e.getLine() == 0)
+                e.setLine(line);
+            outputApp.toNextFreeLine();
+            outputApp.println(e.getClass().getSimpleName() + " at line " + e.getLine() + " due to: \n\t" + e.getMessage());
+            throw e;
         }
+
         /*
         for (Variable var: vars) {
             System.out.println(var);
@@ -68,7 +105,7 @@ public class Interpreter {
         */
     }
 
-    public Object interpretCommand(String command) throws InvalidVariableNameException {
+    public Object interpretCommand(String command) throws InterpreterException {
 
         if (command.strip().startsWith("var ")) {
             interpretVar(command);
@@ -89,6 +126,8 @@ public class Interpreter {
             if (c == '}')
                 br2--;
 
+
+
             if (c == '.' && br1 == 0 && br2 == 0) {
                 parts.add(tmp.toString());
                 tmp = new StringBuilder();
@@ -104,7 +143,7 @@ public class Interpreter {
         return value;
     }
 
-    private Object interpretSingleCommand(Object value, String cmd) throws InvalidVariableNameException {
+    private Object interpretSingleCommand(Object value, String cmd) throws InterpreterException {
 
         cmd = cmd.strip();
         // First command in a chain of commands
@@ -190,8 +229,9 @@ public class Interpreter {
                 }
             }
 
-
-            return classes.getOrDefault(cmd, null);
+            if (!cmd.strip().equals("")) {
+                throw new NotFoundException("The value '" + cmd + "' wasn't found");
+            }
         }
 
 
@@ -251,7 +291,7 @@ public class Interpreter {
         return null;
     }
 
-    private void interpretVar(String line) throws InvalidVariableNameException {
+    private void interpretVar(String line) throws InterpreterException {
         String name = line.split("=")[0].strip().split(" ")[1];
         String value = line.split("=")[1];
 

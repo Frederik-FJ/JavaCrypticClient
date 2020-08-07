@@ -2,6 +2,7 @@ package util.items;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
+import Exceptions.interpreterExceptions.PermissionDeniedException;
 import connection.WebSocketClient;
 import information.Information;
 import util.file.File;
@@ -132,7 +133,7 @@ public class Device {
         return components;
     }
 
-    public void changeName(String newName) {
+    public void changeName(String newName) throws InvalidServerResponseException, PermissionDeniedException {
         List<String> endpoint = Arrays.asList("device", "change_name");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", uuid);
@@ -140,7 +141,7 @@ public class Device {
         try {
             client.microservice("device", endpoint, data);
             reloadName();
-        } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+        } catch (UnknownMicroserviceException e) {
             e.printStackTrace();
         }
     }

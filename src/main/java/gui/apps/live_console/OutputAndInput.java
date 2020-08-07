@@ -10,13 +10,16 @@ import java.awt.*;
 
 public class OutputAndInput extends Panel implements OutputApp {
 
-    Interpreter interpreter;
+    volatile Interpreter interpreter;
     LiveConsole parent;
 
-    JTextArea input = new JTextArea();
-    JTextArea output = new JTextArea();
+    volatile JTextArea input = new JTextArea();
+    volatile JTextArea output = new JTextArea();
     JButton submit = new JButton("submit");
     JScrollPane outputContainer;
+
+    volatile boolean isRunning = false;
+
 
     public OutputAndInput(Interpreter interpreter, LiveConsole parent) {
         this.interpreter = interpreter;
@@ -81,13 +84,30 @@ public class OutputAndInput extends Panel implements OutputApp {
     }
 
     protected void execute(String input) {
-        try {
-            interpreter.interpret(input);
-        } catch (InterpreterException e) {
-            parent.exceptionList.add(e);
+        if (isRunning) {
+            return;
         }
-        parent.reload();
-        this.input.setText("");
+        new Thread(() -> {
+            isRunning = true;
+            submit.setBackground(Color.RED);
+
+            OutputAndInput.this.input.setText("");
+            try {
+                interpreter.interpret(input);
+            } catch (InterpreterException e) {
+                parent.exceptionList.add(e);
+            } catch (Exception e) {
+                endExecute();
+                throw e;
+            }
+            parent.reload();
+            endExecute();
+        }).start();
+    }
+
+    public void endExecute() {
+        isRunning = false;
+        submit.setBackground(Color.WHITE);
     }
 
 
