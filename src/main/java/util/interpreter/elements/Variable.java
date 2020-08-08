@@ -1,4 +1,4 @@
-package util.interpreter;
+package util.interpreter.elements;
 
 public class Variable{
 

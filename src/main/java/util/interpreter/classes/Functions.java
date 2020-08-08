@@ -1,17 +1,14 @@
-package util.interpreter.functions;
+package util.interpreter.classes;
 
 import util.interpreter.Interpreter;
 import util.interpreter.annotations.UsableClass;
 import util.interpreter.annotations.UsableField;
 import util.interpreter.annotations.UsableMethod;
-import util.interpreter.classes.ClassStore;
-import util.interpreter.classes.DeviceClass;
 
 @UsableClass(name = "Functions")
 public class Functions {
 
     Interpreter interpreter;
-    ClassStore classStore;
 
     public Functions(Interpreter interpreter) {
         this.interpreter = interpreter;

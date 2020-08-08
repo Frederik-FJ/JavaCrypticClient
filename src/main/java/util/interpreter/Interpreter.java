@@ -10,7 +10,8 @@ import util.interpreter.annotations.UsableClass;
 import util.interpreter.classes.ClassStore;
 import util.interpreter.classes.DeviceClass;
 import util.interpreter.classes.FileClass;
-import util.interpreter.functions.Functions;
+import util.interpreter.classes.Functions;
+import util.interpreter.elements.Variable;
 import util.items.Device;
 
 import java.lang.reflect.Constructor;
@@ -25,6 +26,8 @@ public class Interpreter {
     Functions functions;
 
     List<Variable> vars = new ArrayList<>();
+
+    Interpreter parentInterpreter = null;
 
 
     static Map<String, ClassStore> classes = new HashMap<>();
@@ -45,6 +48,13 @@ public class Interpreter {
     public Interpreter(OutputApp outputApp, Device sourceDevice) {
         this.outputApp = outputApp;
         this.sourceDevice = sourceDevice;
+        this.functions = new Functions(this);
+    }
+
+    public Interpreter(Interpreter parentInterpreter) {
+        this.parentInterpreter = parentInterpreter;
+        this.sourceDevice = parentInterpreter.sourceDevice;
+        this.outputApp = parentInterpreter.outputApp;
         this.functions = new Functions(this);
     }
 
@@ -107,16 +117,47 @@ public class Interpreter {
 
     public Object interpretCommand(String command) throws InterpreterException {
 
-        if (command.strip().startsWith("var ")) {
-            interpretVar(command);
-            return null;
-        }
         Object value = null;
+
+        if (command.strip().startsWith("var ")) {
+            return interpretVar(command);
+        }
+
         List<String> parts = new ArrayList<>();
         int br1 = 0;
         int br2 = 0;
+        boolean str1 = false;
+        boolean str2 = false;
         StringBuilder tmp = new StringBuilder();
+        char last = '.';
         for (char c : command.toCharArray()) {
+
+            // String
+            if (str1) {
+                tmp.append(c);
+                if (c == '"') {
+                    str1 = false;
+                    last = c;
+                }
+                continue;
+
+            }
+
+            if (str2) {
+                tmp.append(c);
+                if (c == '\'') {
+                    str2 = false;
+                    last = c;
+                }
+                continue;
+            }
+
+            if (c == '"')
+                str1 = true;
+            if (c == '\'')
+                str2 = true;
+
+            // Brackets
             if (c == '(')
                 br1++;
             if (c == ')')
@@ -126,14 +167,34 @@ public class Interpreter {
             if (c == '}')
                 br2--;
 
+            // interpret main command
+            if (br1 == 0 && br2 == 0 && !str1 && !str2) {
+                // Condition
+                if (c == '=') {
+                    if (last == '=') {
+                        parts = new ArrayList<>();
+                        tmp = new StringBuilder();
+                        tmp.append(command);
+                        break;
+                    }
+                }
+                if (c == '<' || c == '>' || c == '!') {
+                    parts = new ArrayList<>();
+                    tmp = new StringBuilder();
+                    tmp.append(command);
+                    break;
+                }
 
-
-            if (c == '.' && br1 == 0 && br2 == 0) {
-                parts.add(tmp.toString());
-                tmp = new StringBuilder();
-                continue;
+                // Split commands with '.'s
+                if (c == '.') {
+                    parts.add(tmp.toString());
+                    tmp = new StringBuilder();
+                    last = c;
+                    continue;
+                }
             }
             tmp.append(c);
+            last = c;
         }
         parts.add(tmp.toString());
 
@@ -146,6 +207,7 @@ public class Interpreter {
     private Object interpretSingleCommand(Object value, String cmd) throws InterpreterException {
 
         cmd = cmd.strip();
+        //System.err.println(cmd);
         // First command in a chain of commands
         if (value == null) {
             // Checking for Vars
@@ -155,7 +217,7 @@ public class Interpreter {
                 }
             }
 
-            //Type-Forms
+            // Type-Forms
             try {
                 return Double.parseDouble(cmd);
             } catch (NumberFormatException ignore) { }
@@ -163,6 +225,16 @@ public class Interpreter {
             if ((cmd.startsWith("'") && cmd.endsWith("'")) || (cmd.startsWith("\"") && cmd.endsWith("\""))) {
                 return cmd.substring(1, cmd.length()-1);
             }
+
+            if (cmd.equals("true") || cmd.equals("True")) {
+                return true;
+            }
+
+            if (cmd.equals("false") || cmd.equals("False")) {
+                return false;
+            }
+
+
 
             for (String s : classes.keySet()) {
                 // for Classes used for static methods
@@ -172,7 +244,7 @@ public class Interpreter {
                 // Constructor
                 if (cmd.split("\\(")[0].equals(s)) {
                     // Preparation for calling the constructor
-                    String tmp = cmd.split("\\(")[1];
+                    String tmp = cmd.split("\\(", 2)[1];
                     String[] arguments = tmp.substring(0, tmp.length()-1).split(",");
 
                     Object[] args = new Object[arguments.length];
@@ -198,13 +270,13 @@ public class Interpreter {
             Map<String, List<Method>> functions = func.getMethods();
             for (String s : functions.keySet()) {
                 if (cmd.split("\\(")[0].equals(s)) {
-                    List<Method> methods = functions.get(s);
                     String arg = cmd.split("\\(", 2)[1];
                     System.out.println("ARG --> " + arg + "\nCMD --> " + cmd);
+
                     // without arguments
                     if (arg.equals(")")) {
                         try {
-                            return classes.get("Functions").getMethod(s).invoke(this.functions);
+                            return func.getMethod(s).invoke(this.functions);
                         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                             e.printStackTrace();
                         }
@@ -229,9 +301,14 @@ public class Interpreter {
                 }
             }
 
+            Object con = interpretConditions(cmd);
+            if (con != null)
+                return con;
+
             if (!cmd.strip().equals("")) {
                 throw new NotFoundException("The value '" + cmd + "' wasn't found");
             }
+            return null;
         }
 
 
@@ -240,7 +317,7 @@ public class Interpreter {
             // Preparation for Methods
             String methodName = cmd.split("\\(")[0];
             System.out.println(cmd);
-            String tmp = cmd.split("\\(")[1];
+            String tmp = cmd.split("\\(", 2)[1];
             String[] arguments = tmp.substring(0, tmp.length() - 1).split(",");
 
             Object[] args = new Object[arguments.length];
@@ -291,9 +368,9 @@ public class Interpreter {
         return null;
     }
 
-    private void interpretVar(String line) throws InterpreterException {
+    private Object interpretVar(String line) throws InterpreterException {
         String name = line.split("=")[0].strip().split(" ")[1];
-        String value = line.split("=")[1];
+        String value = line.split("=", 2)[1];
 
         if (name.contains("'") || name.contains("\"") || name.contains(".")) {
             throw new InvalidVariableNameException(name);
@@ -303,14 +380,148 @@ public class Interpreter {
         for (Variable var : vars) {
             if (var.getName().equals(name)) {
                 var.setContent(interpretCommand(value));
-                return;
+                return value;
+            }
+        }
+
+        // vars from parent Interpreter
+        if (parentInterpreter != null) {
+            Interpreter localParentInterpreter = parentInterpreter;
+
+            List<Interpreter> parents = new ArrayList<>();
+            parents.add(parentInterpreter);
+            while (localParentInterpreter.hasParentInterpreter()) {
+                parents.add((localParentInterpreter = localParentInterpreter.getParentInterpreter()));
+            }
+
+            for (Interpreter i : parents) {
+                for (Variable var : i.vars) {
+                    if (var.getName().equals(name)) {
+                        var.setContent(interpretCommand(value));
+                        return value;
+                    }
+                }
             }
         }
 
         // new Var
         Variable var = new Variable(name, interpretCommand(value));
         vars.add(var);
+        return value;
     }
+
+
+    public Object interpretConditions(String cmd) throws InterpreterException{
+
+        //Condition connections
+        if (cmd.contains("&&") || cmd.contains("||")) {
+
+            int br1 = 0;
+            StringBuilder tmp = new StringBuilder();
+            for (char c : cmd.toCharArray()) {
+                if (c == '(')
+                    br1++;
+                if (c == ')')
+                    br1--;
+
+                if (br1 == 0 && c == ')' && (tmp.toString().contains("==") || tmp.toString().contains("<")
+                        || tmp.toString().contains(">") || tmp.toString().contains("!="))) {
+                    cmd = cmd.replace(tmp.toString() + ')', interpretCommand(tmp.substring(1)).toString());
+                    tmp = new StringBuilder();
+                    continue;
+                }
+
+                if (br1 > 0)
+                    tmp.append(c);
+            }
+
+            // Split with ||
+            String[] or = cmd.split("\\|\\|");
+
+            //Split with &&
+            String[][] and = new String[or.length][];
+            for (int i = 0; i < or.length; i++) {
+                and[i] = or[i].split("&&");
+            }
+
+            // compute values and compute them with &&
+            boolean[] valuesAfterAnd = new boolean[or.length];
+            for (int i = 0; i < or.length; i++) {
+                boolean val = true;
+                for (String s : and[i]) {
+                    if (!((boolean) interpretCommand(s))) {
+                        val = false;
+                        break;
+                    }
+                }
+                valuesAfterAnd[i] = val;
+            }
+
+            // compute values with ||
+            boolean finalValue = false;
+            for (boolean i : valuesAfterAnd) {
+                if (i) {
+                    finalValue = true;
+                    break;
+                }
+            }
+
+            return finalValue;
+        }
+
+        // Conditions
+        if (cmd.contains("==") || cmd.contains("!") || cmd.contains("<") || cmd.contains(">")) {
+            if (cmd.contains("=")) {
+                if (cmd.contains("===") || cmd.contains("!==")) {
+                    String[] parts = cmd.split("===");
+                    int value1 = interpretCommand(parts[0]).hashCode();
+                    int value2 = interpretCommand(parts[1]).hashCode();
+                    if (cmd.contains("===")) {
+                        return value1 == value2;
+                    } else {
+                        return value1 != value2;
+                    }
+                }
+                else if (cmd.contains("==") || cmd.contains("!=")) {
+                    String[] parts = cmd.split("==");
+                    Object value1 = interpretCommand(parts[0]);
+                    Object value2 = interpretCommand(parts[1]);
+                    if (cmd.contains("==")) {
+                        return value1.equals(value2);
+                    } else {
+                        return !value1.equals(value2);
+                    }
+                }
+            }
+            else if (cmd.contains("<")) {
+                String[] parts = cmd.replace("=", "").split("<");
+                Double value1 = (Double) interpretCommand(parts[0]);
+                Double value2 = (Double) interpretCommand(parts[1]);
+                if (cmd.contains("=")) {
+                    return value1 <= value2;
+                } else {
+                    return value1 < value2;
+                }
+            }
+            else if (cmd.contains(">")) {
+                String[] parts = cmd.replace("=", "").split(">");
+                Double value1 = (Double) interpretCommand(parts[0]);
+                Double value2 = (Double) interpretCommand(parts[1]);
+                if (cmd.contains("=")) {
+                    return value1 >= value2;
+                } else {
+                    return value1 > value2;
+                }
+            }
+        }
+
+        if (cmd.startsWith("!")) {
+            return !((boolean) interpretCommand(cmd.substring(1)));
+        }
+
+        return null;
+    }
+
 
 
     public OutputApp getOutputApp() {
@@ -319,5 +530,17 @@ public class Interpreter {
 
     public Device getSourceDevice() {
         return sourceDevice;
+    }
+
+    public boolean hasParentInterpreter() {
+        return parentInterpreter != null;
+    }
+
+    public Interpreter getParentInterpreter() {
+        return parentInterpreter;
+    }
+
+    public List<Variable> getVars() {
+        return vars;
     }
 }

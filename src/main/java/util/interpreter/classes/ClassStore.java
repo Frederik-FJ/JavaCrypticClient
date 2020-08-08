@@ -4,7 +4,6 @@ import util.interpreter.annotations.UsableConstructor;
 import util.interpreter.annotations.UsableField;
 import util.interpreter.annotations.UsableFunction;
 import util.interpreter.annotations.UsableMethod;
-import util.interpreter.functions.Functions;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

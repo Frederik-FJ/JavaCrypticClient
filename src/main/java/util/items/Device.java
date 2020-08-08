@@ -192,4 +192,12 @@ public class Device {
     public File getRootDirectory() {
         return new File(null, null, true, this);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Device) {
+            return ((Device) o).getUuid().equals(uuid);
+        }
+        return false;
+    }
 }
