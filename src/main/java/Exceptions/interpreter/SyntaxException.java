@@ -1,4 +1,4 @@
-package Exceptions.interpreterExceptions;
+package Exceptions.interpreter;
 
 public class SyntaxException extends InterpreterException {
     public SyntaxException(String message) {

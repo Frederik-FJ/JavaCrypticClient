@@ -1,4 +1,4 @@
-package Exceptions.interpreterExceptions;
+package Exceptions.interpreter;
 
 public class NotFoundException extends InterpreterException{
     public NotFoundException(String message, int line) {

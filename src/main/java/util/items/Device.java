@@ -2,7 +2,7 @@ package util.items;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
-import Exceptions.interpreterExceptions.PermissionDeniedException;
+import Exceptions.interpreter.PermissionDeniedException;
 import connection.WebSocketClient;
 import information.Information;
 import util.file.File;
@@ -31,7 +31,7 @@ public class Device {
 
     public static Device getRandomDevice() {
         List<String> endpoint = Arrays.asList("device", "spot");
-        Map result;
+        Map<?, ?> result;
         try {
             result = Information.webSocketClient.microservice("device", endpoint, new HashMap<>());
         } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
@@ -42,7 +42,7 @@ public class Device {
 
     public static List<Device> getHackedDevices() {
         List<String> endpoint = Collections.singletonList("list_part_owner");
-        Map result;
+        Map<?, ?> result;
         try {
             result = Information.webSocketClient.microservice("service", endpoint, new HashMap<>());
         } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
@@ -51,19 +51,20 @@ public class Device {
         }
 
         List<Device> ret = new ArrayList<>();
-        for (Map m : (List<Map>) result.get("services")) {
+        for (Map<?, ?> m : (List<Map>) result.get("services")) {
             Device d = new Device(m.get("device").toString());
+            // Name kann nicht gesetzt werden weil nur die device UUID zurück kommt
             ret.add(d);
         }
 
         return ret;
     }
 
-    public Map deviceInfo() throws UnknownMicroserviceException, InvalidServerResponseException {
+    public Map<?, ?> deviceInfo() throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("device", "info");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", uuid);
-        Map result = client.microservice("device", endpoint, data);
+        Map<?, ?> result = client.microservice("device", endpoint, data);
         //setComponents((List<Map>) result.get("hardware_type"));
         return result;
     }
@@ -96,7 +97,7 @@ public class Device {
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", uuid);
         try {
-            Map result = client.microservice("device", endpoint, data);
+            Map<?, ?> result = client.microservice("device", endpoint, data);
             return (boolean) result.get("online");
         } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
             e.printStackTrace();
@@ -105,17 +106,15 @@ public class Device {
 
     }
 
-    private Map changeStatus() {
+    private void changeStatus() {
         List<String> endpoint = Arrays.asList("device", "power");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", uuid);
-        Map result = null;
         try {
-            result = client.microservice("device", endpoint, data);
+            client.microservice("device", endpoint, data);
         } catch (UnknownMicroserviceException | InvalidServerResponseException e) {
             e.printStackTrace();
         }
-        return result;
     }
 
     public void boot() {
@@ -146,7 +145,7 @@ public class Device {
         }
     }
 
-    public Map getOwner() throws UnknownMicroserviceException, InvalidServerResponseException {
+    public Map<?, ?> getOwner() throws UnknownMicroserviceException, InvalidServerResponseException {
         List<String> endpoint = Arrays.asList("device", "owner");
         Map<String, String> data = new HashMap<>();
         data.put("device_uuid", uuid);

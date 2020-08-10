@@ -1,4 +1,4 @@
-package Exceptions.interpreterExceptions;
+package Exceptions.interpreter;
 
 public class PermissionDeniedException extends InterpreterException{
     public PermissionDeniedException(String message, int line) {

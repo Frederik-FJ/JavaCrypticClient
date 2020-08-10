@@ -1,6 +1,6 @@
 package util.interpreter.elements;
 
-import Exceptions.interpreterExceptions.InterpreterException;
+import Exceptions.interpreter.InterpreterException;
 import util.interpreter.Interpreter;
 
 import java.util.ArrayList;

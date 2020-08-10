@@ -1,11 +1,16 @@
 package util.interpreter.classes;
 
 import Exceptions.InvalidServerResponseException;
+import Exceptions.file.UnknownFileSourceException;
 import util.file.File;
 import util.interpreter.annotations.UsableClass;
 import util.interpreter.annotations.UsableConstructor;
+import util.interpreter.annotations.UsableFunction;
 import util.interpreter.annotations.UsableMethod;
 import util.items.Device;
+import util.path.Path;
+
+import java.util.Objects;
 
 
 @UsableClass(name = "File")
@@ -19,6 +24,32 @@ public class FileClass extends File {
     public FileClass(File file) {
         super(file.getUuid(), file.getParentDirUuid(), file.isDirectory(), file.getDevice());
     }
+
+    @UsableMethod(name = "getFileByUuid")
+    public static FileClass getFileByUuid(String uuid, Device device) throws UnknownFileSourceException {
+            return new FileClass(Objects.requireNonNull(File.getFileByUuid(uuid, device)));
+    }
+
+    @UsableFunction(name = "createDirectory")
+    public static FileClass createDirectory(String name, File parentDir, Device device) throws InvalidServerResponseException {
+        return new FileClass(Objects.requireNonNull(File.createDirectory(name, parentDir.getParentDirUuid(), device)));
+    }
+
+    @UsableFunction(name = "createDirectory")
+    public static FileClass createDirectory(String name, String parentDirUuid, Device device) throws InvalidServerResponseException {
+        return new FileClass(Objects.requireNonNull(File.createDirectory(name, parentDirUuid, device)));
+    }
+
+    @UsableFunction(name = "createFile")
+    public static FileClass createFile(String name, String content, File parentDir, Device device) throws InvalidServerResponseException {
+        return new FileClass(Objects.requireNonNull(File.createFile(name, content, parentDir.getUuid(), device)));
+    }
+
+    @UsableFunction(name = "createFile")
+    public static FileClass createFile(String name, String content, String parentDirUuid, Device device) throws InvalidServerResponseException {
+        return new FileClass(Objects.requireNonNull(File.createFile(name, content, parentDirUuid, device)));
+    }
+
 
     @Override
     @UsableMethod(name = "isDirectory")
@@ -94,6 +125,12 @@ public class FileClass extends File {
     @UsableMethod(name = "delete")
     public void delete() {
         super.delete();
+    }
+
+    //TODO PathFile for Interpreter, return it
+    @Override
+    public Path getPath() {
+        return super.getPath();
     }
 
     @Override

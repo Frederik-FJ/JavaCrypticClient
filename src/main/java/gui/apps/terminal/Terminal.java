@@ -100,12 +100,12 @@ public class Terminal extends App implements OutputApp {
 
         String[] params = command.split(" ");
 
-        boolean fileManager = command.replace(" ", "").equalsIgnoreCase("filemanager");
-        boolean terminal = command.replace(" ", "").equalsIgnoreCase("terminal");
-        boolean attack = command.replace(" ", "").equalsIgnoreCase("attack");
-        boolean serviceManager = command.replace(" ", "").equalsIgnoreCase("servicemanager");
-        boolean walletApp = command.replace(" ", "").startsWith("wallet");
-        boolean miner = command.replace(" ", "").equalsIgnoreCase("miner");
+        boolean fileManager = command.strip().equalsIgnoreCase("filemanager");
+        boolean terminal = command.strip().equalsIgnoreCase("terminal");
+        boolean attack = command.strip().equalsIgnoreCase("attack");
+        boolean serviceManager = command.strip().equalsIgnoreCase("servicemanager");
+        boolean walletApp = command.strip().startsWith("wallet");
+        boolean miner = command.strip().equalsIgnoreCase("miner");
 
         boolean ls = command.equals("ls");
         boolean cd = command.startsWith("cd");

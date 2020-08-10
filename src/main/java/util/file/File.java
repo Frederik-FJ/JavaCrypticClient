@@ -9,7 +9,9 @@ import information.Information;
 import util.items.Device;
 import util.path.Path;
 
+import javax.swing.*;
 import java.util.*;
+import java.util.Timer;
 
 public class File {
 
@@ -19,6 +21,10 @@ public class File {
     Device device;
 
     String name = null;
+
+    static int createdFiles = 0;
+    static final int unit = 60000; // 1 Minute
+    static final int maxFilesPerUnit = 5;
 
     public File(String uuid, String parentDirUuid, boolean isDirectory, Device device) {
         this.isDirectory = isDirectory;
@@ -33,6 +39,11 @@ public class File {
     }
 
     private static File create(Device device, String filename, String content, String parentDirUuid, boolean isDirectory) throws UnknownMicroserviceException, InvalidServerResponseException {
+        if (createdFiles >= maxFilesPerUnit) {
+            JOptionPane.showInternalMessageDialog(Information.Desktop, "You created already 5 files in the last minute. Just wait a little bit to create the next file.");
+            throw new RuntimeException("Zu viele Dateien erstellt.");
+        }
+
         List<String> endpoint = Arrays.asList("file", "create");
         Map<String, Object> data = new HashMap<>();
         data.put("device_uuid", device.getUuid());
@@ -40,20 +51,45 @@ public class File {
         data.put("content", content);
         data.put("parent_dir_uuid", parentDirUuid);
         data.put("is_directory", isDirectory);
-        Map result = Information.webSocketClient.microservice("device", endpoint, data);
+        Map<?, ?> result = Information.webSocketClient.microservice("device", endpoint, data);
+
+        createdFiles++;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                createdFiles--;
+            }
+        }, unit);
+
+
         return new File(result.get("uuid").toString(), (String) result.get("parent_dir_uuid"), (boolean) result.get("is_directory"), new Device(result.get("device").toString()));
     }
 
-    public static File createFile(String filename, String content, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
-        return create(device, filename, content, parentDirUuid, false);
+    public static File createFile(String filename, String content, String parentDirUuid, Device device) throws InvalidServerResponseException {
+        try {
+            return create(device, filename, content, parentDirUuid, false);
+        } catch (UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    public static File createFile(String filename, String content, Path path, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
-        return create(device, filename, content, path.getCurrentFile().getUuid(), false);
+    public static File createFile(String filename, String content, Path path, Device device) throws InvalidServerResponseException {
+        try {
+            return create(device, filename, content, path.getCurrentFile().getUuid(), false);
+        } catch (UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    public static File createDirectory(String name, String parentDirUuid, Device device) throws InvalidServerResponseException, UnknownMicroserviceException {
-        return create(device, name, "", parentDirUuid, true);
+    public static File createDirectory(String name, String parentDirUuid, Device device) throws InvalidServerResponseException {
+        try {
+            return create(device, name, "", parentDirUuid, true);
+        } catch (UnknownMicroserviceException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static File getFileByUuid(String uuid, Device device) throws UnknownFileSourceException {

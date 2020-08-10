@@ -62,6 +62,12 @@ public class Bruteforce extends Service {
         }
     }
 
+    public double getProgress() throws InvalidServerResponseException {
+        double progress =  Double.parseDouble(this.status().get("progress").toString());
+        double percent = (progress / 20 - 0.1) * 100;
+        return ((int) (percent * 100)) / 100.0;
+    }
+
     public boolean stop() {
         List<String> endpoint = Arrays.asList("bruteforce", "stop");
         try {

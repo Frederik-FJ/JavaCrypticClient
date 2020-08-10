@@ -1,8 +1,6 @@
-package util.interpreter.classes;
+package util.interpreter.classes.service;
 
-import Exceptions.InvalidServerResponseException;
-import Exceptions.UnknownMicroserviceException;
-import Exceptions.interpreterExceptions.WrongServiceException;
+import Exceptions.interpreter.WrongServiceException;
 import util.interpreter.annotations.UsableClass;
 import util.interpreter.annotations.UsableConstructor;
 import util.interpreter.annotations.UsableMethod;
@@ -46,9 +44,4 @@ public class SSHClass extends SSH {
         return super.getDevice();
     }
 
-    @Override
-    @UsableMethod(name = "delete")
-    public void delete() throws InvalidServerResponseException, UnknownMicroserviceException {
-        super.delete();
-    }
 }

@@ -1,6 +1,6 @@
 package gui.apps.live_console;
 
-import Exceptions.interpreterExceptions.InterpreterException;
+import Exceptions.interpreter.InterpreterException;
 import gui.util.OutputApp;
 import gui.util.Panel;
 import util.interpreter.Interpreter;

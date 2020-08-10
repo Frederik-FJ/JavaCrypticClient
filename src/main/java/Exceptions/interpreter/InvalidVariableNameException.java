@@ -1,4 +1,4 @@
-package Exceptions.interpreterExceptions;
+package Exceptions.interpreter;
 
 public class InvalidVariableNameException extends InterpreterException{
 

@@ -1,13 +1,13 @@
 package util.interpreter.classes;
 
 import Exceptions.InvalidServerResponseException;
-import Exceptions.interpreterExceptions.PermissionDeniedException;
+import Exceptions.interpreter.PermissionDeniedException;
+import information.Information;
 import util.interpreter.annotations.*;
+import util.interpreter.classes.service.BruteforceClass;
+import util.interpreter.classes.service.SSHClass;
 import util.items.Device;
-import util.service.Bruteforce;
-import util.service.Miner;
-import util.service.Portscan;
-import util.service.Service;
+import util.service.*;
 
 @UsableClass(name = "Device")
 public class DeviceClass extends Device {
@@ -31,8 +31,8 @@ public class DeviceClass extends Device {
     public String getUuid() {
         return super.getUuid();
     }
-    @Override
 
+    @Override
     @UsableMethod(name = "getName")
     public String getName() {
         return super.getName();
@@ -69,6 +69,8 @@ public class DeviceClass extends Device {
         }
     }
 
+    //FIXME return MinerClass and PortscanClass
+
     @Override
     @UsableMethod(name = "getMiner")
     public Miner getMinerService() {
@@ -89,6 +91,31 @@ public class DeviceClass extends Device {
             }
         }
         return null;
+    }
+
+    @UsableMethod(name = "getSSH")
+    public SSH getSSHService() {
+        for (Service s : this.getServices()) {
+            if (s instanceof SSH) {
+                return new SSHClass(s);
+            }
+        }
+        return null;
+    }
+
+    @UsableMethod(name = "portscanSSH")
+    public SSH getSSHWithPortscan(Device target) {
+        for (Service s : getPortscanService().run(target)) {
+            if (s instanceof SSH) {
+                return new SSHClass(s);
+            }
+        }
+        return null;
+    }
+
+    @UsableMethod(name = "connect")
+    public void connect() {
+        Information.Desktop.startTerminal(this);
     }
 
 
