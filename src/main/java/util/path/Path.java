@@ -1,10 +1,13 @@
 package util.path;
 
 import Exceptions.InvalidServerResponseException;
+import Exceptions.NoDirectoryException;
 import Exceptions.UnknownMicroserviceException;
+import information.Information;
 import util.items.Device;
 import util.file.File;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +36,34 @@ public class Path {
         this(file.getDevice());
         this.currentFile = file;
         updatePwd();
+    }
+
+    public static Path getPathFromString(Path srcPath, String path) throws NoDirectoryException {
+        DirectoryPath p = new DirectoryPath(srcPath);
+        String[] dirs = path.split("/");
+        for (String dir : dirs) {
+            if (dir.contains(" ") && !dir.contains("\"")) {
+                dir = dir.split(" ")[0];
+            }
+            if (dir.equals(".")) continue;
+            try {
+                for (File f : p.getCurrentFile().getFiles()) {
+                    if (dir.equals(f.getName())) {
+                        return new Path(f);
+                    }
+                }
+            } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException e) {
+                e.printStackTrace();
+            }
+            try {
+                p.changeDirectory(dir);
+            } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
+                e.printStackTrace();
+                JOptionPane.showInternalMessageDialog(Information.Desktop, "Error");
+                break;
+            }
+        }
+        return null;
     }
 
     public Device getDevice() {

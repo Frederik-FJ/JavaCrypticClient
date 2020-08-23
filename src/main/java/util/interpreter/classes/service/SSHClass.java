@@ -1,6 +1,7 @@
 package util.interpreter.classes.service;
 
 import Exceptions.interpreter.WrongServiceException;
+import util.interpreter.Interpreter;
 import util.interpreter.annotations.UsableClass;
 import util.interpreter.annotations.UsableConstructor;
 import util.interpreter.annotations.UsableMethod;
@@ -11,9 +12,12 @@ import util.service.Service;
 @UsableClass(name = "SSH")
 public class SSHClass extends SSH {
 
+    Interpreter interpreter;
+
     @UsableConstructor
-    public SSHClass(String serviceUuid, Device device) throws WrongServiceException {
+    public SSHClass(Interpreter interpreter, String serviceUuid, Device device) throws WrongServiceException {
         super(serviceUuid, device);
+        this.interpreter = interpreter;
 
         if (!this.getInfo(false).get("name").toString().equalsIgnoreCase("ssh")) {
             throw new WrongServiceException("Not a SSH Service");

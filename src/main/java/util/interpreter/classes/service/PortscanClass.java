@@ -2,6 +2,7 @@ package util.interpreter.classes.service;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
+import util.interpreter.Interpreter;
 import util.interpreter.annotations.UsableClass;
 import util.interpreter.annotations.UsableConstructor;
 import util.interpreter.annotations.UsableMethod;
@@ -12,9 +13,12 @@ import util.service.Service;
 @UsableClass(name = "Portscan")
 public class PortscanClass extends Portscan {
 
+    Interpreter interpreter;
+
     @UsableConstructor
-    public PortscanClass(String serviceUuid, Device device) {
+    public PortscanClass(Interpreter interpreter, String serviceUuid, Device device) {
         super(serviceUuid, device);
+        this.interpreter = interpreter;
     }
 
     public PortscanClass(Service service) {

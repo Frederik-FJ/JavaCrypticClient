@@ -3,6 +3,7 @@ package util.interpreter.classes;
 import Exceptions.InvalidServerResponseException;
 import Exceptions.interpreter.PermissionDeniedException;
 import information.Information;
+import util.interpreter.Interpreter;
 import util.interpreter.annotations.*;
 import util.interpreter.classes.service.BruteforceClass;
 import util.interpreter.classes.service.SSHClass;
@@ -12,18 +13,20 @@ import util.service.*;
 @UsableClass(name = "Device")
 public class DeviceClass extends Device {
 
+    Interpreter interpreter;
+
     @UsableConstructor
-    public DeviceClass(String uuid) {
+    public DeviceClass(Interpreter interpreter, String uuid) {
         super(uuid);
     }
 
-    public DeviceClass(Device device) {
+    public DeviceClass(Interpreter interpreter, Device device) {
         super(device.getUuid());
     }
 
     @UsableFunction(name = "getRandomDevice")
-    public static DeviceClass getRandomDevice() {
-        return new DeviceClass(Device.getRandomDevice().getUuid());
+    public static DeviceClass getRandomDevice(Interpreter interpreter) {
+        return new DeviceClass(interpreter, Device.getRandomDevice());
     }
 
     @Override
@@ -122,7 +125,7 @@ public class DeviceClass extends Device {
     @Override
     @UsableMethod(name = "getRootDir")
     public FileClass getRootDirectory() {
-        return new FileClass(super.getRootDirectory());
+        return new FileClass(interpreter, super.getRootDirectory());
     }
 
     @Override

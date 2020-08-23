@@ -117,7 +117,10 @@ public class Gui extends JFrame {
 
         // load with userInput if no data from properties available
         String uname = JOptionPane.showInputDialog("Username");
-        String pw = JOptionPane.showInputDialog("Password");
+        JPasswordField pwf = new JPasswordField();
+        int result = JOptionPane.showConfirmDialog(null, pwf, "Password", JOptionPane.OK_CANCEL_OPTION);
+        if (result < 0) return;
+        String pw = new String(pwf.getPassword());
 
         try {
             Information.client.login(uname, pw);

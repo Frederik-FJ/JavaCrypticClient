@@ -8,6 +8,8 @@ import util.interpreter.Interpreter;
 import util.items.Device;
 
 import javax.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -45,6 +47,13 @@ public class LiveConsole extends App implements OutputApp {
         tabbedPane.addTab("Output & Input", outputAndInput);
 
         this.add(tabbedPane);
+
+        this.addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameClosing(InternalFrameEvent e) {
+                outputAndInput.stop();
+            }
+        });
 
     }
 

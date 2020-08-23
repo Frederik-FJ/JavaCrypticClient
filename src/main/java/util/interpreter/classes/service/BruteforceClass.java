@@ -2,6 +2,7 @@ package util.interpreter.classes.service;
 
 import Exceptions.InvalidServerResponseException;
 import Exceptions.UnknownMicroserviceException;
+import util.interpreter.Interpreter;
 import util.interpreter.annotations.UsableClass;
 import util.interpreter.annotations.UsableConstructor;
 import util.interpreter.annotations.UsableMethod;
@@ -14,10 +15,12 @@ import util.service.Service;
 @UsableClass(name = "Bruteforce")
 public class BruteforceClass extends Bruteforce {
 
+    Interpreter interpreter;
 
     @UsableConstructor
-    public BruteforceClass(String serviceUuid, DeviceClass device) {
+    public BruteforceClass(Interpreter interpreter, String serviceUuid, DeviceClass device) {
         super(serviceUuid, device);
+        this.interpreter = interpreter;
     }
 
     public BruteforceClass(Service service) {
@@ -71,7 +74,7 @@ public class BruteforceClass extends Bruteforce {
     @Override
     @UsableMethod(name = "getDevice")
     public Device getDevice() {
-        return new DeviceClass(super.getDevice());
+        return new DeviceClass(interpreter, super.getDevice());
     }
 
     @Override

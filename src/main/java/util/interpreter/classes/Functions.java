@@ -12,7 +12,7 @@ public class Functions {
 
     public Functions(Interpreter interpreter) {
         this.interpreter = interpreter;
-        currentDevice = new DeviceClass(interpreter.getSourceDevice());
+        currentDevice = new DeviceClass(this.interpreter, interpreter.getSourceDevice());
     }
 
     @UsableMethod(name = "print")
@@ -28,6 +28,24 @@ public class Functions {
     @UsableMethod(name = "currentDevice")
     public DeviceClass getCurrentDevice() {
         return currentDevice;
+    }
+
+    @UsableMethod(name = "sleep")
+    public void sleep(Double value) {
+        try {
+            Thread.sleep(value.intValue());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @UsableMethod(name = "sleepSec")
+    public void sleepSeconds(Double value) {
+        try {
+            Thread.sleep(value.intValue() * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @UsableField(name = "currentDevice", isStatic = false)

@@ -41,6 +41,11 @@ public class ClassStore {
                 return c;
             }
         }
+        for (Constructor<?> c : constructors) {
+            if (Functions.isCallable(c.getParameterTypes(), args)) {
+                return c;
+            }
+        }
         throw new NoSuchMethodException();
     }
 

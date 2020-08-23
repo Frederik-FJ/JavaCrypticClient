@@ -182,6 +182,12 @@ public class FileManagerMainPane extends Panel {
             return;
         }
 
+        // open live console if file ends with .crp
+        if (f.getName().endsWith(".crp")) {
+            f.toExecutionFile().executeWithInterpreter();
+            return;
+        }
+
         // open the TextEditor
         Information.Desktop.startTextEditor(f);
     }
@@ -203,7 +209,23 @@ public class FileManagerMainPane extends Panel {
      * @return returns the Popup-Menu
      */
     protected JPopupMenu dirPopupMenu(File dir) {
-        return popupMenu(dir, "directory");
+        JPopupMenu options = popupMenu(dir, "directory");
+
+        JMenuItem open = new JMenuItem("open");
+        open.addActionListener(actionEvent -> {
+            try {
+                loadDirectory(dir);
+                directoryPath.setDirectory(dir);
+            } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException e) {
+                e.printStackTrace();
+            }
+        });
+        options.add(open, 0);
+
+        if (dir.getName().endsWith(".crp")) {
+            //TODO execute dirs as interpreted files
+        }
+        return options;
     }
 
     /**
@@ -233,6 +255,13 @@ public class FileManagerMainPane extends Panel {
             JMenuItem show = new JMenuItem("show");
             show.addActionListener(actionEvent -> Information.Desktop.startWalletApp(new WalletFile(file)));
             options.add(show, 0);
+        }
+
+        // Adding option to execute with interpreter if the file ends with .crp
+        if (file.getName().endsWith(".crp")) {
+            JMenuItem execute = new JMenuItem("execute");
+            execute.addActionListener(actionEvent -> file.toExecutionFile().executeWithInterpreter());
+            options.add(execute, 0);
         }
 
         return options;

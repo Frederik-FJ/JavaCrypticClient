@@ -13,8 +13,11 @@ import util.interpreter.classes.DeviceClass;
 import util.interpreter.classes.FileClass;
 import util.interpreter.classes.Functions;
 import util.interpreter.classes.service.BruteforceClass;
+import util.interpreter.elements.IfStatement;
+import util.interpreter.elements.Loop;
 import util.interpreter.elements.Variable;
 import util.items.Device;
+import util.path.Path;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +28,8 @@ public class Interpreter {
 
     OutputApp outputApp;
     Device sourceDevice;
+    Path sourcePath;
+
     Functions functions;
 
     List<Variable> vars = new ArrayList<>();
@@ -52,11 +57,20 @@ public class Interpreter {
         this.outputApp = outputApp;
         this.sourceDevice = sourceDevice;
         this.functions = new Functions(this);
+        this.sourcePath = new Path(sourceDevice);
+    }
+
+    public Interpreter(OutputApp outputApp, Path sourcePath) {
+        this.outputApp = outputApp;
+        this.sourceDevice = sourcePath.getDevice();
+        this.sourcePath = sourcePath;
+        this.functions = new Functions(this);
     }
 
     public Interpreter(Interpreter parentInterpreter) {
         this.parentInterpreter = parentInterpreter;
         this.sourceDevice = parentInterpreter.sourceDevice;
+        this.sourcePath = parentInterpreter.sourcePath;
         this.outputApp = parentInterpreter.outputApp;
         this.functions = new Functions(this);
     }
@@ -214,11 +228,9 @@ public class Interpreter {
         // First command in a chain of commands
         if (value == null) {
             // Checking for Vars
-            for (Variable var : vars) {
-                if (var.getName().equals(cmd)) {
-                    return var.getContent();
-                }
-            }
+            try {
+                return getVar(cmd).getContent();
+            } catch (NoVarException ignore) {}
 
 
             try {
@@ -235,6 +247,11 @@ public class Interpreter {
                 return interpretDefinedMethods(cmd);
             } catch (NoDefinedMethodException ignore) {
             }
+
+            try {
+                interpretWhileIf(cmd);
+                return null;
+            }catch (NoLoopException ignore) { }
 
             try {
                 return interpretConditions(cmd);
@@ -275,31 +292,10 @@ public class Interpreter {
         }
 
         // overwrite old value
-        for (Variable var : vars) {
-            if (var.getName().equals(name)) {
-                var.setContent(interpretCommand(value));
-                return value;
-            }
-        }
-
-        // vars from parent Interpreter
-        if (parentInterpreter != null) {
-            Interpreter localParentInterpreter = parentInterpreter;
-
-            List<Interpreter> parents = new ArrayList<>();
-            parents.add(parentInterpreter);
-            while (localParentInterpreter.hasParentInterpreter()) {
-                parents.add((localParentInterpreter = localParentInterpreter.getParentInterpreter()));
-            }
-
-            for (Interpreter i : parents) {
-                for (Variable var : i.vars) {
-                    if (var.getName().equals(name)) {
-                        var.setContent(interpretCommand(value));
-                        return value;
-                    }
-                }
-            }
+        try {
+            Variable old = this.getVar(name);
+            old.setContent(interpretCommand(value));
+        } catch (NoVarException ignore) {
         }
 
         // new Var
@@ -426,13 +422,15 @@ public class Interpreter {
             if (cmd.split("\\(")[0].equals(s)) {
                 // Preparation for calling the constructor
                 String tmp = cmd.split("\\(", 2)[1];
-                String[] arguments = split(Collections.singletonList(','), tmp.substring(0, tmp.length() - 1)).toArray(new String[0]);;
+                String[] arguments = split(Collections.singletonList(','), tmp.substring(0, tmp.length() - 1)).toArray(new String[0]);
 
-                Object[] args = new Object[arguments.length];
+                Object[] args = new Object[arguments.length + 1];
                 Class<?>[] argTypes = new Class[args.length];
 
-                for (int i = 0; i < arguments.length; i++) {
-                    args[i] = interpretCommand(arguments[i]);
+                args[0] = this;
+                argTypes[0] = this.getClass();
+                for (int i = 1; i < args.length; i++) {
+                    args[i] = interpretCommand(arguments[i-1]);
                     argTypes[i] = args[i].getClass();
                 }
 
@@ -532,8 +530,8 @@ public class Interpreter {
             // without arguments
             if (arguments.length == 1 && arguments[0].equals("")) {
                 if (value instanceof ClassStore) {
-                    method = ((ClassStore) value).getFunction(methodName);
-                    return method.invoke(null);
+                    method = ((ClassStore) value).getFunction(methodName, this.getClass());
+                    return method.invoke(null, this);
                 } else {
                     method = classes.get(Functions.getUsableName(value.getClass())).getMethod(methodName);
                     return method.invoke(value);
@@ -542,16 +540,22 @@ public class Interpreter {
             // with arguments
             else {
                 if (value instanceof ClassStore) {
-                    method = ((ClassStore) value).getFunction(methodName, argTypes);
-                    return method.invoke(null, args);
+                    List<Class<?>> staticArgTypes = new ArrayList<>(Arrays.asList(argTypes));
+                    staticArgTypes.add(0, this.getClass());
+                    List<Object> staticArgs = new ArrayList<>(Arrays.asList(args));
+                    staticArgs.add(0, this);
+
+                    method = ((ClassStore) value).getFunction(methodName, staticArgTypes.toArray(new Class<?>[0]));
+                    return method.invoke(null, staticArgs.toArray(new Object[0]));
                 } else {
                     method = classes.get(Functions.getUsableName(value.getClass())).getMethod(methodName, argTypes);
                     return method.invoke(value, args);
                 }
             }
         } catch (NoSuchMethodException e) {
+            Class<?> c = value instanceof ClassStore ? ((ClassStore) value).getStoredClass() : value.getClass();
             throw new NoMethodException("Die Methode " + methodName + " mit den Parameter " + Arrays.toString(argTypes)
-                    + " wurde auf dem Objekt der Klasse " + Functions.getUsableName(value.getClass()) +
+                    + " wurde auf dem Objekt der Klasse " + Functions.getUsableName(c) +
                     " nicht gefundend");
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
@@ -559,20 +563,31 @@ public class Interpreter {
         throw new NoMethodException("");
     }
 
-    public OutputApp getOutputApp() {
-        return outputApp;
-    }
+    private void interpretWhileIf(String cmd) throws InterpreterException {
 
-    public Device getSourceDevice() {
-        return sourceDevice;
-    }
-
-    public boolean hasParentInterpreter() {
-        return parentInterpreter != null;
-    }
-
-    public Interpreter getParentInterpreter() {
-        return parentInterpreter;
+        List<String> parts = split(Collections.singletonList(')'), cmd);
+        String condition;
+        String content;
+        try {
+            condition = parts.get(0).split("\\(", 2)[1].strip();
+            content = parts.get(1).split("\\{", 2)[1].strip();
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(parts);
+            throw new NoLoopException("");
+        }
+        Loop loop;
+        switch (parts.get(0).split("\\(")[0].strip()) {
+            case "while":
+                loop = new Loop(this, condition, content);
+                loop.execute();
+                break;
+            case "if":
+                IfStatement ifs = new IfStatement(this, condition, content, "");
+                ifs.execute();
+                break;
+            default:
+                throw new NoLoopException("");
+        }
     }
 
     public List<Variable> getVars() {
@@ -640,5 +655,53 @@ public class Interpreter {
         return parts;
     }
 
+    private Variable getVar(String name) throws NoVarException {
+        for (Variable var : vars) {
+            if (var.getName().equals(name)) {
+                return var;
+            }
+        }
 
+        // vars from parent Interpreter
+        if (parentInterpreter != null) {
+            Interpreter localParentInterpreter = parentInterpreter;
+            List<Interpreter> parents = new ArrayList<>();
+            parents.add(parentInterpreter);
+
+            while (localParentInterpreter.hasParentInterpreter()) {
+                parents.add((localParentInterpreter = localParentInterpreter.getParentInterpreter()));
+            }
+
+            for (Interpreter i : parents) {
+                for (Variable var : i.vars) {
+                    if (var.getName().equals(name)) {
+                        return var;
+                    }
+                }
+            }
+        }
+        throw new NoVarException("");
+    }
+
+
+
+    public OutputApp getOutputApp() {
+        return outputApp;
+    }
+
+    public Device getSourceDevice() {
+        return sourceDevice;
+    }
+
+    public boolean hasParentInterpreter() {
+        return parentInterpreter != null;
+    }
+
+    public Interpreter getParentInterpreter() {
+        return parentInterpreter;
+    }
+
+    public Path getSourcePath() {
+        return sourcePath;
+    }
 }

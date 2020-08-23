@@ -14,6 +14,7 @@ import util.items.Device;
 import util.file.File;
 import util.file.WalletFile;
 import util.path.DirectoryPath;
+import util.path.Path;
 
 import javax.swing.*;
 import java.awt.*;
@@ -159,10 +160,10 @@ public class Terminal extends App implements OutputApp {
             }
 
             try {
-                WalletFile walletFile = new WalletFile(Objects.requireNonNull(this.getFileFromPath(command.split(" ")[1])));
+                WalletFile walletFile = new WalletFile(Objects.requireNonNull(Path.getPathFromString(this.directoryPath, command.split(" ")[1]).getCurrentFile()));
                 Information.Desktop.startWalletApp(walletFile);
                 return "starting Wallet-App";
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | NoDirectoryException e) {
                 e.printStackTrace();
                 return "Invalid File";
             }
@@ -193,10 +194,14 @@ public class Terminal extends App implements OutputApp {
 
 
         if (run) {
-            if (params[0].equals("run-interpret"))
-                getFileFromPath(params[1]).toExecutionFile().executeWithInterpreter();
-            else
-                getFileFromPath(params[1]).toExecutionFile().execute();
+            try {
+                if (params[0].equals("run-interpret"))
+                    Path.getPathFromString(this.directoryPath, params[1]).getCurrentFile().toExecutionFile().executeWithInterpreter();
+                else
+                    Path.getPathFromString(this.directoryPath, params[1]).getCurrentFile().toExecutionFile().execute();
+            }catch (NoDirectoryException e) {
+                e.printStackTrace();
+            }
         }
 
         if (usePath) {
@@ -236,35 +241,7 @@ public class Terminal extends App implements OutputApp {
         return notFound;
     }
 
-    private File getFileFromPath(String path) {
-        DirectoryPath p = new DirectoryPath(this.directoryPath);
-        String[] dirs = path.split("/");
-        for (String dir : dirs) {
-            if (dir.contains(" ") && !dir.contains("\"")) {
-                dir = dir.split(" ")[0];
-            }
-            if (dir.equals(".")) continue;
-            try {
-                for (File f : p.getCurrentFile().getFiles()) {
-                    if (dir.equals(f.getName())) {
-                        if (!f.isDirectory())
-                            return f;
-                        break;
-                    }
-                }
-            } catch (UnknownMicroserviceException | InvalidServerResponseException | NoDirectoryException e) {
-                e.printStackTrace();
-            }
-            try {
-                p.changeDirectory(dir);
-            } catch (InvalidServerResponseException | UnknownMicroserviceException e) {
-                e.printStackTrace();
-                JOptionPane.showInternalMessageDialog(Information.Desktop, "Error");
-                break;
-            }
-        }
-        return null;
-    }
+
 
     @Override
     public void println(Object o) {

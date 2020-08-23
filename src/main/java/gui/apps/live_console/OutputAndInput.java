@@ -20,6 +20,8 @@ public class OutputAndInput extends Panel implements OutputApp {
 
     volatile boolean isRunning = false;
 
+    Thread currentThread = null;
+
 
     public OutputAndInput(Interpreter interpreter, LiveConsole parent) {
         this.interpreter = interpreter;
@@ -63,6 +65,10 @@ public class OutputAndInput extends Panel implements OutputApp {
         this.add(outputContainer, BorderLayout.CENTER);
     }
 
+    public void stop() {
+        this.currentThread.stop();
+    }
+
     @Override
     public void println(Object o) {
         if (o == null)
@@ -87,7 +93,7 @@ public class OutputAndInput extends Panel implements OutputApp {
         if (isRunning) {
             return;
         }
-        new Thread(() -> {
+        Thread currentThread = new Thread(() -> {
             isRunning = true;
             submit.setBackground(Color.RED);
 
@@ -102,7 +108,9 @@ public class OutputAndInput extends Panel implements OutputApp {
             }
             parent.reload();
             endExecute();
-        }).start();
+        });
+        currentThread.start();
+        this.currentThread = currentThread;
     }
 
     public void endExecute() {

@@ -21,7 +21,7 @@ public class Information {
     public static String walletUuid = null;
     public static String walletPw = null;
 
-    public static DesktopPane Desktop = null;
+    public static volatile DesktopPane Desktop = null;
 
     public static ImageIcon fileIcon;
     public static ImageIcon dirIcon;

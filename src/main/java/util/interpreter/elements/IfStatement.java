@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Loop {
+public class IfStatement {
 
     Interpreter interpreter;
     Interpreter loopInterpreter;
@@ -16,33 +16,26 @@ public class Loop {
     List<Variable> vars = new ArrayList<>();
     String condition;
     String content;
+    String elseContent;
 
-    Variable counter = new Variable("counter", 0.0);
-
-    public Loop(Interpreter interpreter, String condition, String content, Variable... loopVars) {
+    public IfStatement(Interpreter interpreter, String condition, String content, String elseContent, Variable... loopVars) {
         this.interpreter = interpreter;
         this.loopInterpreter = new Interpreter(interpreter);
         this.condition = condition;
         this.content = content;
-        loopInterpreter.getVars().add(counter);
+        this.elseContent = elseContent;
         loopInterpreter.getVars().addAll(Arrays.asList(loopVars));
 
     }
 
     public void execute() throws InterpreterException {
         try {
-            while((boolean) loopInterpreter.interpretCommand(condition)) {
+            if((boolean) loopInterpreter.interpretCommand(condition)) {
                 Interpreter interpreter = new Interpreter(this.loopInterpreter);
                 interpreter.interpret(content);
-                try {
-                    Double current = (Double) counter.getContent();
-                    if (current.intValue() != current) {
-                        throw new ClassCastException("");
-                    }
-                    counter.setContent(current + 1);
-                } catch (ClassCastException e) {
-                    throw new LoopException("The counter cannot be set on a non-Integer value");
-                }
+            } else {
+                Interpreter interpreter = new Interpreter(this.loopInterpreter);
+                interpreter.interpret(elseContent);
             }
         } catch (ClassCastException e) {
             System.out.println(condition);
